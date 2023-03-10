@@ -1,0 +1,76 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: WebAssembly Playgound CI
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm install
+      - run: npm run compile
+
+      - if: ${{ contains(github.ref, 'tags/v') }}
+        run: node dist/main.js --release
+      - if: ${{ !contains(github.ref, 'tags/v') }}
+        run: node dist/main.js
+
+      - name: Save App Bundle
+        uses: actions/upload-artifact@v2
+        with:
+          name: wasm-playground-app-bundle
+          path: vscode/vscode-web
+
+  deploy-development:
+    needs: [ build ]
+    if: ${{ !contains(github.ref, 'tags/v') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: mkdir dev
+      - name: Restore Bundles
+        uses: actions/download-artifact@v2
+        with:
+          name: wasm-playgound-app-bundle-dev
+          path: dev
+      - run: |
+          sed -i -e "s|wasm-playground.kamenokosoft.com|wasm-playground.kamenokosoft.com/dev|g" dev/index.html
+          sed -i -e "s|https://wasm-playground.kamenokosoft.com/callback|https://wasm-playground.kamenokosoft.com/dev/callback|g" dev/extensions/github-authentication/dist/browser/extension.js
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          keep_files: true
+
+  deploy:
+    needs: [ build ]
+    if: ${{ contains(github.ref, 'tags/v') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restore Bundles
+        uses: actions/download-artifact@v2
+        with:
+          name: wasm-playgound-app-bundle
+          path: .
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          keep_files: true
