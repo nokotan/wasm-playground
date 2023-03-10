@@ -18,10 +18,10 @@ async function main() {
 
     await buildExtension("wasm-playground");
     await buildExtension("emscripten-remote-build");
-    await buildExtension("gistpad", {
-        vsceOptions: [ "" ],
-        projectName: "gistfs"
-    });
+    // await buildExtension("gistpad", {
+    //     vsceOptions: [ "" ],
+    //     projectName: "gistfs"
+    // });
     await buildExtension("wasmer-terminal", {
         vsceOptions: [ "--no-dependencies" ],
         projectName: "wasmer-term"
@@ -39,10 +39,8 @@ async function main() {
     const copiedFiles = [
         "index.html",
         "callback.html",
-        "favicon.ico",
         "manifest.json",
         "sw.js",
-        "icon.png",
     ];
 
     for (const file of copiedFiles) {

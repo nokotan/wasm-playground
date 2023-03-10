@@ -25,16 +25,26 @@ export interface Static {
 interface DownloadInfo {
 	url: string;
 	version: string;
+	quality: 'stable' | 'insider';
 }
 
 const extensionRoot = process.cwd();
 const vscodeTestDir = path.resolve(extensionRoot, 'vscode');
 
+async function getLatestVersion(quality: 'stable' | 'insider' | string): Promise<DownloadInfo> {
+	const knownVersions = {
+		"1.74.1": "1ad8d514439d5077d2b0b7ee64d2ce82a9308e5a"
+	};
 
-async function getLatestVersion(quality: 'stable' | 'insider'): Promise<DownloadInfo> {
-	// const update: DownloadInfo = await fetchJSON(`https://update.code.visualstudio.com/api/update/web-standalone/${quality}/latest`);
-	// return update;
-	return Promise.resolve({ url: `https://update.code.visualstudio.com/commit:1ad8d514439d5077d2b0b7ee64d2ce82a9308e5a/web-standalone/${quality}`, version: "64bbfbf67ada9953918d72e1df2f4d8e537d340e" });
+	if (quality == 'stable' || quality == 'insider') {
+		const update: DownloadInfo = await fetchJSON(`https://update.code.visualstudio.com/api/update/web-standalone/${quality}/latest`);
+		update.quality = quality;
+		return update;
+	} else if (knownVersions[quality]) {
+		return Promise.resolve({ url: `https://update.code.visualstudio.com/commit:${knownVersions[quality]}/web-standalone/stable`, version: knownVersions[quality], quality: 'stable' });
+	} else {
+		return Promise.reject('unknown vscode version');
+	}
 }
 
 const reset = '\x1b[G\x1b[0K';
@@ -96,14 +106,14 @@ async function unzip(source: string, destination: string, message: string, strip
 	process.stdout.write(`${reset}${message}: complete\n`);
 }
 
-export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider'): Promise<Static> {
+export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider' | string): Promise<Static> {
 	const info = await getLatestVersion(quality);
 
 	const folderName = `vscode-web`;
 
 	const downloadedPath = path.resolve(vscodeTestDir, folderName);
 	if (existsSync(downloadedPath) && existsSync(path.join(downloadedPath, 'version'))) {
-		return { type: 'static', location: downloadedPath, quality, version: info.version };
+		return { type: 'static', location: downloadedPath, quality: info.quality, version: info.version };
 	}
 
 	if (existsSync(vscodeTestDir)) {
@@ -130,7 +140,7 @@ export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider'): Pro
 		}
 
 	}
-	return { type: 'static', location: downloadedPath, quality, version: info.version };
+	return { type: 'static', location: downloadedPath, quality: info.quality, version: info.version };
 }
 
 function hasStdOut(object: unknown): object is { stdout: string, stderr: string } {
