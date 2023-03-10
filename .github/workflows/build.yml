@@ -44,7 +44,7 @@ jobs:
       - name: Restore Bundles
         uses: actions/download-artifact@v2
         with:
-          name: wasm-playgound-app-bundle-dev
+          name: wasm-playgound-app-bundle
           path: dev
       - run: |
           sed -i -e "s|wasm-playground.kamenokosoft.com|wasm-playground.kamenokosoft.com/dev|g" dev/index.html
