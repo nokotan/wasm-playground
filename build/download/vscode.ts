@@ -1,4 +1,4 @@
-import { promises as fs, existsSync } from 'fs';
+import { promises as fs, existsSync, copyFileSync } from 'fs';
 import * as path from 'path';
 
 import { fetchJSON } from '../fetch';
@@ -18,9 +18,8 @@ interface DownloadInfo {
 	quality: 'stable' | 'insider';
 }
 
-const installationRoot = path.resolve(process.cwd(), 'dist');
-
 async function getLatestVersion(quality: 'stable' | 'insider' | string): Promise<DownloadInfo> {
+
 	const knownVersions = {
 		"1.74.1": "1ad8d514439d5077d2b0b7ee64d2ce82a9308e5a"
 	};
@@ -36,8 +35,12 @@ async function getLatestVersion(quality: 'stable' | 'insider' | string): Promise
 	}
 }
 
-export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider' | string): Promise<Static> {
+export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider' | string, installationRoot?: string): Promise<Static> {
 	const info = await getLatestVersion(quality);
+
+	if (!installationRoot) {
+		installationRoot = path.resolve(process.cwd(), 'dist');
+	}
 
 	if (existsSync(installationRoot) && existsSync(path.join(installationRoot, 'version'))) {
 		return { type: 'static', location: installationRoot, quality: info.quality, version: info.version };
@@ -56,14 +59,14 @@ export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider' | str
 	try {
 		await download(info.url, tmpArchiveName, `Downloading ${productName}`);
 		await unzip(tmpArchiveName, downloadPath, `Unpacking ${productName}`, 1);
-		await fs.cp(downloadPath, installationRoot);
+		await fs.cp(downloadPath, installationRoot, { recursive: true });
 		await fs.writeFile(path.join(installationRoot, "version"), info.version);
 	} catch (err) {
 		console.error(err);
 		throw Error(`Failed to download and unpack ${productName}`);
 	} finally {
 		try {
-			fs.unlink(tmpArchiveName);
+			// fs.unlink(tmpArchiveName);
 		} catch (e) {
 			// ignore
 		}

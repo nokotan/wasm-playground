@@ -31,19 +31,18 @@ export async function downloadExternalRepository(extensionRepository: string) {
 }
 
 export interface BuildExtensionConfig {
-	vsceOptions: string[],
+	vsCodePath: string,
+	vsceOptions?: string[],
 	projectName?: string
 }
 
-export async function buildExtension(extensionName: string, options?: BuildExtensionConfig): Promise<void> {
+export async function buildExtension(extensionName: string, options: BuildExtensionConfig): Promise<void> {
 
-	if (!options) {
-		options = {
-			vsceOptions: [ "--no-dependencies" ]
-		};
+	if (!options.vsceOptions) {
+		options.vsceOptions = [ "--no-dependencies" ];
 	}
 	
-	const folderName = `vscode-web/addon/${extensionName}`;
+	const folderName = path.resolve(options.vsCodePath, `addon/${extensionName}`);
 	const downloadedPath = path.resolve(vscodeTestDir, folderName);
 	const tmpArchiveName = path.resolve(extensionName, `${extensionName}.vsix`);
 	const projectName = options.projectName || extensionName;
