@@ -1,18 +1,24 @@
-import * as fs from "fs";
-import { buildExtension, downloadAndUnzipVSCode, downloadExternalRepository } from "./download";
 
-function replaceFileContentSync(fileName: string, replacePatterns: { pattern: string | RegExp, replaced: string }[]) {
-    let content = fs.readFileSync(fileName, { encoding: "utf8" });
+import { buildExtension, downloadExternalRepository } from "./download/extension";
+import { replaceFileContent } from "./util";
+import { downloadAndUnzipVSCode } from "./download/vscode";
+import { promises as fs } from "fs";
 
-    for (const item of replacePatterns) {
-        content = content.replace(item.pattern, item.replaced);
-    }
 
-    fs.writeFileSync(fileName, content, { encoding: "utf8" });
-}
 
 async function main() {
+
     await downloadAndUnzipVSCode("stable");
+
+    await patchVSCode();
+
+    await deployExtensions();
+
+    await copyStaticAssets();
+}
+
+async function deployExtensions() {
+
     await downloadExternalRepository("https://github.com/lostintangent/gistpad.git");
     await downloadExternalRepository("https://github.com/nokotan/wasmer-terminal.git");
 
@@ -26,8 +32,11 @@ async function main() {
         vsceOptions: [ "--no-dependencies" ],
         projectName: "wasmer-term"
     });
-    
-    replaceFileContentSync(
+}
+
+async function patchVSCode() {
+
+    await replaceFileContent(
         "vscode/vscode-web/extensions/github-authentication/dist/browser/extension.js", 
         [ 
             { pattern: "/(?:^|\\.)github\\.dev$/", replaced: "/(?:^|\\.)kamenokosoft\\.com$/" },
@@ -35,6 +44,9 @@ async function main() {
             { pattern: "01ab8ac9400c4e429b23", replaced: "49ba0b7a0fa218f5973a" },   
         ]
     );
+}
+
+async function copyStaticAssets() {
 
     const copiedFiles = [
         "index.html",
@@ -45,7 +57,7 @@ async function main() {
     ];
 
     for (const file of copiedFiles) {
-        fs.copyFileSync(`src/${file}`, "vscode/vscode-web/" + file);
+        await fs.copyFile(`src/${file}`, "vscode/vscode-web/" + file);
     }
 }
 
