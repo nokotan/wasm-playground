@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "build": "tsc",
-    "pack": "node dist/main.js",
+    "build": "tsc -p build",
+    "pack": "tsc -p src && node build/dist/main.js",
     "serve": "webpack serve"
   },
   "keywords": [],

@@ -40,11 +40,12 @@ async function main() {
         "index.html",
         "callback.html",
         "manifest.json",
+        "config.js",
         "sw.js",
     ];
 
     for (const file of copiedFiles) {
-        fs.copyFileSync(file, "vscode/vscode-web/" + file);
+        fs.copyFileSync(`src/${file}`, "vscode/vscode-web/" + file);
     }
 }
 
