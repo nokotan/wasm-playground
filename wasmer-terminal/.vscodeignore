@@ -1,0 +1,16 @@
+js
+node_modules
+pkg
+public
+screenshots
+target
+src
+build.rs
+Cargo.lock
+Cargo.toml
+.gitignore
+package-lock.json
+rust-toolchain.toml
+tsconfig.json
+webpack.config.mjs
+*.vsix

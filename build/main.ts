@@ -21,7 +21,6 @@ async function main() {
 async function deployExtensions() {
 
     await downloadExternalRepository("https://github.com/lostintangent/gistpad.git");
-    await downloadExternalRepository("https://github.com/nokotan/wasmer-terminal.git");
 
     await buildExtension("wasm-playground", { vsCodePath: installationRoot });
     await buildExtension("emscripten-remote-build", { vsCodePath: installationRoot });
