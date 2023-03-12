@@ -7,12 +7,16 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getWorkerLocation": () => (/* binding */ getWorkerLocation),
 /* harmony export */   "isWorker": () => (/* binding */ isWorker),
 /* harmony export */   "startWasm": () => (/* binding */ startWasm),
 /* harmony export */   "startWorker": () => (/* binding */ startWorker)
 /* harmony export */ });
 function isWorker() {
     return true;
+}
+function getWorkerLocation() {
+    return __webpack_require__.p;
 }
 function startWorker(module, memory, state, opts, helper) {
     const worker = new Worker(new URL(/* worker import */ __webpack_require__.p + __webpack_require__.u(618), __webpack_require__.b), Object.assign({}, opts, { type: undefined }));
@@ -68,7 +72,7 @@ if (!self.onmessage) {
         if (event.data.length == 5) {
             let [moduleUrl, module, memory, state, mainJS] = event.data;
             __webpack_require__.p = moduleUrl;
-            const importFrom = ( true) ? __webpack_require__.e(/* import() */ 972).then(__webpack_require__.bind(__webpack_require__, 972)) : 0;
+            const importFrom = ( true) ? __webpack_require__.e(/* import() */ 688).then(__webpack_require__.bind(__webpack_require__, 688)) : 0;
             try {
                 const { default: init, worker_entry_point, worker_entry_point_with_val } = await importFrom;
                 await init(module, memory);
@@ -92,7 +96,7 @@ if (!self.onmessage) {
         else {
             let [moduleUrl, module, memory, ctx, mainJS, wasm_module, wasm_memory] = event.data;
             __webpack_require__.p = moduleUrl;
-            const importFrom = ( true) ? __webpack_require__.e(/* import() */ 972).then(__webpack_require__.bind(__webpack_require__, 972)) : 0;
+            const importFrom = ( true) ? __webpack_require__.e(/* import() */ 688).then(__webpack_require__.bind(__webpack_require__, 688)) : 0;
             try {
                 const { default: init, wasm_entry_point, } = await importFrom;
                 await init(module, memory);
