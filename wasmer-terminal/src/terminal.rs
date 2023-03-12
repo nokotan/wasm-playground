@@ -1,10 +1,15 @@
-use wasm_bindgen::prelude::*;
 use js_sys::Function;
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen(typescript_custom_section)]
+const TS_APPEND_CONTENT: &'static str = r#"
+import { WasmPseudoTerminal } from "./snippets/wasmer-vscode-web-7bb130c80b4ace6c/js/terminal";
+"#;
 
 #[wasm_bindgen(module = "/js/terminal.ts")]
 extern "C" {
 
-    #[wasm_bindgen(js_name = "WasmPseudoTerminal")]
+    #[wasm_bindgen(js_name = "WasmPseudoTerminal", typescript_type = "WasmPseudoTerminal")]
     pub type Terminal;
 
     #[wasm_bindgen(method)]

@@ -158,6 +158,12 @@ pub async fn fetch(
         opts.body(Some(&array));
     }
 
+    let url = if url.starts_with("http") {
+        url.to_string()
+    } else {
+        format!("{}/{}", get_worker_location(), url).to_string()
+    };
+
     let request = {
         let request = Request::new_with_str_and_init(&url, &opts).map_err(|_| err::ERR_EIO)?;
 
@@ -236,6 +242,9 @@ pub async fn get_response_data(resp: Response) -> Result<Vec<u8>, u32> {
 extern "C" {
     #[wasm_bindgen(js_name = "isWorker")]
     pub fn is_worker() -> bool;
+
+    #[wasm_bindgen(js_name = "getWorkerLocation")]
+    pub fn get_worker_location() -> String;
 }
 
 pub mod console {

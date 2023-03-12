@@ -1,5 +1,7 @@
 import { Pseudoterminal, Event, EventEmitter, TerminalDimensions } from 'vscode';
 import { open as OpenTerminal } from '../../../index';
+import { WasiFS } from '../../../index';
+import { importVSCode } from './vscode';
 
 export class WasmPseudoTerminal implements Pseudoterminal {
 	onDidWrite: Event<string>;
@@ -8,21 +10,25 @@ export class WasmPseudoTerminal implements Pseudoterminal {
 	private m_rows: number;
 	private m_cols: number;
 
-	private constructor(private writeEmitter: EventEmitter<string>, private closeEmitter: EventEmitter<number>, private location: string) {
+	private constructor(private fs: WasiFS, private writeEmitter: EventEmitter<string>, private closeEmitter: EventEmitter<number>, private location: string) {
 		this.onDidWrite = this.writeEmitter.event;
 		this.onDidClose = this.closeEmitter.event;
 	}
 
-	static async createWasmPseudoTerminal(location: string) {
-		const vscode = await import("vscode");
-		return new WasmPseudoTerminal(new vscode.EventEmitter<string>(), new vscode.EventEmitter<number>(), location);
+	static async createWasmPseudoTerminal(fs: WasiFS, location: string) {
+		const vscode = await importVSCode();
+		return new WasmPseudoTerminal(fs, new vscode.EventEmitter<string>(), new vscode.EventEmitter<number>(), location);
 	}
 
     private onDataCallback?: (data: string) => void;
     private onDimensionChangedCallback?: (dimension: TerminalDimensions) => void;
 
     async open(initialDimensions: TerminalDimensions | undefined) {
-		OpenTerminal(this, this.location);
+		if (initialDimensions) {
+			this.m_rows = initialDimensions.rows;
+			this.m_cols = initialDimensions.columns;
+		}
+		OpenTerminal(this, this.fs, this.location);
     }
 
     close(): void {

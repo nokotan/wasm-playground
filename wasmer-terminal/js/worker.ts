@@ -9,6 +9,10 @@ export function isWorker() {
     return true;
 }
 
+export function getWorkerLocation() {
+    return __webpack_public_path__;
+}
+
 export function startWorker(module, memory, state, opts, helper) {
     const worker = new Worker(new URL('./worker.ts',
         import.meta.url), opts);

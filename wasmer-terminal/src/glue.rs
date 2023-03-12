@@ -9,6 +9,7 @@ use wasmer_os::bin_factory::CachedCompiledModules;
 use wasmer_os::common::MAX_MPSC;
 use wasmer_os::console::Console;
 
+use crate::fs::WasiFS;
 use crate::system::TerminalCommand;
 use crate::system::WebConsole;
 use crate::system::WebSystem;
@@ -47,7 +48,7 @@ pub enum InputEvent {
 }
 
 #[wasm_bindgen]
-pub unsafe fn open(terminal: Terminal, location: String) -> Result<(), JsValue> {
+pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String) -> Result<(), JsValue> {
     #[wasm_bindgen]
     extern "C" {
         #[wasm_bindgen(js_namespace = navigator, js_name = userAgent)]
@@ -80,19 +81,18 @@ pub unsafe fn open(terminal: Terminal, location: String) -> Result<(), JsValue> 
             }
         });
     }
-  
+
     let web_console = WebConsole::new(term_tx);
     let system = System::default();
     let compiled_modules = Arc::new(CachedCompiledModules::new(None));
 
-    let fs = wasmer_os::fs::create_root_fs(None);
     let mut console = Console::new(
         location,
         "".to_string(),
         wasmer_os::eval::Compiler::Browser,
         Arc::new(web_console),
         None,
-        fs,
+        fs.fs.clone(),
         compiled_modules,
     );
     let tty = console.tty().clone();
@@ -122,9 +122,7 @@ pub unsafe fn open(terminal: Terminal, location: String) -> Result<(), JsValue> 
                 });
             }) as Box<dyn FnMut()>)
         };
-        terminal.on_dimension_changed(
-            closure.as_ref().unchecked_ref(),
-        );
+        terminal.on_dimension_changed(closure.as_ref().unchecked_ref());
         closure.forget();
     }
 

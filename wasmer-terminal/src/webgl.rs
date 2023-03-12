@@ -980,12 +980,8 @@ impl GlContext {
                     let _ = tx.send(Err("The shader is not valid".to_string())).await;
                 }
             }
-            WebGlCommand::ShowCanvas => {
-                
-            }
-            WebGlCommand::ShowTerminal => {
-                
-            }
+            WebGlCommand::ShowCanvas => {}
+            WebGlCommand::ShowTerminal => {}
             WebGlCommand::Sync { tx } => {
                 let _ = tx.send(()).await;
             }
