@@ -67,10 +67,32 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: wasm-playground-app-bundle
+          path: dist
+
+      - run: cd dist && tar -czvf ../wasm-playground.tar.gz .
+
+      - uses: actions/create-release@v1
+        if: ${{ contains(github.ref, 'tags/v') }}
+        id: create-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+
+      - uses: actions/upload-release-asset@v1
+        if: ${{ contains(github.ref, 'tags/v') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: wasm-playground.tar.gz
+          asset_name: wasm-playground.tar.gz
+          asset_content_type: application/gzip
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          publish_dir: dist
           keep_files: true
