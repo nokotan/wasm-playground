@@ -9,9 +9,6 @@ import * as path from 'path';
 import { execSync } from 'child_process';
 import { unzip } from '../decompress';
 
-const extensionRoot = process.cwd();
-const vscodeTestDir = path.resolve(extensionRoot, 'vscode');
-
 function hasStdOut(object: unknown): object is { stdout: string, stderr: string } {
 	const arg = object as any;
 
@@ -42,14 +39,13 @@ export async function buildExtension(extensionName: string, options: BuildExtens
 		options.vsceOptions = [ "--no-dependencies" ];
 	}
 	
-	const folderName = path.resolve(options.vsCodePath, `addon/${extensionName}`);
-	const downloadedPath = path.resolve(vscodeTestDir, folderName);
+	const installationPath = path.resolve(options.vsCodePath, `addon/${extensionName}`);
 	const tmpArchiveName = path.resolve(extensionName, `${extensionName}.vsix`);
 	const projectName = options.projectName || extensionName;
 
 	try {
 		execSync(`cd ${extensionName} && npm install && npx vsce package ${options.vsceOptions.join(" ")} && mv ${projectName}-*.vsix ${extensionName}.vsix`, { encoding: "utf8", stdio: "inherit" });
-		await unzip(tmpArchiveName, downloadedPath, `Unpacking ${extensionName}`);
+		await unzip(tmpArchiveName, installationPath, `Unpacking ${extensionName}`);
 	} catch (err) {
 		if (hasStdOut(err)) {
 			console.log(err.stdout);

@@ -9,12 +9,14 @@ export interface Static {
 	readonly type: 'static';
 	readonly location: string;
 	readonly quality: 'stable' | 'insider';
+	readonly productVersion: string;
 	readonly version: string;
 }
 
 interface DownloadInfo {
 	url: string;
 	version: string;
+	productVersion: string;
 	quality: 'stable' | 'insider';
 }
 
@@ -29,21 +31,24 @@ async function getLatestVersion(quality: 'stable' | 'insider' | string): Promise
 		update.quality = quality;
 		return update;
 	} else if (knownVersions[quality]) {
-		return Promise.resolve({ url: `https://update.code.visualstudio.com/commit:${knownVersions[quality]}/web-standalone/stable`, version: knownVersions[quality], quality: 'stable' });
+		return Promise.resolve({ url: `https://update.code.visualstudio.com/commit:${knownVersions[quality]}/web-standalone/stable`, version: knownVersions[quality], productVersion: quality, quality: 'stable' });
 	} else {
 		return Promise.reject('unknown vscode version');
 	}
 }
 
 export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider' | string, installationRoot?: string): Promise<Static> {
-	const info = await getLatestVersion(quality);
-
+	
 	if (!installationRoot) {
 		installationRoot = path.resolve(process.cwd(), 'dist');
 	}
 
-	if (existsSync(installationRoot) && existsSync(path.join(installationRoot, 'version'))) {
-		return { type: 'static', location: installationRoot, quality: info.quality, version: info.version };
+	const info = await getLatestVersion(quality);
+	const versionPath = path.join(installationRoot, 'version')
+
+	if (existsSync(versionPath)) {
+		const version = await fs.readFile(versionPath, { encoding: 'utf8' });
+		return JSON.parse(version);
 	}
 
 	if (existsSync(installationRoot)) {
@@ -54,23 +59,21 @@ export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider' | str
 
 	const productName = `VS Code ${quality === 'stable' ? 'Stable' : 'Insiders'}`;
 	const tmpArchiveName = `vscode-web-${quality}-${info.version}-tmp`;
-	const downloadPath = path.resolve(process.cwd(), 'vscode');
 
 	try {
 		await download(info.url, tmpArchiveName, `Downloading ${productName}`);
-		await unzip(tmpArchiveName, downloadPath, `Unpacking ${productName}`, 1);
-		await fs.cp(downloadPath, installationRoot, { recursive: true });
-		await fs.writeFile(path.join(installationRoot, "version"), info.version);
+		await unzip(tmpArchiveName, installationRoot, `Unpacking ${productName}`, 1);
+		await fs.writeFile(path.join(installationRoot, "version"), JSON.stringify(info));
 	} catch (err) {
 		console.error(err);
 		throw Error(`Failed to download and unpack ${productName}`);
 	} finally {
 		try {
-			// fs.unlink(tmpArchiveName);
+			fs.unlink(tmpArchiveName);
 		} catch (e) {
 			// ignore
 		}
 
 	}
-	return { type: 'static', location: installationRoot, quality: info.quality, version: info.version };
+	return { type: 'static', location: installationRoot, ...info };
 }

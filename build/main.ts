@@ -1,7 +1,7 @@
 
 import { buildExtension, downloadExternalRepository } from "./download/extension";
 import { replaceFileContent } from "./util";
-import { downloadAndUnzipVSCode } from "./download/vscode";
+import { downloadAndUnzipVSCode, Static } from "./download/vscode";
 import { promises as fs } from "fs";
 import * as path from "path";
 
@@ -9,13 +9,13 @@ const installationRoot = path.resolve(process.cwd(), 'dist');
 
 async function main() {
 
-    await downloadAndUnzipVSCode("stable", installationRoot);
+    const installationInfo = await downloadAndUnzipVSCode("stable", installationRoot);
 
     await patchVSCode();
 
     await deployExtensions();
 
-    await copyStaticAssets();
+    await copyStaticAssets(installationInfo);
 }
 
 async function deployExtensions() {
@@ -48,7 +48,7 @@ async function patchVSCode() {
     );
 }
 
-async function copyStaticAssets() {
+async function copyStaticAssets(info: Static) {
 
     const copiedFiles = [
         "index.html",
@@ -61,6 +61,16 @@ async function copyStaticAssets() {
     for (const file of copiedFiles) {
         await fs.copyFile(`src/${file}`, "dist/" + file);
     }
+
+    await replaceFileContent(
+        "dist/index.html",
+        [
+            {
+                pattern: "5e805b79fcb6ba4c2d23712967df89a089da575b/1.76.1",
+                replaced: `${info.version}/${info.productVersion}`
+            }
+        ]
+    )
 }
 
 main();
