@@ -1,8 +1,10 @@
 use std::path::PathBuf;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::spawn_local;
 use wasmer_os::fs::UnionFileSystem;
 use wasmer_os::wasmer_vfs::FileSystem;
 
+use crate::codefs::CodeFS;
 use crate::vscode::fileevent::{
     create_event_emitter, FileChangeEvent, FileChangeEventEmitter, VSCodeFileChangeEvent,
 };
@@ -37,6 +39,24 @@ impl WasiFS {
         }
     }
 
+    pub fn mount(&mut self, base_uri: Uri, mount_point: String) {
+        let mut vscode_fs = CodeFS::new(base_uri);
+
+        self.fs.mount(
+            "vscode",
+            &mount_point,
+            false,
+            Box::new(vscode_fs.create_client()),
+            None,
+        );
+
+        spawn_local(async move { vscode_fs.poll().await });
+    }
+
+    pub fn unmount(&mut self, mount_point: String) {
+        self.fs.unmount(&mount_point);
+    }
+
     pub fn clone(&self) -> Self {
         Self {
             fs: self.fs.clone(),
@@ -60,7 +80,7 @@ impl WasiFS {
     }
 
     pub fn stat(&mut self, uri: Uri) -> Result<FileEntry, FileSystemError> {
-        let stat: JsValue = self.stat_internal(&uri)?.into();
+        let stat = FileStat::from(self.stat_internal(&uri)?);
         Ok(stat.into())
     }
 

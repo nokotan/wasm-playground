@@ -13,6 +13,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	
 	vscode.workspace.registerFileSystemProvider("wasmfs", fs, { isCaseSensitive: true });
 
+	vscode.workspace.onDidChangeWorkspaceFolders(e => {
+		for (const added of e.added) {
+			fs.mount(added.uri, "/mnt/" + added.name);
+		}
+
+		for (const removed of e.removed) {
+			fs.unmount("/mnt/" + removed.name);
+		}
+	});
+
     vscode.window.registerTerminalProfileProvider('wasmer-term.terminal', {
 		provideTerminalProfile(
 			token: vscode.CancellationToken

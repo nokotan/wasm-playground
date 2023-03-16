@@ -109,6 +109,7 @@ export default {
   output: {
     path: resolve(__dirname, 'dist'),
   },
+  devtool: "source-map",
   optimization: {
     minimize: false
   },

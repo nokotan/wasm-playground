@@ -1,4 +1,5 @@
 pub mod fileevent;
+pub mod filesystem;
 pub mod stat;
 pub mod uri;
 

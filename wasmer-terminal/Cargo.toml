@@ -12,6 +12,7 @@ readme = "README.md"
 
 [dependencies]
 wasmer-os = { version = "^1.0", git = "https://github.com/nokotan/ate.git", branch = "wasmer3-wasix", default_features = false, features = [ "js", "mesh-net" ] }
+wasmer-bus = { version = "^1.0", git = "https://github.com/nokotan/ate.git", branch = "wasmer3-wasix", default_features = false }
 #wasm-bindgen = { version = "0.2", features = [ "nightly", "serde-serialize" ] }
 wasm-bindgen = { version = "0.2", features = [ "serde-serialize" ] }
 wasm-bindgen-futures = "0.4"

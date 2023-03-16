@@ -1,9 +1,13 @@
-import { Disposable, EventEmitter, FileChangeEvent, FileSystemError } from "vscode";
+import { Disposable, EventEmitter, FileChangeEvent, FileSystemError, FileSystem } from "vscode";
 
 let code: typeof import("vscode") | undefined;
 
 export async function importVSCode() {
     return code || (code = await import("vscode"));
+}
+
+export function getWorkspaceFs(): FileSystem | undefined {
+    return code?.workspace.fs;
 }
 
 export async function createEventEmitter(): Promise<EventEmitter<FileChangeEvent>> {

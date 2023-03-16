@@ -2998,6 +2998,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
+ "wasmer-bus",
  "wasmer-os",
  "wat",
  "web-sys",
