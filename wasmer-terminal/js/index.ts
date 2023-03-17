@@ -13,13 +13,25 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	
 	vscode.workspace.registerFileSystemProvider("wasmfs", fs, { isCaseSensitive: true });
 
+	fs.createDirectory(vscode.Uri.parse("wasmfs:/mnt"));
+
+	for (const added of vscode.workspace.workspaceFolders) {
+		console.log(`mount /mnt/${added.index}`);
+		fs.createDirectory(vscode.Uri.parse(`wasmfs:/mnt/${added.index}`));
+		fs.mount(added.uri, "/mnt/" + added.index);
+	}
+
 	vscode.workspace.onDidChangeWorkspaceFolders(e => {
 		for (const added of e.added) {
-			fs.mount(added.uri, "/mnt");
+			console.log(`mount /mnt/${added.index}`);
+			fs.createDirectory(vscode.Uri.parse(`wasmfs:/mnt/${added.index}`));
+			fs.mount(added.uri, "/mnt/" + added.index);
 		}
 
 		for (const removed of e.removed) {
-			fs.unmount("/mnt");
+			console.log(`unmount /mnt/${removed.index}`);
+			fs.unmount("/mnt" + removed.index);
+			fs.delete(vscode.Uri.parse(`wasmfs:/mnt/${removed.index}`));
 		}
 	});
 

@@ -44,3 +44,19 @@ impl Into<FsError> for FileSystemError {
         }
     }
 }
+
+impl From<FsError> for FileSystemError {
+    fn from(value: FsError) -> Self {
+        let error = get_file_system_error();
+        let message = value.to_string();
+
+        match value {
+            FsError::EntityNotFound => error.FileNotFound(message),
+            FsError::AlreadyExists => error.FileExists(message),
+            FsError::NotAFile => error.FileIsADirectory(message),
+            FsError::BaseNotDirectory => error.FileNotADirectory(message),
+            FsError::PermissionDenied => error.NoPermissions(message),
+            _ => error.Unavailable(message),
+        }
+    }
+}

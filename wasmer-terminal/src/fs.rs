@@ -1,9 +1,11 @@
 use std::path::PathBuf;
-use tracing::info;
+use std::sync::{Arc, RwLock};
+use tracing::{error, info};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use wasmer_os::fs::UnionFileSystem;
 use wasmer_os::wasmer_vfs::FileSystem;
+use wasmer_os::wasmer_wasi::FsError;
 
 use crate::codefs::CodeFS;
 use crate::vscode::fileerror::FileSystemError;
@@ -19,7 +21,7 @@ use crate::vscode::{
 
 #[wasm_bindgen]
 pub struct WasiFS {
-    pub(crate) fs: UnionFileSystem,
+    pub(crate) fs: Arc<RwLock<UnionFileSystem>>,
 
     pub(crate) event_emitter: FileChangeEventEmitter,
 
@@ -34,7 +36,7 @@ impl WasiFS {
         let emitter = create_event_emitter().await;
 
         Self {
-            fs: wasmer_os::fs::create_root_fs(None),
+            fs: Arc::new(RwLock::new(wasmer_os::fs::create_root_fs(None))),
             event_emitter: emitter.clone().into(),
             event: emitter.event(),
             event_buffer: Vec::new(),
@@ -44,7 +46,9 @@ impl WasiFS {
     pub fn mount(&mut self, base_uri: Uri, mount_point: String) {
         let mut vscode_fs = CodeFS::new(base_uri);
 
-        self.fs.mount(
+        let mut fs = self.fs.as_ref().write().expect("cannot write");
+
+        fs.mount(
             "vscode",
             &mount_point,
             false,
@@ -56,7 +60,8 @@ impl WasiFS {
     }
 
     pub fn unmount(&mut self, mount_point: String) {
-        self.fs.unmount(&mount_point);
+        let mut fs = self.fs.as_ref().write().expect("cannot write");
+        fs.unmount(&mount_point);
     }
 
     pub fn clone(&self) -> Self {
@@ -74,8 +79,9 @@ impl WasiFS {
 
     fn stat_internal(&self, uri: &Uri) -> Result<FileStat, FileSystemError> {
         let path = PathBuf::from(uri.path());
+        let fs = self.fs.as_ref().read().expect("cannot read");
 
-        match self.fs.metadata(&path) {
+        match fs.metadata(&path) {
             Err(e) => Err(create_file_not_found_error(e.to_string())),
             Ok(metadata) => Ok(FileStat::from(metadata)),
         }
@@ -89,11 +95,12 @@ impl WasiFS {
     #[wasm_bindgen(js_name = "readDirectory")]
     pub fn read_directory(&self, uri: Uri) -> Result<DirectoryEntries, FileSystemError> {
         if self.stat_internal(&uri)?.file_type != FileType::Directory {
-            return Err(create_file_not_found_error("Not a directory".to_string()));
+            return Err(FileSystemError::from(FsError::BaseNotDirectory));
         }
 
         let path = PathBuf::from(uri.path());
-        let files = self.fs.read_dir(&path).unwrap();
+        let fs = self.fs.as_ref().read().expect("cannot read");
+        let files = fs.read_dir(&path).unwrap();
         let entries: Vec<_> = files
             .into_iter()
             .map(|meta| {
@@ -113,17 +120,18 @@ impl WasiFS {
     #[wasm_bindgen(js_name = "readFile")]
     pub fn read_file(&self, uri: Uri) -> Result<Box<[u8]>, FileSystemError> {
         let path = PathBuf::from(uri.path());
+        let fs = self.fs.as_ref().read().expect("cannot read");
 
-        let mut file = match self.fs.new_open_options().read(true).open(path) {
+        let mut file = match fs.new_open_options().read(true).open(path) {
             Ok(file) => file,
-            Err(e) => return Err(create_file_not_found_error(e.to_string())),
+            Err(e) => return Err(FileSystemError::from(e)),
         };
 
         let mut buf = Vec::new();
 
         match file.read_to_end(&mut buf) {
             Ok(_) => Ok(buf.into_boxed_slice()),
-            Err(e) => Err(create_file_not_found_error(e.to_string())),
+            Err(e) => Err(FileSystemError::from(FsError::IOError)),
         }
     }
 
@@ -137,21 +145,23 @@ impl WasiFS {
         let path = PathBuf::from(uri.path());
         let options: WriteFileOptions = serde_wasm_bindgen::from_value(options).unwrap();
 
-        let mut file = match self
-            .fs
-            .new_open_options()
-            .write(true)
-            .create(options.create)
-            .append(!options.overwrite)
-            .open(path)
-        {
-            Ok(file) => file,
-            Err(e) => return Err(create_file_not_found_error(e.to_string())),
-        };
+        let ret = {
+            let fs = self.fs.as_ref().read().expect("cannot read");
+            let mut file = match fs
+                .new_open_options()
+                .write(true)
+                .create(options.create)
+                .append(!options.overwrite)
+                .open(path)
+            {
+                Ok(file) => file,
+                Err(e) => return Err(FileSystemError::from(e)),
+            };
 
-        let ret = match file.write_all(buf) {
-            Ok(_) => Ok(()),
-            Err(e) => return Err(create_file_not_found_error(e.to_string())),
+            match file.write_all(buf) {
+                Ok(_) => Ok(()),
+                Err(e) => return Err(FileSystemError::from(FsError::IOError)),
+            }
         };
 
         let mut events = Vec::new();
@@ -173,10 +183,10 @@ impl WasiFS {
         let old_path = PathBuf::from(old_uri.path());
         let path = PathBuf::from(uri.path());
 
-        let ret = self
-            .fs
-            .rename(&old_path, &path)
-            .map_err(|e| create_file_not_found_error(e.to_string()));
+        let ret = {
+            let fs = self.fs.as_ref().read().expect("cannot read");
+            fs.rename(&old_path, &path).map_err(FileSystemError::from)
+        };
 
         let mut events = Vec::new();
         events.push(FileChangeEvent {
@@ -191,10 +201,10 @@ impl WasiFS {
     pub fn delete(&mut self, uri: Uri) -> Result<(), FileSystemError> {
         let path = PathBuf::from(uri.path());
 
-        let ret = self
-            .fs
-            .remove_file(&path)
-            .map_err(|e| create_file_not_found_error(e.to_string()));
+        let ret = {
+            let fs = self.fs.as_ref().read().expect("cannot read");
+            fs.remove_file(&path).map_err(FileSystemError::from)
+        };
 
         let mut events = Vec::new();
         events.push(FileChangeEvent {
@@ -210,10 +220,10 @@ impl WasiFS {
     pub fn create_directory(&mut self, uri: Uri) -> Result<(), FileSystemError> {
         let path = PathBuf::from(uri.path());
 
-        let ret = self
-            .fs
-            .create_dir(&path)
-            .map_err(|e| create_file_not_found_error(e.to_string()));
+        let ret = {
+            let fs = self.fs.as_ref().read().expect("cannot read");
+            fs.create_dir(&path).map_err(FileSystemError::from)
+        };
 
         let mut events = Vec::new();
         events.push(FileChangeEvent {
