@@ -6,26 +6,30 @@ use std::{
 };
 
 use tokio::sync::mpsc::{self, Receiver, Sender};
+use tracing::info;
 use wasmer_bus::task::block_on;
 use wasmer_os::fs::MountedFileSystem;
+use wasmer_os::wasmer_vfs::Result;
 use wasmer_os::{
     wasmer_vfs::{FileOpener, FileSystem, Metadata, ReadDir},
     wasmer_wasi::VirtualFile,
 };
 
+use crate::vscode::fileerror::FileSystemError;
 use crate::vscode::uri::Uri;
+use crate::vscode::DirectoryEntries;
 use crate::vscode::{filesystem::WorkSpace, stat::FileStat, uri::UriComponent};
 
 #[derive(Debug)]
 enum FileCommands {
     Stat {
         path: PathBuf,
-        tx: Sender<Metadata>,
+        tx: Sender<Result<Metadata>>,
     },
 
     ReadDirectory {
         path: PathBuf,
-        tx: Sender<ReadDir>,
+        tx: Sender<Result<ReadDir>>,
     },
 
     CreateDirectory {
@@ -77,27 +81,34 @@ impl CodeFS {
 
     pub async fn poll(&mut self) {
         while let Some(command) = self.rx.recv().await {
+            info!("Received Command: {:?}", command);
             match command {
                 FileCommands::CreateDirectory { path, tx } => {
                     let path = self.base_uri.with_path(&path);
                     let _ = WorkSpace::create_directory(path.into()).await;
-                    tx.send(()).await.unwrap();
+                    let _ = tx.send(()).await;
                 }
                 FileCommands::Delete { path, tx } => {
                     let path = self.base_uri.with_path(&path);
                     let _ = WorkSpace::delete(path.into()).await;
-                    tx.send(()).await.unwrap();
+                    let _ = tx.send(()).await;
                 }
                 FileCommands::Stat { path, tx } => {
                     let path = self.base_uri.with_path(&path);
                     let stat = WorkSpace::stat(path.into()).await;
-                    let stat = FileStat::from(stat);
-                    tx.send(stat.into()).await.unwrap();
+                    let stat = stat
+                        .map(FileStat::from)
+                        .map(FileStat::into)
+                        .map_err(FileSystemError::into);
+                    let _ = tx.send(stat).await;
                 }
                 FileCommands::ReadDirectory { path, tx } => {
                     let path = self.base_uri.with_path(&path);
                     let stat = WorkSpace::read_directory(path.into()).await;
-                    tx.send(stat.into()).await.unwrap();
+                    let stat = stat
+                        .map(DirectoryEntries::into)
+                        .map_err(FileSystemError::into);
+                    let _ = tx.send(stat).await;
                 }
                 FileCommands::Rename {
                     old_path,
@@ -107,17 +118,17 @@ impl CodeFS {
                     let old_path = self.base_uri.with_path(&old_path);
                     let new_path = self.base_uri.with_path(&new_path);
                     let _ = WorkSpace::rename(old_path.into(), new_path.into()).await;
-                    tx.send(()).await.unwrap();
+                    let _ = tx.send(()).await;
                 }
                 FileCommands::ReadFile { path, tx } => {
                     let path = self.base_uri.with_path(&path);
                     let stat = WorkSpace::read_file(path.into()).await;
-                    tx.send(stat.to_vec()).await.unwrap();
+                    let _ = tx.send(stat.to_vec()).await;
                 }
                 FileCommands::WriteFile { path, data, tx } => {
                     let path = self.base_uri.with_path(&path);
                     let _ = WorkSpace::write_file(path.into(), &data).await;
-                    tx.send(()).await.unwrap();
+                    let _ = tx.send(()).await;
                 }
             }
         }
@@ -139,33 +150,23 @@ impl CodeFSClient {
     fn read_all(&self, path: &std::path::Path) -> Vec<u8> {
         let (tx, mut rx) = mpsc::channel(1);
 
-        let data = block_on(async move {
-            self.tx
-                .send(FileCommands::ReadFile {
-                    path: path.into(),
-                    tx,
-                })
-                .await
-                .unwrap();
-            rx.recv().await
-        });
+        block_on(self.tx.send(FileCommands::ReadFile {
+            path: path.into(),
+            tx,
+        }));
+        let data = block_on(rx.recv());
         data.unwrap()
     }
 
     fn write_all(&self, path: &std::path::Path, data: &[u8]) {
         let (tx, mut rx) = mpsc::channel(1);
 
-        let _ = block_on(async move {
-            self.tx
-                .send(FileCommands::WriteFile {
-                    path: path.into(),
-                    data: data.to_vec(),
-                    tx,
-                })
-                .await
-                .unwrap();
-            rx.recv().await
-        });
+        block_on(self.tx.send(FileCommands::WriteFile {
+            path: path.into(),
+            data: data.to_vec(),
+            tx,
+        }));
+        block_on(rx.recv());
     }
 }
 
@@ -177,49 +178,35 @@ impl wasmer_os::wasmer_vfs::FileSystem for CodeFSClient {
     fn metadata(&self, path: &std::path::Path) -> wasmer_os::wasmer_vfs::Result<Metadata> {
         let (tx, mut rx) = mpsc::channel(1);
 
-        let metadata = block_on(async move {
-            self.tx
-                .send(FileCommands::Stat {
-                    path: path.into(),
-                    tx,
-                })
-                .await
-                .unwrap();
-            rx.recv().await
-        });
-        Ok(metadata.unwrap())
+        block_on(self.tx.send(FileCommands::Stat {
+            path: path.into(),
+            tx,
+        }));
+        let metadata = block_on(rx.recv());
+        metadata.unwrap()
     }
 
     fn create_dir(&self, path: &std::path::Path) -> wasmer_os::wasmer_vfs::Result<()> {
         let (tx, mut rx) = mpsc::channel(1);
 
-        block_on(async move {
-            self.tx
-                .send(FileCommands::CreateDirectory {
-                    path: path.into(),
-                    tx,
-                })
-                .await
-                .unwrap();
-            rx.recv().await
-        });
+        block_on(self.tx.send(FileCommands::CreateDirectory {
+            path: path.into(),
+            tx,
+        }))
+        .unwrap();
+        block_on(rx.recv());
         Ok(())
     }
 
     fn read_dir(&self, path: &std::path::Path) -> wasmer_os::wasmer_vfs::Result<ReadDir> {
         let (tx, mut rx) = mpsc::channel(1);
 
-        let readdir = block_on(async move {
-            self.tx
-                .send(FileCommands::ReadDirectory {
-                    path: path.into(),
-                    tx,
-                })
-                .await
-                .unwrap();
-            rx.recv().await
-        });
-        Ok(readdir.unwrap())
+        block_on(self.tx.send(FileCommands::ReadDirectory {
+            path: path.into(),
+            tx,
+        }));
+        let readdir = block_on(rx.recv());
+        readdir.unwrap()
     }
 
     fn rename(
@@ -229,49 +216,34 @@ impl wasmer_os::wasmer_vfs::FileSystem for CodeFSClient {
     ) -> wasmer_os::wasmer_vfs::Result<()> {
         let (tx, mut rx) = mpsc::channel(1);
 
-        block_on(async move {
-            self.tx
-                .send(FileCommands::Rename {
-                    old_path: from.into(),
-                    new_path: to.into(),
-                    tx,
-                })
-                .await
-                .unwrap();
-            rx.recv().await
-        });
+        block_on(self.tx.send(FileCommands::Rename {
+            old_path: from.into(),
+            new_path: to.into(),
+            tx,
+        }));
+        block_on(rx.recv());
         Ok(())
     }
 
     fn remove_file(&self, path: &std::path::Path) -> wasmer_os::wasmer_vfs::Result<()> {
         let (tx, mut rx) = mpsc::channel(1);
 
-        block_on(async move {
-            self.tx
-                .send(FileCommands::Delete {
-                    path: path.into(),
-                    tx,
-                })
-                .await
-                .unwrap();
-            rx.recv().await
-        });
+        block_on(self.tx.send(FileCommands::Delete {
+            path: path.into(),
+            tx,
+        }));
+        block_on(rx.recv());
         Ok(())
     }
 
     fn remove_dir(&self, path: &std::path::Path) -> wasmer_os::wasmer_vfs::Result<()> {
         let (tx, mut rx) = mpsc::channel(1);
 
-        block_on(async move {
-            self.tx
-                .send(FileCommands::Delete {
-                    path: path.into(),
-                    tx,
-                })
-                .await
-                .unwrap();
-            rx.recv().await;
-        });
+        block_on(self.tx.send(FileCommands::Delete {
+            path: path.into(),
+            tx,
+        }));
+        block_on(rx.recv());
         Ok(())
     }
 

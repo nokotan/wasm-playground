@@ -15,11 +15,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
 	vscode.workspace.onDidChangeWorkspaceFolders(e => {
 		for (const added of e.added) {
-			fs.mount(added.uri, "/mnt/" + added.name);
+			fs.mount(added.uri, "/mnt");
 		}
 
 		for (const removed of e.removed) {
-			fs.unmount("/mnt/" + removed.name);
+			fs.unmount("/mnt");
 		}
 	});
 

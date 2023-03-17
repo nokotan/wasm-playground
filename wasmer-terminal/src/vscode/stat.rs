@@ -77,20 +77,20 @@ pub struct FileStat {
     #[serde(rename = "type")]
     pub file_type: FileType,
 
-    pub ctime: u32,
+    pub ctime: u64,
 
-    pub mtime: u32,
+    pub mtime: u64,
 
-    pub size: u32,
+    pub size: u64,
 }
 
 impl FileStat {
     pub fn new() -> Self {
         Self {
             file_type: FileType::File,
-            ctime: 0u32,
-            mtime: 0u32,
-            size: 0u32,
+            ctime: 0u64,
+            mtime: 0u64,
+            size: 0u64,
         }
     }
 }
@@ -99,9 +99,9 @@ impl From<Metadata> for FileStat {
     fn from(from: Metadata) -> FileStat {
         FileStat {
             file_type: FileType::from(from.file_type()),
-            ctime: from.created as u32,
-            mtime: from.modified as u32,
-            size: from.len as u32,
+            ctime: from.created,
+            mtime: from.modified,
+            size: from.len,
         }
     }
 }
@@ -110,10 +110,10 @@ impl Into<Metadata> for FileStat {
     fn into(self) -> Metadata {
         Metadata {
             ft: self.file_type.into(),
-            accessed: self.mtime as u64,
-            created: self.ctime as u64,
-            modified: self.mtime as u64,
-            len: self.size as u64,
+            accessed: self.mtime,
+            created: self.ctime,
+            modified: self.mtime,
+            len: self.size,
         }
     }
 }

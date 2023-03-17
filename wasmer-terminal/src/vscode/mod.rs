@@ -1,3 +1,4 @@
+pub mod fileerror;
 pub mod fileevent;
 pub mod filesystem;
 pub mod stat;
@@ -6,6 +7,8 @@ pub mod uri;
 use js_sys::Function;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
+
+use crate::vscode::fileerror::FileSystemError;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_APPEND_CONTENT: &'static str = r#"
@@ -53,10 +56,4 @@ extern "C" {
 
     #[wasm_bindgen(typescript_type = "[string, vscode.FileType][]")]
     pub type DirectoryEntries;
-
-    #[wasm_bindgen]
-    pub type FileSystemError;
-
-    #[wasm_bindgen(static_method_of = FileSystemError)]
-    pub fn FileNotFound(message: String) -> FileSystemError;
 }

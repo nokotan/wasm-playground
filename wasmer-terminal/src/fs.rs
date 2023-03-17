@@ -1,10 +1,12 @@
 use std::path::PathBuf;
+use tracing::info;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use wasmer_os::fs::UnionFileSystem;
 use wasmer_os::wasmer_vfs::FileSystem;
 
 use crate::codefs::CodeFS;
+use crate::vscode::fileerror::FileSystemError;
 use crate::vscode::fileevent::{
     create_event_emitter, FileChangeEvent, FileChangeEventEmitter, VSCodeFileChangeEvent,
 };
@@ -12,7 +14,7 @@ use crate::vscode::stat::{FileStat, FileType};
 use crate::vscode::uri::{Uri, UriComponent};
 use crate::vscode::{
     create_disposable, create_file_not_found_error, DirectoryEntries, Disposable, FileEntry,
-    FileSystemError, WriteFileOptions,
+    WriteFileOptions,
 };
 
 #[wasm_bindgen]

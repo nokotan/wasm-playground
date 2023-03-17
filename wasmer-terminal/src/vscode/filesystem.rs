@@ -1,6 +1,7 @@
 use js_sys::Uint8Array;
 use wasm_bindgen::prelude::*;
 
+use super::fileerror::FileSystemError;
 use super::uri::Uri;
 use super::{DirectoryEntries, FileEntry};
 
@@ -15,23 +16,23 @@ extern "C" {
     #[wasm_bindgen(method, js_name = "createDirectory")]
     async fn create_directory_js(this: &FileSystem, uri: Uri);
 
-    #[wasm_bindgen(method)]
+    #[wasm_bindgen(method, js_name = "delete")]
     async fn delete_js(this: &FileSystem, uri: Uri);
 
     #[wasm_bindgen(method, js_name = "isWritableFileSystem")]
     pub fn is_writable_file_system(this: &FileSystem, scheme: String) -> bool;
 
-    #[wasm_bindgen(method, js_name = "readDirectory")]
-    async fn read_directory_js(this: &FileSystem, uri: Uri) -> JsValue;
+    #[wasm_bindgen(method, catch, js_name = "readDirectory")]
+    async fn read_directory_js(this: &FileSystem, uri: Uri) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(method, js_name = "readFile")]
     async fn read_file_js(this: &FileSystem, uri: Uri) -> JsValue;
 
-    #[wasm_bindgen(method)]
+    #[wasm_bindgen(method, js_name = "rename")]
     async fn rename_js(this: &FileSystem, source: Uri, target: Uri);
 
-    #[wasm_bindgen(method, js_name = "stat")]
-    async fn stat_js(this: &FileSystem, uri: Uri) -> JsValue;
+    #[wasm_bindgen(method, catch, js_name = "stat")]
+    async fn stat_js(this: &FileSystem, uri: Uri) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(method, js_name = "writeFile")]
     async fn write_file_js(this: &FileSystem, uri: Uri, content: &[u8]);
@@ -64,16 +65,19 @@ impl WorkSpace {
         Uint8Array::from(data)
     }
 
-    pub async fn read_directory(uri: Uri) -> DirectoryEntries {
+    pub async fn read_directory(uri: Uri) -> Result<DirectoryEntries, FileSystemError> {
         let fs = get_workspace_fs();
         let data = fs.read_directory_js(uri).await;
-        DirectoryEntries::from(data)
+
+        data.map(DirectoryEntries::from)
+            .map_err(FileSystemError::from)
     }
 
-    pub async fn stat(uri: Uri) -> FileEntry {
+    pub async fn stat(uri: Uri) -> Result<FileEntry, FileSystemError> {
         let fs = get_workspace_fs();
         let data = fs.stat_js(uri).await;
-        FileEntry::from(data)
+
+        data.map(FileEntry::from).map_err(FileSystemError::from)
     }
 
     pub async fn rename(source: Uri, target: Uri) {
