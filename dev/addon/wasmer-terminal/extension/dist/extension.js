@@ -2113,10 +2113,12 @@ async function activate(context) {
     const fs = await _pkg__WEBPACK_IMPORTED_MODULE_1__.WasiFS["new"]();
     vscode__WEBPACK_IMPORTED_MODULE_0__.workspace.registerFileSystemProvider("wasmfs", fs, { isCaseSensitive: true });
     fs.createDirectory(vscode__WEBPACK_IMPORTED_MODULE_0__.Uri.parse("wasmfs:/mnt"));
-    for (const added of vscode__WEBPACK_IMPORTED_MODULE_0__.workspace.workspaceFolders) {
-        console.log(`mount /mnt/${added.index}`);
-        fs.createDirectory(vscode__WEBPACK_IMPORTED_MODULE_0__.Uri.parse(`wasmfs:/mnt/${added.index}`));
-        fs.mount(added.uri, "/mnt/" + added.index);
+    if (vscode__WEBPACK_IMPORTED_MODULE_0__.workspace.workspaceFolders) {
+        for (const added of vscode__WEBPACK_IMPORTED_MODULE_0__.workspace.workspaceFolders) {
+            console.log(`mount /mnt/${added.index}`);
+            fs.createDirectory(vscode__WEBPACK_IMPORTED_MODULE_0__.Uri.parse(`wasmfs:/mnt/${added.index}`));
+            fs.mount(added.uri, "/mnt/" + added.index);
+        }
     }
     vscode__WEBPACK_IMPORTED_MODULE_0__.workspace.onDidChangeWorkspaceFolders(e => {
         for (const added of e.added) {
