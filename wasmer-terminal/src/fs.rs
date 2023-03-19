@@ -1,23 +1,19 @@
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
-use tracing::{error, info};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use wasmer_os::fs::UnionFileSystem;
 use wasmer_os::wasmer_vfs::FileSystem;
 use wasmer_os::wasmer_wasi::FsError;
 
-use crate::codefs::CodeFS;
+use crate::codefs::fs::CodeFS;
 use crate::vscode::fileerror::FileSystemError;
 use crate::vscode::fileevent::{
     create_event_emitter, FileChangeEvent, FileChangeEventEmitter, VSCodeFileChangeEvent,
 };
 use crate::vscode::stat::{FileStat, FileType};
 use crate::vscode::uri::{Uri, UriComponent};
-use crate::vscode::{
-    create_disposable, create_file_not_found_error, DirectoryEntries, Disposable, FileEntry,
-    WriteFileOptions,
-};
+use crate::vscode::{create_disposable, DirectoryEntries, Disposable, FileEntry, WriteFileOptions};
 
 #[wasm_bindgen]
 pub struct WasiFS {
@@ -82,7 +78,7 @@ impl WasiFS {
         let fs = self.fs.as_ref().read().expect("cannot read");
 
         match fs.metadata(&path) {
-            Err(e) => Err(create_file_not_found_error(e.to_string())),
+            Err(e) => Err(FileSystemError::from(e)),
             Ok(metadata) => Ok(FileStat::from(metadata)),
         }
     }

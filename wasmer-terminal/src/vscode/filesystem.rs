@@ -1,9 +1,29 @@
 use js_sys::Uint8Array;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
 use super::fileerror::FileSystemError;
 use super::uri::Uri;
-use super::{DirectoryEntries, FileEntry};
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct WriteFileOptions {
+    pub create: bool,
+    pub overwrite: bool,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct RenameFileOptions {
+    pub overwrite: bool,
+}
+
+#[wasm_bindgen(module = "vscode")]
+extern "C" {
+    #[wasm_bindgen(typescript_type = "vscode.FileStat")]
+    pub type FileEntry;
+
+    #[wasm_bindgen(typescript_type = "[string, vscode.FileType][]")]
+    pub type DirectoryEntries;
+}
 
 #[wasm_bindgen(module = "/js/vscode.ts")]
 extern "C" {
