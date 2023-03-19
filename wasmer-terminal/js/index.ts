@@ -15,10 +15,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
 	fs.createDirectory(vscode.Uri.parse("wasmfs:/mnt"));
 
-	for (const added of vscode.workspace.workspaceFolders) {
-		console.log(`mount /mnt/${added.index}`);
-		fs.createDirectory(vscode.Uri.parse(`wasmfs:/mnt/${added.index}`));
-		fs.mount(added.uri, "/mnt/" + added.index);
+	if (vscode.workspace.workspaceFolders) {
+		for (const added of vscode.workspace.workspaceFolders) {
+			console.log(`mount /mnt/${added.index}`);
+			fs.createDirectory(vscode.Uri.parse(`wasmfs:/mnt/${added.index}`));
+			fs.mount(added.uri, "/mnt/" + added.index);
+		}
 	}
 
 	vscode.workspace.onDidChangeWorkspaceFolders(e => {
