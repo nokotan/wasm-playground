@@ -71,11 +71,5 @@ that.addEventListener('fetch', event => {
         });
       })
     );
-  } else {
-    const result = cdnUrl.exec(event.request.url);
-
-    if (result && result[1]) {
-      return fetch(self.location.origin + "/" + result[1]);
-    }
   }
 });

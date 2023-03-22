@@ -37,7 +37,8 @@ const config = {
                 "fileSearchProvider",
                 "textSearchProvider"
             ]
-        }
+        },
+        webEndpointUrlTemplate: "https://wasm-playground.kamenokosoft.com",
     },
     codeExchangeProxyEndpoints: {
         github: "https://exchange-code.herokuapp.com/github/"
