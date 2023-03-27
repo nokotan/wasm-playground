@@ -2676,7 +2676,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus"
 version = "1.1.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "base64 0.13.1",
@@ -2695,7 +2695,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-fuse"
 version = "1.1.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "serde",
@@ -2707,7 +2707,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-macros"
 version = "1.1.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "convert_case",
  "derivative",
@@ -2720,7 +2720,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-process"
 version = "1.1.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "bytes",
@@ -2734,7 +2734,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-reqwest"
 version = "1.2.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "bytes",
@@ -2757,7 +2757,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-time"
 version = "1.1.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "serde",
@@ -2769,7 +2769,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-tty"
 version = "1.2.1"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "serde",
@@ -2782,7 +2782,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-types"
 version = "1.1.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "bincode",
  "num_enum",
@@ -2796,7 +2796,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-webgl"
 version = "1.0.3"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "serde",
@@ -2806,7 +2806,7 @@ dependencies = [
 [[package]]
 name = "wasmer-bus-ws"
 version = "1.1.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "bytes",
@@ -2856,7 +2856,7 @@ dependencies = [
 [[package]]
 name = "wasmer-os"
 version = "1.0.0"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "async-trait",
  "base64 0.13.1",
@@ -2905,7 +2905,7 @@ dependencies = [
 [[package]]
 name = "wasmer-os-grammar"
 version = "0.1.2"
-source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#ec0e5ee00c712e36afe92400540cffc180947cbe"
+source = "git+https://github.com/nokotan/ate.git?branch=wasmer3-wasix#b79dee26eff883349ba7ffd8062dcedac2ea7844"
 dependencies = [
  "lalrpop",
  "lalrpop-util",
