@@ -24,6 +24,7 @@ export default {
   plugins: [
     new CopyPlugin({
       patterns: [
+        { from: resolve(__dirname, "public/bin/bash.wasm"), to: "bin" },
         { from: resolve(__dirname, "public/bin/wapm.wasm"), to: "bin" },
         { from: resolve(__dirname, "public/bin/coreutils.wasm"), to: "bin" },
       ],
