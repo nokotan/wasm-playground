@@ -104,9 +104,9 @@ pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String, pwd: Option
         console.set_current_dir(&pwd.path.unwrap());
     }   
 
-    console.add_preopen_dir("bin");
-    console.add_preopen_dir("lib");
-    console.add_preopen_dir("mnt");
+    console.add_preopen_dir("/bin");
+    console.add_preopen_dir("/lib");
+    console.add_preopen_dir("/mnt");
 
     let tty = console.tty().clone();
 
