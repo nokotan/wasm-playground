@@ -14,6 +14,8 @@ use crate::system::TerminalCommand;
 use crate::system::WebConsole;
 use crate::system::WebSystem;
 use crate::terminal::Terminal;
+use crate::vscode::uri::Uri;
+use crate::vscode::uri::UriComponent;
 
 use super::common::*;
 use super::pool::*;
@@ -48,7 +50,7 @@ pub enum InputEvent {
 }
 
 #[wasm_bindgen]
-pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String) -> Result<(), JsValue> {
+pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String, pwd: Option<Uri>) -> Result<(), JsValue> {
     #[wasm_bindgen]
     extern "C" {
         #[wasm_bindgen(js_namespace = navigator, js_name = userAgent)]
@@ -96,6 +98,12 @@ pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String) -> Result<(
         fs.clone(),
         compiled_modules,
     );
+
+    if let Some(pwd) = pwd {
+        let pwd = UriComponent::from(pwd);
+        console.set_env("PWD", &pwd.path.unwrap());
+    }   
+
     let tty = console.tty().clone();
 
     let (tx, mut rx) = mpsc::channel(MAX_MPSC);

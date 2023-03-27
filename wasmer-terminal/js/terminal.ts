@@ -1,4 +1,4 @@
-import { Pseudoterminal, Event, EventEmitter, TerminalDimensions } from 'vscode';
+import { Pseudoterminal, Event, EventEmitter, TerminalDimensions, workspace, Uri } from 'vscode';
 import { open as OpenTerminal } from '../../../index';
 import { WasiFS } from '../../../index';
 import { importVSCode } from './vscode';
@@ -28,7 +28,14 @@ export class WasmPseudoTerminal implements Pseudoterminal {
 			this.m_rows = initialDimensions.rows;
 			this.m_cols = initialDimensions.columns;
 		}
-		OpenTerminal(this, this.fs, this.location);
+
+		const vscode = await importVSCode();
+		let pwd: Uri | undefined = undefined;
+
+		if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) {
+			pwd = vscode.Uri.parse(`wasmfs:/mnt/${vscode.workspace.workspaceFolders[0].index}`);
+		}
+		OpenTerminal(this, this.fs, this.location, pwd);
     }
 
     close(): void {
