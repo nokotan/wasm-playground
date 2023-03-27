@@ -101,8 +101,12 @@ pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String, pwd: Option
 
     if let Some(pwd) = pwd {
         let pwd = UriComponent::from(pwd);
-        console.set_env("PWD", &pwd.path.unwrap());
+        console.set_current_dir(pwd.path.unwrap());
     }   
+
+    console.add_preopen_dir("bin");
+    console.add_preopen_dir("lib");
+    console.add_preopen_dir("mnt");
 
     let tty = console.tty().clone();
 

@@ -14,6 +14,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	vscode.workspace.registerFileSystemProvider("wasmfs", fs, { isCaseSensitive: true });
 
 	fs.createDirectory(vscode.Uri.parse("wasmfs:/mnt"));
+	fs.createDirectory(vscode.Uri.parse("wasmfs:/lib"));
 
 	if (vscode.workspace.workspaceFolders) {
 		for (const added of vscode.workspace.workspaceFolders) {
