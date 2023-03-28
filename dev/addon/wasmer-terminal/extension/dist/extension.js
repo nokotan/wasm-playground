@@ -1870,7 +1870,7 @@ async function init(input, maybe_memory) {
 /***/ 275:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-module.exports = __webpack_require__.p + "e6bb4602215baefcb262.wasm";
+module.exports = __webpack_require__.p + "e92e409a74fe5e19d9b5.wasm";
 
 /***/ }),
 
@@ -2118,6 +2118,7 @@ async function activate(context) {
     const fs = await _pkg__WEBPACK_IMPORTED_MODULE_1__.WasiFS["new"]();
     vscode__WEBPACK_IMPORTED_MODULE_0__.workspace.registerFileSystemProvider("wasmfs", fs, { isCaseSensitive: true });
     fs.createDirectory(vscode__WEBPACK_IMPORTED_MODULE_0__.Uri.parse("wasmfs:/mnt"));
+    fs.createDirectory(vscode__WEBPACK_IMPORTED_MODULE_0__.Uri.parse("wasmfs:/lib"));
     if (vscode__WEBPACK_IMPORTED_MODULE_0__.workspace.workspaceFolders) {
         for (const added of vscode__WEBPACK_IMPORTED_MODULE_0__.workspace.workspaceFolders) {
             console.log(`mount /mnt/${added.index}`);
