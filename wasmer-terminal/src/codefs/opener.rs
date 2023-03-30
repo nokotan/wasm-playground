@@ -39,7 +39,7 @@ impl FileOpener for CodeFSFileOpener {
             self.fs.clone(),
             metadata,
             path.to_owned(),
-            buffer
+            buffer,
         )))
     }
 }

@@ -46,6 +46,15 @@ impl UriComponent {
         uri.path = Some(path.to_string_lossy().to_string());
         uri
     }
+
+    pub fn join_path(&self, path: &Path) -> Self {
+        let mut uri = self.clone();
+        uri.path = self
+            .path
+            .as_ref()
+            .map(|s| s.to_owned() + path.as_os_str().to_str().unwrap());
+        uri
+    }
 }
 
 impl From<Uri> for UriComponent {

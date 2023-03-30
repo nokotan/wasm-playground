@@ -9,7 +9,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	__webpack_public_path__ = decodeURIComponent(context.extensionUri.toString() + "/dist/");
 	await init();
 
-	const fs = await WasiFS.new();
+	const fs = await WasiFS.new(context.globalStorageUri);
+	await fs.restore();
 	
 	vscode.workspace.registerFileSystemProvider("wasmfs", fs, { isCaseSensitive: true });
 
@@ -18,17 +19,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
 	if (vscode.workspace.workspaceFolders) {
 		for (const added of vscode.workspace.workspaceFolders) {
-			console.log(`mount /mnt/${added.index}`);
-			fs.createDirectory(vscode.Uri.parse(`wasmfs:/mnt/${added.index}`));
-			fs.mount(added.uri, "/mnt/" + added.index);
+			const folderName = added.name || added.index;
+			console.log(`mount /mnt/${folderName}`);
+			fs.createDirectory(vscode.Uri.parse(`wasmfs:/mnt/${folderName}`));
+			fs.mount(added.uri, "/mnt/" + folderName);
 		}
 	}
 
 	vscode.workspace.onDidChangeWorkspaceFolders(e => {
 		for (const added of e.added) {
-			console.log(`mount /mnt/${added.index}`);
-			fs.createDirectory(vscode.Uri.parse(`wasmfs:/mnt/${added.index}`));
-			fs.mount(added.uri, "/mnt/" + added.index);
+			const folderName = added.name || added.index;
+			console.log(`mount /mnt/${folderName}`);
+			fs.createDirectory(vscode.Uri.parse(`wasmfs:/mnt/${folderName}`));
+			fs.mount(added.uri, "/mnt/" + folderName);
 		}
 
 		for (const removed of e.removed) {

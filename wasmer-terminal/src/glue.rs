@@ -50,7 +50,12 @@ pub enum InputEvent {
 }
 
 #[wasm_bindgen]
-pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String, pwd: Option<Uri>) -> Result<(), JsValue> {
+pub unsafe fn open(
+    terminal: Terminal,
+    fs: WasiFS,
+    location: String,
+    pwd: Option<Uri>,
+) -> Result<(), JsValue> {
     #[wasm_bindgen]
     extern "C" {
         #[wasm_bindgen(js_namespace = navigator, js_name = userAgent)]
@@ -58,6 +63,8 @@ pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String, pwd: Option
     }
 
     info!("glue::start");
+
+    let clonedfs = fs.clone();
 
     let (term_tx, mut term_rx) = mpsc::channel(MAX_MPSC);
     {
@@ -80,6 +87,7 @@ pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String, pwd: Option
                         terminal.clear();
                     }
                 }
+                clonedfs.backup().await;
             }
         });
     }
@@ -102,7 +110,7 @@ pub unsafe fn open(terminal: Terminal, fs: WasiFS, location: String, pwd: Option
     if let Some(pwd) = pwd {
         let pwd = UriComponent::from(pwd);
         console.set_current_dir(&pwd.path.unwrap());
-    }   
+    }
 
     console.add_preopen_dir("/bin");
     console.add_preopen_dir("/lib");

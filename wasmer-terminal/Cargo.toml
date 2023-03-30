@@ -43,6 +43,7 @@ async-trait = "^0.1"
 dummy-waker = "^1"
 wat = "1.0"
 lalrpop-util = {version = "0.19", features = ["lexer"]}
+async-recursion = "1.0.4"
 
 [dependencies.parking_lot]
 version = "^0.11"

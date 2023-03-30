@@ -13,9 +13,7 @@ pub struct CodeFSClient {
 
 impl CodeFSClient {
     pub fn new(tx: Sender<FileCommands>) -> Self {
-        Self {
-            tx
-        }
+        Self { tx }
     }
 
     pub fn read_all(&self, path: &std::path::Path) -> Vec<u8> {

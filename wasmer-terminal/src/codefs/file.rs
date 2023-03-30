@@ -24,10 +24,13 @@ pub struct CodeFSVirtualFile {
 }
 
 impl CodeFSVirtualFile {
-    pub fn new(fs: CodeFSClient,  metadata: Metadata, path: PathBuf, buffer: Vec<u8>) -> Self {
+    pub fn new(fs: CodeFSClient, metadata: Metadata, path: PathBuf, buffer: Vec<u8>) -> Self {
         Self {
-            fs, metadata, buffer, path,
-            cursor: 0usize
+            fs,
+            metadata,
+            buffer,
+            path,
+            cursor: 0usize,
         }
     }
 }
