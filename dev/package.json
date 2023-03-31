@@ -1,6 +1,6 @@
 {
 	"name": "Code",
-	"version": "1.76.2",
+	"version": "1.77.0",
 	"private": true,
 	"dependencies": {
 		"@microsoft/1ds-core-js": "^3.2.2",
@@ -12,7 +12,7 @@
 		"vscode-oniguruma": "1.7.0",
 		"vscode-regexp-languagedetection": "https://github.com/microsoft/vscode-regexp-languagedetection.git#e9098d2de15e12ac8a4e62581ecf3cc9c69c655e",
 		"vscode-textmate": "9.0.0",
-		"xterm": "5.2.0-beta.29",
+		"xterm": "5.2.0-beta.30",
 		"xterm-addon-canvas": "0.4.0-beta.7",
 		"xterm-addon-search": "0.11.0",
 		"xterm-addon-unicode11": "0.5.0",
