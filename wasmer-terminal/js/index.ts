@@ -10,7 +10,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	await init();
 
 	const fs = await WasiFS.new(context.globalStorageUri);
-	await fs.restore();
+	await fs.restore().catch(console.error);
 	
 	vscode.workspace.registerFileSystemProvider("wasmfs", fs, { isCaseSensitive: true });
 

@@ -64,9 +64,13 @@ that.addEventListener('fetch', event => {
         return caches.open(RUNTIME).then(cache => {
           return fetch(event.request).then(response => {
             // Put a copy of the response in the runtime cache.
-            return cache.put(event.request, response.clone()).then(() => {
+            if (response.ok) {
+              return cache.put(event.request, response.clone()).then(() => {
+                return response;
+              });
+            } else {
               return response;
-            });
+            }
           });
         });
       })

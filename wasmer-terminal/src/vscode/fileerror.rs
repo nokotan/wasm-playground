@@ -4,6 +4,7 @@ use wasmer_os::wasmer_wasi::FsError;
 #[wasm_bindgen(module = "/js/vscode.ts")]
 extern "C" {
     #[wasm_bindgen]
+    #[derive(Debug)]
     pub type FileSystemError;
 
     #[wasm_bindgen(js_name = "getFileSystemError")]
@@ -58,5 +59,12 @@ impl From<FsError> for FileSystemError {
             FsError::PermissionDenied => error.NoPermissions(message),
             _ => error.Unavailable(message),
         }
+    }
+}
+
+impl From<std::io::Error> for FileSystemError {
+    fn from(value: std::io::Error) -> Self {
+        let error = get_file_system_error();
+        error.Unavailable(value.to_string())
     }
 }

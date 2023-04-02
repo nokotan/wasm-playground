@@ -1,4 +1,5 @@
 use async_recursion::async_recursion;
+use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::sync::{RwLockReadGuard, RwLockWriteGuard};
@@ -67,18 +68,19 @@ impl WasiFS {
         fs.unmount(&mount_point);
     }
 
-    pub async fn backup(&self) {
+    pub async fn backup(&self) -> Result<(), JsValue> {
         let backup_url = match &self.backup_url {
             Some(x) => x,
-            None => return,
+            None => return Ok(()),
         };
         let fs = self.fs.as_ref().read().expect("cannot read");
-        let base_uri = backup_url.join_path(&Path::new("/.app"));
 
-        if let Err(_) = WorkSpace::stat(base_uri.clone().into()).await {
-            WorkSpace::create_directory(base_uri.clone().into()).await;
-        }
-        Self::backup_recursive(backup_url, &fs, "/.app", "").await;
+        let base_uri = backup_url.join_path(&Path::new("/.app"));
+        let _ = WorkSpace::create_directory(base_uri.into()).await;
+
+        Self::backup_recursive(backup_url, &fs, "/.app", "")
+            .await
+            .map_err(FileSystemError::into)
     }
 
     #[async_recursion(?Send)]
@@ -87,12 +89,12 @@ impl WasiFS {
         fs: &RwLockReadGuard<'a, UnionFileSystem>,
         root_path: &str,
         path: &str,
-    ) {
+    ) -> Result<(), FileSystemError> {
         let path = root_path.to_string() + path;
-        let entries = match fs.read_dir(&PathBuf::from(&path)) {
-            Ok(x) => x,
-            Err(_) => return,
-        };
+        let entries = fs
+            .read_dir(&PathBuf::from(&path))
+            .map_err(FileSystemError::from)?;
+
         for entry in entries.into_iter() {
             let entry = entry.unwrap();
             let full_path = root_path.to_string() + &entry.path().to_string_lossy();
@@ -102,9 +104,7 @@ impl WasiFS {
 
             match FileType::from(metadata.file_type()) {
                 FileType::Directory => {
-                    if let Err(_) = WorkSpace::stat(save_url.clone().into()).await {
-                        WorkSpace::create_directory(save_url.clone().into()).await;
-                    }
+                    let _ = WorkSpace::create_directory(save_url.clone().into()).await;
 
                     Self::backup_recursive(
                         backup_uri,
@@ -112,49 +112,50 @@ impl WasiFS {
                         root_path,
                         &entry.path.to_string_lossy(),
                     )
-                    .await;
+                    .await?;
                 }
                 FileType::File => {
-                    let mut file = fs
-                        .new_open_options()
-                        .read(true)
-                        .open(&PathBuf::from(&full_path));
-                    let mut file = match file {
-                        Ok(x) => x,
-                        Err(_) => continue,
+                    let result = async move {
+                        let mut file = fs
+                            .new_open_options()
+                            .read(true)
+                            .open(&PathBuf::from(&full_path))
+                            .map_err(FileSystemError::from)?;
+
+                        let mut buf = Vec::new();
+                        file.read_to_end(&mut buf).map_err(FileSystemError::from)?;
+
+                        WorkSpace::write_file(save_url.into(), &buf).await
                     };
-                    let mut buf = Vec::new();
-                    file.read_to_end(&mut buf);
-                    WorkSpace::write_file(save_url.into(), &buf).await;
+                    if let Err(error) = result.await {
+                        tracing::error!("{}", error.code());
+                    }
                 }
                 _ => {}
             }
         }
+
+        return Ok(());
     }
 
-    pub async fn restore(&self) {
-        if self.backup_url.is_none() {
-            return;
-        }
-        let mut fs = self.fs.as_ref().write().expect("cannot write");
-        let backup_uri = self.backup_url.as_ref().unwrap().clone();
-        Self::restore_recursive(&backup_uri, &mut fs, "/.app").await;
+    pub async fn restore(&self) -> Result<(), FileSystemError> {
+        let backup_url = match self.backup_url.as_ref() {
+            Some(value) => value,
+            None => return Ok(()),
+        };
+        let fs = self.fs.as_ref().write().expect("cannot write");
+        Self::restore_recursive(backup_url, &fs, "/.app").await
     }
 
     #[async_recursion(?Send)]
     async fn restore_recursive<'a>(
-        backup_uri: &UriComponent,
-        fs: &mut RwLockWriteGuard<'a, UnionFileSystem>,
+        backup_url: &UriComponent,
+        fs: &RwLockWriteGuard<'a, UnionFileSystem>,
         base_path: &str,
-    ) {
-        let base_url = backup_uri.clone();
-        let save_url = base_url.join_path(&PathBuf::from(base_path));
+    ) -> Result<(), FileSystemError> {
+        let save_url = backup_url.join_path(&PathBuf::from(base_path));
 
-        let entries = WorkSpace::read_directory(save_url.clone().into()).await;
-        let entries = match entries {
-            Ok(x) => x,
-            Err(_) => return,
-        };
+        let entries = WorkSpace::read_directory(save_url.into()).await?;
         let entries: Vec<(String, FileType)> =
             serde_wasm_bindgen::from_value(entries.into()).unwrap();
 
@@ -162,27 +163,38 @@ impl WasiFS {
             let full_path = format!("{}/{}", base_path, path);
             match file_type {
                 FileType::Directory => {
-                    fs.create_dir(&PathBuf::from(&full_path));
-                    Self::restore_recursive(backup_uri, fs, &full_path).await;
+                    fs.create_dir(&PathBuf::from(&full_path))
+                        .map_err(FileSystemError::from)?;
+                    Self::restore_recursive(backup_url, fs, &full_path).await?;
                 }
                 FileType::File => {
-                    info!("{}", &full_path);
-                    let content =
-                        WorkSpace::read_file(base_url.join_path(&PathBuf::from(&full_path)).into())
-                            .await
-                            .to_vec();
-                    if let Ok(mut file) = fs
-                        .new_open_options()
-                        .write(true)
-                        .create(true)
-                        .open(&PathBuf::from(&full_path))
-                    {
-                        file.write_all(&content);
+                    let result = async move {
+                        let content = WorkSpace::read_file(
+                            backup_url.join_path(&PathBuf::from(&full_path)).into(),
+                        )
+                        .await?
+                        .to_vec();
+
+                        let mut file = fs
+                            .new_open_options()
+                            .write(true)
+                            .create(true)
+                            .open(&PathBuf::from(&full_path))
+                            .map_err(FileSystemError::from)?;
+
+                        file.write_all(&content).map_err(FileSystemError::from)
+                    };
+
+                    // continue on errors, displaying error content
+                    if let Err(error) = result.await {
+                        tracing::error!("{}", error.code());
                     }
                 }
                 _ => {}
             }
         }
+
+        return Ok(());
     }
 
     pub fn clone(&self) -> Self {
@@ -203,10 +215,9 @@ impl WasiFS {
         let path = PathBuf::from(uri.path());
         let fs = self.fs.as_ref().read().expect("cannot read");
 
-        match fs.metadata(&path) {
-            Err(e) => Err(FileSystemError::from(e)),
-            Ok(metadata) => Ok(FileStat::from(metadata)),
-        }
+        fs.metadata(&path)
+            .map(FileStat::from)
+            .map_err(FileSystemError::from)
     }
 
     pub fn stat(&mut self, uri: Uri) -> Result<FileEntry, FileSystemError> {
@@ -234,8 +245,6 @@ impl WasiFS {
             })
             .collect();
 
-        // let val = DirectoryStat { entries };
-
         Ok(serde_wasm_bindgen::to_value(&entries).unwrap().into())
     }
 
@@ -244,17 +253,16 @@ impl WasiFS {
         let path = PathBuf::from(uri.path());
         let fs = self.fs.as_ref().read().expect("cannot read");
 
-        let mut file = match fs.new_open_options().read(true).open(path) {
-            Ok(file) => file,
-            Err(e) => return Err(FileSystemError::from(e)),
-        };
-
+        let mut file = fs
+            .new_open_options()
+            .read(true)
+            .open(path)
+            .map_err(FileSystemError::from)?;
         let mut buf = Vec::new();
 
-        match file.read_to_end(&mut buf) {
-            Ok(_) => Ok(buf.into_boxed_slice()),
-            Err(_) => Err(FileSystemError::from(FsError::IOError)),
-        }
+        file.read_to_end(&mut buf)
+            .map(|_| buf.into_boxed_slice())
+            .map_err(FileSystemError::from)
     }
 
     #[wasm_bindgen(js_name = "writeFile")]
@@ -269,21 +277,17 @@ impl WasiFS {
 
         let ret = {
             let fs = self.fs.as_ref().read().expect("cannot read");
-            let mut file = match fs
+            let mut file = fs
                 .new_open_options()
                 .write(true)
                 .create(options.create)
                 .append(!options.overwrite)
                 .open(path)
-            {
-                Ok(file) => file,
-                Err(e) => return Err(FileSystemError::from(e)),
-            };
+                .map_err(FileSystemError::from)?;
 
-            match file.write_all(buf) {
-                Ok(_) => Ok(()),
-                Err(e) => return Err(FileSystemError::from(FsError::IOError)),
-            }
+            file.write_all(buf)
+                .map(|_| ())
+                .map_err(FileSystemError::from)
         };
 
         let mut events = Vec::new();

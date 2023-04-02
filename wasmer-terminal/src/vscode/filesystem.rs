@@ -30,14 +30,14 @@ extern "C" {
 
     pub type FileSystem;
 
-    #[wasm_bindgen(method)]
-    async fn copy_js(this: &FileSystem, source: Uri, target: Uri);
+    #[wasm_bindgen(method, catch, js_name = "copy")]
+    async fn copy_js(this: &FileSystem, source: Uri, target: Uri) -> Result<(), JsValue>;
 
-    #[wasm_bindgen(method, js_name = "createDirectory")]
-    async fn create_directory_js(this: &FileSystem, uri: Uri);
+    #[wasm_bindgen(method, catch, js_name = "createDirectory")]
+    async fn create_directory_js(this: &FileSystem, uri: Uri) -> Result<(), JsValue>;
 
-    #[wasm_bindgen(method, js_name = "delete")]
-    async fn delete_js(this: &FileSystem, uri: Uri);
+    #[wasm_bindgen(method, catch, js_name = "delete")]
+    async fn delete_js(this: &FileSystem, uri: Uri) -> Result<(), JsValue>;
 
     #[wasm_bindgen(method, js_name = "isWritableFileSystem")]
     pub fn is_writable_file_system(this: &FileSystem, scheme: String) -> bool;
@@ -45,17 +45,17 @@ extern "C" {
     #[wasm_bindgen(method, catch, js_name = "readDirectory")]
     async fn read_directory_js(this: &FileSystem, uri: Uri) -> Result<JsValue, JsValue>;
 
-    #[wasm_bindgen(method, js_name = "readFile")]
-    async fn read_file_js(this: &FileSystem, uri: Uri) -> JsValue;
+    #[wasm_bindgen(method, catch, js_name = "readFile")]
+    async fn read_file_js(this: &FileSystem, uri: Uri) -> Result<JsValue, JsValue>;
 
-    #[wasm_bindgen(method, js_name = "rename")]
-    async fn rename_js(this: &FileSystem, source: Uri, target: Uri);
+    #[wasm_bindgen(method, catch, js_name = "rename")]
+    async fn rename_js(this: &FileSystem, source: Uri, target: Uri) -> Result<(), JsValue>;
 
     #[wasm_bindgen(method, catch, js_name = "stat")]
     async fn stat_js(this: &FileSystem, uri: Uri) -> Result<JsValue, JsValue>;
 
-    #[wasm_bindgen(method, js_name = "writeFile")]
-    async fn write_file_js(this: &FileSystem, uri: Uri, content: &[u8]);
+    #[wasm_bindgen(method, catch, js_name = "writeFile")]
+    async fn write_file_js(this: &FileSystem, uri: Uri, content: &[u8]) -> Result<(), JsValue>;
 
     #[wasm_bindgen(js_name = "getWorkspaceFs")]
     pub fn get_workspace_fs() -> FileSystem;
@@ -64,25 +64,28 @@ extern "C" {
 pub struct WorkSpace {}
 
 impl WorkSpace {
-    pub async fn copy(source: Uri, target: Uri) {
+    pub async fn copy(source: Uri, target: Uri) -> Result<(), FileSystemError> {
         let fs = get_workspace_fs();
-        fs.copy_js(source, target).await;
+        let result = fs.copy_js(source, target).await;
+        result.map_err(FileSystemError::from)
     }
 
-    pub async fn create_directory(uri: Uri) {
+    pub async fn create_directory(uri: Uri) -> Result<(), FileSystemError> {
         let fs = get_workspace_fs();
-        fs.create_directory_js(uri).await;
+        let result = fs.create_directory_js(uri).await;
+        result.map_err(FileSystemError::from)
     }
 
-    pub async fn delete(uri: Uri) {
+    pub async fn delete(uri: Uri) -> Result<(), FileSystemError> {
         let fs = get_workspace_fs();
-        fs.delete_js(uri).await;
+        let result = fs.delete_js(uri).await;
+        result.map_err(FileSystemError::from)
     }
 
-    pub async fn read_file(uri: Uri) -> Uint8Array {
+    pub async fn read_file(uri: Uri) -> Result<Uint8Array, FileSystemError> {
         let fs = get_workspace_fs();
         let data = fs.read_file_js(uri).await;
-        Uint8Array::from(data)
+        data.map(Uint8Array::from).map_err(FileSystemError::from)
     }
 
     pub async fn read_directory(uri: Uri) -> Result<DirectoryEntries, FileSystemError> {
@@ -100,13 +103,15 @@ impl WorkSpace {
         data.map(FileEntry::from).map_err(FileSystemError::from)
     }
 
-    pub async fn rename(source: Uri, target: Uri) {
+    pub async fn rename(source: Uri, target: Uri) -> Result<(), FileSystemError> {
         let fs = get_workspace_fs();
-        fs.rename_js(source, target).await;
+        let result = fs.rename_js(source, target).await;
+        result.map_err(FileSystemError::from)
     }
 
-    pub async fn write_file(uri: Uri, content: &[u8]) {
+    pub async fn write_file(uri: Uri, content: &[u8]) -> Result<(), FileSystemError> {
         let fs = get_workspace_fs();
-        fs.write_file_js(uri, content).await;
+        let result = fs.write_file_js(uri, content).await;
+        result.map_err(FileSystemError::from)
     }
 }

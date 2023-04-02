@@ -70,7 +70,7 @@ impl CodeFS {
                 }
                 FileCommands::ReadFile { path, tx } => {
                     let path = self.base_uri.with_path(&path);
-                    let stat = WorkSpace::read_file(path.into()).await;
+                    let stat = WorkSpace::read_file(path.into()).await.unwrap();
                     let _ = tx.send(stat.to_vec()).await;
                 }
                 FileCommands::WriteFile { path, data, tx } => {
