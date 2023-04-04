@@ -92,8 +92,7 @@ impl WasiFS {
     ) -> Result<(), FileSystemError> {
         let path = root_path.to_string() + path;
         let entries = fs
-            .read_dir(&PathBuf::from(&path))
-            .map_err(FileSystemError::from)?;
+            .read_dir(&PathBuf::from(&path))?;
 
         for entry in entries.into_iter() {
             let entry = entry.unwrap();
@@ -119,11 +118,10 @@ impl WasiFS {
                         let mut file = fs
                             .new_open_options()
                             .read(true)
-                            .open(&PathBuf::from(&full_path))
-                            .map_err(FileSystemError::from)?;
+                            .open(&PathBuf::from(&full_path))?;
 
                         let mut buf = Vec::new();
-                        file.read_to_end(&mut buf).map_err(FileSystemError::from)?;
+                        file.read_to_end(&mut buf)?;
 
                         WorkSpace::write_file(save_url.into(), &buf).await
                     };
@@ -163,8 +161,7 @@ impl WasiFS {
             let full_path = format!("{}/{}", base_path, path);
             match file_type {
                 FileType::Directory => {
-                    fs.create_dir(&PathBuf::from(&full_path))
-                        .map_err(FileSystemError::from)?;
+                    fs.create_dir(&PathBuf::from(&full_path))?;
                     Self::restore_recursive(backup_url, fs, &full_path).await?;
                 }
                 FileType::File => {
@@ -179,8 +176,7 @@ impl WasiFS {
                             .new_open_options()
                             .write(true)
                             .create(true)
-                            .open(&PathBuf::from(&full_path))
-                            .map_err(FileSystemError::from)?;
+                            .open(&PathBuf::from(&full_path))?;
 
                         file.write_all(&content).map_err(FileSystemError::from)
                     };
@@ -256,8 +252,7 @@ impl WasiFS {
         let mut file = fs
             .new_open_options()
             .read(true)
-            .open(path)
-            .map_err(FileSystemError::from)?;
+            .open(path)?;
         let mut buf = Vec::new();
 
         file.read_to_end(&mut buf)
@@ -282,8 +277,7 @@ impl WasiFS {
                 .write(true)
                 .create(options.create)
                 .append(!options.overwrite)
-                .open(path)
-                .map_err(FileSystemError::from)?;
+                .open(path)?;
 
             file.write_all(buf)
                 .map(|_| ())

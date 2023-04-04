@@ -24,7 +24,7 @@ impl FileOpener for CodeFSFileOpener {
         Box<dyn wasmer_os::wasmer_wasi::VirtualFile + Send + Sync + 'static>,
     > {
         let buffer = if conf.read() {
-            self.fs.read_all(path)
+            self.fs.read_all(path)?
         } else {
             Vec::new()
         };

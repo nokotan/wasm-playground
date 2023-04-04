@@ -52,7 +52,7 @@ impl UriComponent {
         uri.path = self
             .path
             .as_ref()
-            .map(|s| s.to_owned() + path.as_os_str().to_str().unwrap());
+            .map(|s| s.to_owned() + &path.to_string_lossy());
         uri
     }
 }
