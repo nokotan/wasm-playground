@@ -39,7 +39,7 @@ export class WasmPseudoTerminal implements Pseudoterminal {
     }
 
     close(): void {
-
+		this.fs.backup();
 	}
 
 	write(data: string) {

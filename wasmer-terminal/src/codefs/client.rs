@@ -23,7 +23,8 @@ impl CodeFSClient {
         block_on(self.tx.send(FileCommands::ReadFile {
             path: path.into(),
             tx,
-        })).map_err(|_| FsError::IOError)?;
+        }))
+        .map_err(|_| FsError::IOError)?;
         let data = block_on(rx.recv());
         Ok(data.unwrap())
     }
@@ -35,7 +36,8 @@ impl CodeFSClient {
             path: path.into(),
             data: data.to_vec(),
             tx,
-        })).map_err(|_| FsError::IOError)?;
+        }))
+        .map_err(|_| FsError::IOError)?;
         block_on(rx.recv());
         Ok(())
     }
@@ -52,7 +54,8 @@ impl wasmer_os::wasmer_vfs::FileSystem for CodeFSClient {
         block_on(self.tx.send(FileCommands::Stat {
             path: path.into(),
             tx,
-        })).map_err(|_| FsError::IOError)?;
+        }))
+        .map_err(|_| FsError::IOError)?;
         let metadata = block_on(rx.recv());
         metadata.unwrap()
     }
@@ -63,7 +66,8 @@ impl wasmer_os::wasmer_vfs::FileSystem for CodeFSClient {
         block_on(self.tx.send(FileCommands::CreateDirectory {
             path: path.into(),
             tx,
-        })).map_err(|_| FsError::IOError)?;
+        }))
+        .map_err(|_| FsError::IOError)?;
         block_on(rx.recv());
         Ok(())
     }
@@ -74,7 +78,8 @@ impl wasmer_os::wasmer_vfs::FileSystem for CodeFSClient {
         block_on(self.tx.send(FileCommands::ReadDirectory {
             path: path.into(),
             tx,
-        })).map_err(|_| FsError::IOError)?;
+        }))
+        .map_err(|_| FsError::IOError)?;
         let readdir = block_on(rx.recv());
         readdir.unwrap()
     }
@@ -90,7 +95,8 @@ impl wasmer_os::wasmer_vfs::FileSystem for CodeFSClient {
             old_path: from.into(),
             new_path: to.into(),
             tx,
-        })).map_err(|_| FsError::IOError)?;
+        }))
+        .map_err(|_| FsError::IOError)?;
         block_on(rx.recv());
         Ok(())
     }
@@ -101,7 +107,8 @@ impl wasmer_os::wasmer_vfs::FileSystem for CodeFSClient {
         block_on(self.tx.send(FileCommands::Delete {
             path: path.into(),
             tx,
-        })).map_err(|_| FsError::IOError)?;
+        }))
+        .map_err(|_| FsError::IOError)?;
         block_on(rx.recv());
         Ok(())
     }
@@ -112,7 +119,8 @@ impl wasmer_os::wasmer_vfs::FileSystem for CodeFSClient {
         block_on(self.tx.send(FileCommands::Delete {
             path: path.into(),
             tx,
-        })).map_err(|_| FsError::IOError)?;
+        }))
+        .map_err(|_| FsError::IOError)?;
         block_on(rx.recv());
         Ok(())
     }

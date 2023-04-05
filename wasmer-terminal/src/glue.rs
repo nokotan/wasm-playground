@@ -40,7 +40,7 @@ pub fn main() {
     );
 
     let pool = WebThreadPool::new_with_max_threads().unwrap();
-    let web_system = WebSystem::new(pool.clone());
+    let web_system = WebSystem::new(pool);
     wasmer_os::api::set_system_abi(web_system);
 }
 
@@ -87,7 +87,6 @@ pub unsafe fn open(
                         terminal.clear();
                     }
                 }
-                clonedfs.backup().await;
             }
         });
     }
@@ -98,7 +97,7 @@ pub unsafe fn open(
     let fs = fs.fs.as_ref().read().expect("cannot read");
 
     let mut console = Console::new(
-        location,
+        location + "?no_welcome",
         "".to_string(),
         wasmer_os::eval::Compiler::Browser,
         Arc::new(web_console),

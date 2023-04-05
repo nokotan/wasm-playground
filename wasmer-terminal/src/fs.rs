@@ -77,8 +77,13 @@ impl WasiFS {
 
         let base_uri = backup_url.join_path(&Path::new("/.app"));
         let _ = WorkSpace::create_directory(base_uri.into()).await;
+        let base_uri = backup_url.join_path(&Path::new("/bin"));
+        let _ = WorkSpace::create_directory(base_uri.into()).await;
 
         Self::backup_recursive(backup_url, &fs, "/.app", "")
+            .await
+            .map_err::<JsValue, _>(FileSystemError::into)?;
+        Self::backup_recursive(backup_url, &fs, "", "/bin")
             .await
             .map_err(FileSystemError::into)
     }
@@ -91,8 +96,7 @@ impl WasiFS {
         path: &str,
     ) -> Result<(), FileSystemError> {
         let path = root_path.to_string() + path;
-        let entries = fs
-            .read_dir(&PathBuf::from(&path))?;
+        let entries = fs.read_dir(&PathBuf::from(&path))?;
 
         for entry in entries.into_iter() {
             let entry = entry.unwrap();
@@ -142,7 +146,8 @@ impl WasiFS {
             None => return Ok(()),
         };
         let fs = self.fs.as_ref().write().expect("cannot write");
-        Self::restore_recursive(backup_url, &fs, "/.app").await
+        Self::restore_recursive(backup_url, &fs, "/.app").await?;
+        Self::restore_recursive(backup_url, &fs, "/bin").await
     }
 
     #[async_recursion(?Send)]
@@ -249,10 +254,7 @@ impl WasiFS {
         let path = PathBuf::from(uri.path());
         let fs = self.fs.as_ref().read().expect("cannot read");
 
-        let mut file = fs
-            .new_open_options()
-            .read(true)
-            .open(path)?;
+        let mut file = fs.new_open_options().read(true).open(path)?;
         let mut buf = Vec::new();
 
         file.read_to_end(&mut buf)

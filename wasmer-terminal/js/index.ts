@@ -4,12 +4,14 @@ import init, { WasiFS } from '../pkg';
 
 declare var __webpack_public_path__: string;
 
+let fs: WasiFS | undefined;
+
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 
 	__webpack_public_path__ = decodeURIComponent(context.extensionUri.toString() + "/dist/");
 	await init();
 
-	const fs = await WasiFS.new(context.globalStorageUri);
+	fs = await WasiFS.new(context.globalStorageUri);
 	await fs.restore().catch(console.error);
 	
 	vscode.workspace.registerFileSystemProvider("wasmfs", fs, { isCaseSensitive: true });
@@ -61,6 +63,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 				pty: await WasmPseudoTerminal.createWasmPseudoTerminal(fs.clone(), __webpack_public_path__)
 			});
 			terminal.show();
+		}),
+		vscode.commands.registerCommand("wasmer-term.fs.backUp", async function() {
+			await fs.backup();
 		})
     );
+}
+
+export async function deactivate() {
+	await fs?.backup();
 }
