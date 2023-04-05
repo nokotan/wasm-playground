@@ -23,6 +23,11 @@
         "command": "wasmer-term.openTerminal",
         "title": "Open Wasmer.sh",
         "category": "Ternimal"
+      },
+      {
+        "command": "wasmer-term.fs.backUp",
+        "title": "Back up",
+        "category": "Ternimal"
       }
     ],
     "viewsWelcome": [
