@@ -92,7 +92,7 @@ pub unsafe fn open(
     let web_console = WebConsole::new(term_tx);
     let system = System::default();
     let compiled_modules = Arc::new(CachedCompiledModules::new(None));
-    let fs = fs.fs.as_ref().read().expect("cannot read");
+    let fs = fs.fs.as_ref().try_read().expect("cannot read");
 
     let mut console = Console::new(
         location + "?no_welcome",

@@ -93,7 +93,7 @@ impl WasiFS {
     pub fn mount(&mut self, base_uri: Uri, mount_point: String) {
         let mut vscode_fs = CodeFS::new(base_uri);
 
-        let mut fs = self.fs.as_ref().write().expect("cannot write");
+        let mut fs = self.fs.as_ref().try_write().expect("cannot write");
 
         fs.mount(
             "vscode",
@@ -107,7 +107,7 @@ impl WasiFS {
     }
 
     pub fn unmount(&mut self, mount_point: String) {
-        let mut fs = self.fs.as_ref().write().expect("cannot write");
+        let mut fs = self.fs.as_ref().try_write().expect("cannot write");
         fs.unmount(&mount_point);
     }
 
@@ -137,7 +137,7 @@ impl WasiFS {
 
     fn stat_internal(&self, uri: &Uri) -> Result<FileStat, FileSystemError> {
         let path = PathBuf::from(uri.path());
-        let fs = self.fs.as_ref().read().expect("cannot read");
+        let fs = self.fs.as_ref().try_read().expect("cannot read");
 
         fs.metadata(&path)
             .map(FileStat::from)
@@ -156,7 +156,7 @@ impl WasiFS {
         }
 
         let path = PathBuf::from(uri.path());
-        let fs = self.fs.as_ref().read().expect("cannot read");
+        let fs = self.fs.as_ref().try_read().expect("cannot read");
         let files = fs.read_dir(&path).unwrap();
         let entries: Vec<_> = files
             .into_iter()
@@ -175,7 +175,7 @@ impl WasiFS {
     #[wasm_bindgen(js_name = "readFile")]
     pub fn read_file(&self, uri: Uri) -> Result<Box<[u8]>, FileSystemError> {
         let path = PathBuf::from(uri.path());
-        let fs = self.fs.as_ref().read().expect("cannot read");
+        let fs = self.fs.as_ref().try_read().expect("cannot read");
 
         let mut file = fs.new_open_options().read(true).open(path)?;
         let mut buf = Vec::new();
@@ -196,7 +196,7 @@ impl WasiFS {
         let options: WriteFileOptions = serde_wasm_bindgen::from_value(options).unwrap();
 
         let ret = {
-            let fs = self.fs.as_ref().read().expect("cannot read");
+            let fs = self.fs.as_ref().try_read().expect("cannot read");
             let mut file = fs
                 .new_open_options()
                 .write(true)
@@ -229,7 +229,7 @@ impl WasiFS {
         let path = PathBuf::from(uri.path());
 
         let ret = {
-            let fs = self.fs.as_ref().read().expect("cannot read");
+            let fs = self.fs.as_ref().try_read().expect("cannot read");
             fs.rename(&old_path, &path).map_err(FileSystemError::from)
         };
 
@@ -247,7 +247,7 @@ impl WasiFS {
         let path = PathBuf::from(uri.path());
 
         let ret = {
-            let fs = self.fs.as_ref().read().expect("cannot read");
+            let fs = self.fs.as_ref().try_read().expect("cannot read");
             fs.remove_file(&path).map_err(FileSystemError::from)
         };
 
@@ -266,7 +266,7 @@ impl WasiFS {
         let path = PathBuf::from(uri.path());
 
         let ret = {
-            let fs = self.fs.as_ref().read().expect("cannot read");
+            let fs = self.fs.as_ref().try_read().expect("cannot read");
             fs.create_dir(&path).map_err(FileSystemError::from)
         };
 

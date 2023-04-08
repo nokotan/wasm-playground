@@ -143,39 +143,39 @@ impl VirtualTmpFile {
 
 impl VirtualFile for VirtualTmpFile {
     fn last_accessed(&self) -> u64 {
-        self.file.read().unwrap().last_accessed()
+        self.file.try_read().unwrap().last_accessed()
     }
 
     fn last_modified(&self) -> u64 {
-        self.file.read().unwrap().last_modified()
+        self.file.try_read().unwrap().last_modified()
     }
 
     fn created_time(&self) -> u64 {
-        self.file.read().unwrap().created_time()
+        self.file.try_read().unwrap().created_time()
     }
 
     fn size(&self) -> u64 {
-        self.file.read().unwrap().size()
+        self.file.try_read().unwrap().size()
     }
 
     fn set_len(&mut self, new_size: u64) -> Result<()> {
-        self.file.write().unwrap().set_len(new_size)
+        self.file.try_write().unwrap().set_len(new_size)
     }
 
     fn unlink(&mut self) -> Result<()> {
-        self.file.write().unwrap().unlink()
+        self.file.try_write().unwrap().unlink()
     }
 }
 
 impl Read for VirtualTmpFile {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.file.write().unwrap().read(buf)
+        self.file.try_write().unwrap().read(buf)
     }
 }
 
 impl Write for VirtualTmpFile {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        let ret = self.file.write().unwrap().write(buf)?;
+        let ret = self.file.try_write().unwrap().write(buf)?;
         if let Some(ref callback) = self.callback {
             callback();
         }
@@ -183,7 +183,7 @@ impl Write for VirtualTmpFile {
     }
 
     fn flush(&mut self) -> std::io::Result<()> {
-        self.file.write().unwrap().flush()?;
+        self.file.try_write().unwrap().flush()?;
         if let Some(ref callback) = self.callback {
             callback();
         }
@@ -193,6 +193,6 @@ impl Write for VirtualTmpFile {
 
 impl Seek for VirtualTmpFile {
     fn seek(&mut self, pos: std::io::SeekFrom) -> std::io::Result<u64> {
-        self.file.write().unwrap().seek(pos)
+        self.file.try_write().unwrap().seek(pos)
     }
 }
