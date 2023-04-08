@@ -4,7 +4,7 @@
 
 use std::fmt::Debug;
 use std::io::{Read, Seek, Write};
-use std::path::{Path};
+use std::path::Path;
 use std::sync::{Arc, RwLock};
 use wasmer_os::fs::MountedFileSystem;
 use wasmer_os::wasmer_vfs::{

@@ -2,7 +2,7 @@ pub mod backup;
 pub mod fs;
 
 use js_sys::Date;
-use std::path::{PathBuf};
+use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use tracing::{info, warn};
 use wasm_bindgen::prelude::*;
