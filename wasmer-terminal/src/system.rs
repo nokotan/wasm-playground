@@ -248,5 +248,5 @@ impl ConsoleAbi for WebConsole {
 #[wasm_bindgen(module = "/js/time.ts")]
 extern "C" {
     #[wasm_bindgen(js_name = "sleep")]
-    fn sleep(ms: i32) -> Promise;
+    pub fn sleep(ms: i32) -> Promise;
 }

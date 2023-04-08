@@ -9,13 +9,13 @@ use wasmer_os::bin_factory::CachedCompiledModules;
 use wasmer_os::common::MAX_MPSC;
 use wasmer_os::console::Console;
 
-use crate::fs::WasiFS;
 use crate::system::TerminalCommand;
 use crate::system::WebConsole;
 use crate::system::WebSystem;
 use crate::terminal::Terminal;
 use crate::vscode::uri::Uri;
 use crate::vscode::uri::UriComponent;
+use crate::wasifs::WasiFS;
 
 use super::common::*;
 use super::pool::*;
@@ -110,6 +110,8 @@ pub unsafe fn open(
         let pwd = UriComponent::from(pwd);
         console.set_current_dir(&pwd.path.unwrap());
     }
+
+    console.set_env("PYTHONHOME", "/");
 
     console.add_preopen_dir("/bin");
     console.add_preopen_dir("/lib");

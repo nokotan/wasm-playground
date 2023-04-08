@@ -5,7 +5,7 @@ use url::Url;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct UriComponent {
     pub scheme: String,
 

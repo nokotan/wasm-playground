@@ -1,3 +1,4 @@
+mod backup;
 mod codefs;
 mod common;
 mod fs;
@@ -7,6 +8,7 @@ mod pool;
 mod system;
 mod terminal;
 mod vscode;
+mod wasifs;
 mod webgl;
 mod ws;
 
