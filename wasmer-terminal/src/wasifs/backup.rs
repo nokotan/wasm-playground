@@ -41,7 +41,7 @@ impl BackupContext {
         let base_uri = backup_url.join_path(&Path::new("/lib"));
         let _ = WorkSpace::create_directory(base_uri.into()).await;
 
-        Self::backup_recursive(backup_url, &fs, "/.app", "").await?;
+        Self::backup_recursive(backup_url, &fs, "/.app/", "").await?;
         Self::backup_recursive(backup_url, &fs, "", "/bin").await?;
         Self::backup_recursive(backup_url, &fs, "", "/lib").await
     }
