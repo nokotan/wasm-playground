@@ -2,12 +2,10 @@
 //! enhanced to support mounting file systems, shared static files,
 //! readonly files, etc...
 
-use crate::wasifs::WasiFS;
 use std::fmt::Debug;
 use std::io::{Read, Seek, Write};
-use std::path::{Path, PathBuf};
+use std::path::{Path};
 use std::sync::{Arc, RwLock};
-use downcast::{downcast};
 use wasmer_os::fs::MountedFileSystem;
 use wasmer_os::wasmer_vfs::{
     mem_fs, FileOpener, FileSystem, Metadata, OpenOptions, OpenOptionsConfig, ReadDir, Result,

@@ -64,8 +64,6 @@ pub unsafe fn open(
 
     info!("glue::start");
 
-    let clonedfs = fs.clone();
-
     let (term_tx, mut term_rx) = mpsc::channel(MAX_MPSC);
     {
         let terminal: Terminal = terminal.clone().dyn_into().unwrap();

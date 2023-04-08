@@ -1,23 +1,21 @@
-use async_recursion::async_recursion;
-use downcast::Downcast;
+pub mod backup;
+pub mod fs;
+
 use js_sys::Date;
-use wasmer_os::common::MAX_MPSC;
-use std::future::Future;
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 use std::sync::{Arc, RwLock};
-use std::sync::{RwLockReadGuard, RwLockWriteGuard};
-use std::thread::spawn;
-use std::any::{Any, TypeId};
 use tracing::{info, warn};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::{spawn_local, JsFuture};
-use wasmer_os::fs::{create_root_fs, UnionFileSystem, seed_root_fs};
+use wasmer_os::common::MAX_MPSC;
+use wasmer_os::fs::{seed_root_fs, UnionFileSystem};
 use wasmer_os::wasmer_vfs::FileSystem;
 use wasmer_os::wasmer_wasi::FsError;
 
-use crate::backup::BackupContext;
+use self::backup::BackupContext;
+use self::fs::TmpFileSystem;
+
 use crate::codefs::fs::CodeFS;
-use crate::fs::TmpFileSystem;
 use crate::system::sleep;
 use crate::vscode::fileerror::FileSystemError;
 use crate::vscode::fileevent::{
@@ -49,16 +47,15 @@ impl WasiFS {
         let backup_url = backup_url.map(UriComponent::from);
         let fs = Arc::new(RwLock::new(union_fs));
         let backup_ctx = BackupContext::new(fs.clone(), backup_url.clone());
-        
+
         let (tx, mut rx) = tokio::sync::mpsc::channel(MAX_MPSC);
         let root_fs = TmpFileSystem::new(Some(move || {
             tx.blocking_send(()).unwrap();
         }));
 
         spawn_local(async move {
-
             let mut last_updated = 0f64;
-            
+
             while let Some(_) = rx.recv().await {
                 let now = Date::now();
 
@@ -82,8 +79,8 @@ impl WasiFS {
             let mut union_fs = fs.write().unwrap();
             union_fs.mount("root", "/", false, Box::new(root_fs), None);
             seed_root_fs(&mut union_fs);
-        } 
-      
+        }
+
         Self {
             fs,
             event_emitter: emitter.clone().into(),

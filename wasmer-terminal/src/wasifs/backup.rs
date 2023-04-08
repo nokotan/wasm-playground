@@ -1,25 +1,16 @@
 use async_recursion::async_recursion;
-use std::future::Future;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::sync::{RwLockReadGuard, RwLockWriteGuard};
-use tracing::info;
-use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::spawn_local;
-use wasmer_os::fs::{create_root_fs, UnionFileSystem};
+use wasmer_os::fs::{UnionFileSystem};
 use wasmer_os::wasmer_vfs::FileSystem;
 use wasmer_os::wasmer_wasi::FsError;
 
-use crate::codefs::fs::CodeFS;
-use crate::fs::TmpFileSystem;
+use crate::wasifs::fs::TmpFileSystem;
 use crate::vscode::fileerror::FileSystemError;
-use crate::vscode::fileevent::{
-    create_event_emitter, FileChangeEvent, FileChangeEventEmitter, VSCodeFileChangeEvent,
-};
 use crate::vscode::filesystem::WorkSpace;
-use crate::vscode::stat::{FileStat, FileType};
-use crate::vscode::uri::{Uri, UriComponent};
-use crate::vscode::{create_disposable, DirectoryEntries, Disposable, FileEntry, WriteFileOptions};
+use crate::vscode::stat::{FileType};
+use crate::vscode::uri::{UriComponent};
 
 #[derive(Clone, Debug)]
 pub struct BackupContext {
@@ -37,7 +28,11 @@ impl BackupContext {
             Some(x) => x,
             None => return Ok(()),
         };
-        let fs = self.fs.as_ref().try_read().map_err(|_| FileSystemError::from(FsError::IOError))?;
+        let fs = self
+            .fs
+            .as_ref()
+            .try_read()
+            .map_err(|_| FileSystemError::from(FsError::IOError))?;
 
         let base_uri = backup_url.join_path(&Path::new("/.app"));
         let _ = WorkSpace::create_directory(base_uri.into()).await;
@@ -108,7 +103,11 @@ impl BackupContext {
             Some(value) => value,
             None => return Ok(()),
         };
-        let fs = self.fs.as_ref().try_write().map_err(|_| FileSystemError::from(FsError::IOError))?;;
+        let fs = self
+            .fs
+            .as_ref()
+            .try_write()
+            .map_err(|_| FileSystemError::from(FsError::IOError))?;
         Self::restore_recursive(backup_url, &fs, "/.app").await?;
         Self::restore_recursive(backup_url, &fs, "/bin").await?;
         Self::restore_recursive(backup_url, &fs, "/lib").await

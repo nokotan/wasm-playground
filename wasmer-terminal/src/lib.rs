@@ -1,7 +1,5 @@
-mod backup;
 mod codefs;
 mod common;
-mod fs;
 mod glue;
 mod interval;
 mod pool;

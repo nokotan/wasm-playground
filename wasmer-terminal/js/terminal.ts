@@ -33,7 +33,8 @@ export class WasmPseudoTerminal implements Pseudoterminal {
 		let pwd: Uri | undefined = undefined;
 
 		if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) {
-			pwd = vscode.Uri.parse(`wasmfs:/mnt/${vscode.workspace.workspaceFolders[0].index}`);
+			const folder = vscode.workspace.workspaceFolders[0];
+			pwd = vscode.Uri.parse(`wasmfs:/mnt/${folder.name || folder.index}`);
 		}
 		OpenTerminal(this, this.fs, this.location, pwd);
     }
