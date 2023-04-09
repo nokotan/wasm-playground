@@ -24,6 +24,12 @@ extern "C" {
         f: &Function, // Event<&str>
     );
 
+    #[wasm_bindgen(method, js_name = "onClose")]
+    pub fn on_close(
+        this: &Terminal,
+        exit_code: i32,
+    );
+
     #[wasm_bindgen(method, js_name = "onDimensionChanged")]
     pub fn on_dimension_changed(
         this: &Terminal,

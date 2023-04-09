@@ -1,5 +1,5 @@
 import { Pseudoterminal, Event, EventEmitter, TerminalDimensions, workspace, Uri } from 'vscode';
-import { open as OpenTerminal } from '../../../index';
+import { open as OpenTerminal, TerminalSession } from '../../../index';
 import { WasiFS } from '../../../index';
 import { importVSCode } from './vscode';
 
@@ -9,6 +9,7 @@ export class WasmPseudoTerminal implements Pseudoterminal {
 
 	private m_rows: number;
 	private m_cols: number;
+	private session?: TerminalSession;
 
 	private constructor(private fs: WasiFS, private writeEmitter: EventEmitter<string>, private closeEmitter: EventEmitter<number>, private location: string) {
 		this.onDidWrite = this.writeEmitter.event;
@@ -36,11 +37,12 @@ export class WasmPseudoTerminal implements Pseudoterminal {
 			const folder = vscode.workspace.workspaceFolders[0];
 			pwd = vscode.Uri.parse(`wasmfs:/mnt/${folder.name || folder.index}`);
 		}
-		OpenTerminal(this, this.fs, this.location, pwd);
+		this.session = OpenTerminal(this, this.fs, this.location, pwd);
     }
 
     close(): void {
 		this.fs.backup();
+		this.session?.free();
 	}
 
 	write(data: string) {
@@ -53,6 +55,10 @@ export class WasmPseudoTerminal implements Pseudoterminal {
 
 	onData(callback: (data: string) => void) {
 		this.onDataCallback = callback;
+	}
+
+	onClose(exitCode: number) {
+		this.closeEmitter.fire(exitCode);
 	}
 
 	setDimensions(dimensions: TerminalDimensions): void {

@@ -2,7 +2,7 @@ use async_recursion::async_recursion;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::sync::{RwLockReadGuard, RwLockWriteGuard};
-use tracing::info;
+use tracing::trace;
 use wasmer_os::fs::UnionFileSystem;
 use wasmer_os::wasmer_vfs::FileSystem;
 use wasmer_os::wasmer_wasi::FsError;
@@ -153,7 +153,7 @@ impl BackupContext {
                         .await?
                         .to_vec();
 
-                        info!("restore {} (size:{})", &full_path, content.len());
+                        trace!("restore {} (size:{})", &full_path, content.len());
 
                         let fs = fs
                             .as_ref()

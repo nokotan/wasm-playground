@@ -24,6 +24,7 @@ pub(crate) enum TerminalCommand {
     Print(String),
     ConsoleRect(mpsc::Sender<ConsoleRect>),
     Cls,
+    Exit,
 }
 
 pub(crate) struct WebSystem {
@@ -241,7 +242,7 @@ impl ConsoleAbi for WebConsole {
     }
 
     async fn exit(&self) {
-        // Web terminals can not exit as they have nowhere to go!
+        let _ = self.term_tx.send(TerminalCommand::Exit).await;
     }
 }
 
