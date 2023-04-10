@@ -1,7 +1,7 @@
 {
   "name": "wasmer-term",
   "description": "Wasmer.sh for VSCode",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "publisher": "KamenokoSoft",
   "author": "John Sharratt <johnathan.sharratt@gmail.com>, nokotan <kamenokonokotan@gmail.com>",
   "license": "MIT",
