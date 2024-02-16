@@ -1,0 +1,6 @@
+[submodule "gistpad"]
+	path = gistpad
+	url = git@github.com:lostintangent/gistpad.git
+[submodule "vscode-clangd"]
+	path = vscode-clangd
+	url = git@github.com:nokotan/vscode-clangd.git
