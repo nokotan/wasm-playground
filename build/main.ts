@@ -18,11 +18,9 @@ async function main() {
     await copyStaticAssets(installationInfo);
 }
 
-async function deployExtensions() {
-
-    await downloadExternalRepository("https://github.com/lostintangent/gistpad.git");
-
+async function deployExtensions() {;
     await buildExtension("wasm-playground", { vsCodePath: installationRoot });
+    await buildExtension("vscode-clangd", { vsCodePath: installationRoot });
     await buildExtension("emscripten-remote-build", { vsCodePath: installationRoot });
     // await buildExtension("gistpad", {
     //     vsceOptions: [ "" ],
