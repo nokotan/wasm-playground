@@ -4,6 +4,7 @@ use std::{
     io::{Read, Seek, Write},
     path::PathBuf,
 };
+use std::convert::TryInto;
 
 use wasmer_os::{wasmer_vfs::Metadata, wasmer_wasi::VirtualFile};
 

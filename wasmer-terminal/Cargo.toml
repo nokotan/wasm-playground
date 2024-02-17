@@ -2,7 +2,7 @@
 name = "wasmer-vscode-web"
 version = "0.2.0"
 authors = ["John Sharratt <johnathan.sharratt@gmail.com>", "nokotan <kamenokonokotan@gmail.com>"]
-edition = "2021"
+edition = "2018"
 publish = false
 description = "Wasmer Web Terminal built on WASMER and ATE"
 license = "MIT OR Apache-2.0"
