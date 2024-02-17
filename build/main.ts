@@ -18,7 +18,7 @@ async function main() {
     await copyStaticAssets(installationInfo);
 }
 
-async function deployExtensions() {;
+async function deployExtensions() {
     await buildExtension("wasm-playground", { vsCodePath: installationRoot });
     await buildExtension("vscode-clangd", { vsCodePath: installationRoot });
     await buildExtension("emscripten-remote-build", { vsCodePath: installationRoot });
@@ -26,6 +26,7 @@ async function deployExtensions() {;
         vsCodePath: installationRoot,
         projectName: "gistfs"
     });
+    // stdweb:v0.4.20 is not updated and generates error, disable this extension.
     // await buildExtension("wasmer-terminal", {
     //     vsCodePath: installationRoot,
     //     vsceOptions: [ "--no-dependencies" ],
