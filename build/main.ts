@@ -22,15 +22,15 @@ async function deployExtensions() {;
     await buildExtension("wasm-playground", { vsCodePath: installationRoot });
     await buildExtension("vscode-clangd", { vsCodePath: installationRoot });
     await buildExtension("emscripten-remote-build", { vsCodePath: installationRoot });
-    // await buildExtension("gistpad", {
-    //     vsceOptions: [ "" ],
-    //     projectName: "gistfs"
-    // });
-    await buildExtension("wasmer-terminal", {
+    await buildExtension("gistpad", {
         vsCodePath: installationRoot,
-        vsceOptions: [ "--no-dependencies" ],
-        projectName: "wasmer-term"
+        projectName: "gistfs"
     });
+    // await buildExtension("wasmer-terminal", {
+    //     vsCodePath: installationRoot,
+    //     vsceOptions: [ "--no-dependencies" ],
+    //     projectName: "wasmer-term"
+    // });
 }
 
 async function patchVSCode() {
