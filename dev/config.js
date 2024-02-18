@@ -19,6 +19,11 @@ const config = {
         {
             scheme: "https",
             authority: "wasm-playground.kamenokosoft.com/dev",
+            path: "/addon/vscode-clangd/extension"
+        },
+        {
+            scheme: "https",
+            authority: "wasm-playground.kamenokosoft.com/dev",
             path: "/addon/wasmer-terminal/extension"
         }
     ],
