@@ -1,10 +1,7506 @@
 /*!--------------------------------------------------------
  * Copyright (C) Microsoft Corporation. All rights reserved.
- *--------------------------------------------------------*/(function(){var p=["require","exports","vs/base/common/lifecycle","vs/base/common/platform","vs/base/common/observableInternal/logging","vs/base/common/observableInternal/base","vs/base/common/errors","vs/editor/common/tokens/lineTokens","vs/base/common/uri","vs/base/common/observableInternal/autorun","vs/base/common/observableInternal/derived","vs/base/common/observable","vs/base/common/buffer","vs/editor/common/core/eolCounter","vs/editor/common/encodedTokenAttributes","vs/editor/common/core/lineRange","vs/editor/common/tokens/contiguousMultilineTokensBuilder","vs/base/common/strings","vs/base/common/network","vs/base/common/resources","vs/base/common/async","vs/editor/common/languages/nullTokenize","vs/base/common/amd","vs/base/common/assert","vs/base/common/observableInternal/utils","vs/base/common/stream","vs/base/common/lazy","vs/base/common/symbols","vs/editor/common/model/fixedArray","vs/base/common/arrays","vs/editor/common/tokens/contiguousTokensEditing","vs/editor/common/tokens/contiguousMultilineTokens","vs/base/common/extpath","vs/base/common/path","vs/amdX","vs/base/common/event","vs/editor/common/languages","vs/editor/common/model/textModelTokens","vs/base/common/stopwatch","vs/workbench/services/textMate/browser/tokenizationSupport/textMateTokenizationSupport","vs/workbench/services/textMate/browser/tokenizationSupport/tokenizationSupportWithLineLimit","vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateWorkerTokenizer","vs/workbench/services/textMate/common/TMScopeRegistry","vs/workbench/services/textMate/common/TMGrammarFactory","vs/editor/common/core/position","vs/base/common/types","vs/base/common/cancellation","vs/editor/common/core/offsetRange","vs/editor/common/model/mirrorTextModel","vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateTokenizationWorker.worker"],V=function(H){for(var e=[],P=0,T=H.length;P<T;P++)e[P]=p[H[P]];return e};define(p[22],V([0,1]),function(H,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$U=e.$T=void 0,e.$T=!1;class P{static get(){const y=new Map,N=new Map,s=new Map,f=new Map;function t(h,i){h.has(i.detail)||h.set(i.detail,-i.timestamp)}function d(h,i){const n=h.get(i.detail);n&&(n>=0||h.set(i.detail,n+i.timestamp))}let $=[];typeof H=="function"&&typeof H.getStats=="function"&&($=H.getStats().slice(0).sort((h,i)=>h.timestamp-i.timestamp));for(const h of $)switch(h.type){case 10:t(y,h);break;case 11:case 12:d(y,h);break;case 21:t(N,h);break;case 22:d(N,h);break;case 33:t(s,h);break;case 34:d(s,h);break;case 31:t(f,h);break;case 32:d(f,h);break}let l=0;s.forEach(h=>l+=h);function o(h){const i=[];return h.forEach((n,r)=>i.push([r,n])),i}return{amdLoad:o(y),amdInvoke:o(N),nodeRequire:o(s),nodeEval:o(f),nodeRequireTotal:l}}static toMarkdownTable(y,N){let s="";const f=[];return y.forEach((t,d)=>{f[d]=t.length}),N.forEach(t=>{t.forEach((d,$)=>{typeof d>"u"&&(d=t[$]="-");const l=d.toString().length;f[$]=Math.max(l,f[$])})}),y.forEach((t,d)=>{s+=`| ${t+" ".repeat(f[d]-t.toString().length)} `}),s+=`|
-`,y.forEach((t,d)=>{s+=`| ${"-".repeat(f[d])} `}),s+=`|
-`,N.forEach(t=>{t.forEach((d,$)=>{typeof d<"u"&&(s+=`| ${d+" ".repeat(f[$]-d.toString().length)} `)}),s+=`|
-`}),s}}e.$U=P}),define(p[4],V([0,1]),function(H,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$vd=e.$ud=e.$td=void 0;let P;function T(n){P=n}e.$td=T;function y(){return P}e.$ud=y;class N{constructor(){this.a=0,this.d=new WeakMap}b(r){return s([f(h("|  ",this.a)),r])}c(r){return r.hadValue?r.didChange?[f(" "),d($(r.oldValue,70),{color:"red",strikeThrough:!0}),f(" "),d($(r.newValue,60),{color:"green"})]:[f(" (unchanged)")]:[f(" "),d($(r.newValue,60),{color:"green"}),f(" (initial)")]}handleObservableChanged(r,m){console.log(...this.b([t("observable value changed"),d(r.debugName,{color:"BlueViolet"}),...this.c(m)]))}formatChanges(r){if(r.size!==0)return d(" (changed deps: "+[...r].map(m=>m.debugName).join(", ")+")",{color:"gray"})}handleDerivedCreated(r){const m=r.handleChange;this.d.set(r,new Set),r.handleChange=(k,M)=>(this.d.get(r).add(k),m.apply(r,[k,M]))}handleDerivedRecomputed(r,m){const k=this.d.get(r);console.log(...this.b([t("derived recomputed"),d(r.debugName,{color:"BlueViolet"}),...this.c(m),this.formatChanges(k),{data:[{fn:r._computeFn}]}])),k.clear()}handleFromEventObservableTriggered(r,m){console.log(...this.b([t("observable from event triggered"),d(r.debugName,{color:"BlueViolet"}),...this.c(m),{data:[{fn:r._getValue}]}]))}handleAutorunCreated(r){const m=r.handleChange;this.d.set(r,new Set),r.handleChange=(k,M)=>(this.d.get(r).add(k),m.apply(r,[k,M]))}handleAutorunTriggered(r){const m=this.d.get(r);console.log(...this.b([t("autorun"),d(r.debugName,{color:"BlueViolet"}),this.formatChanges(m),{data:[{fn:r._runFn}]}])),m.clear(),this.a++}handleAutorunFinished(r){this.a--}handleBeginTransaction(r){let m=r.getDebugName();m===void 0&&(m=""),console.log(...this.b([t("transaction"),d(m,{color:"BlueViolet"}),{data:[{fn:r._fn}]}])),this.a++}handleEndTransaction(){this.a--}}e.$vd=N;function s(n){const r=new Array,m=[];let k="";function M(S){if("length"in S)for(const g of S)g&&M(g);else"text"in S?(k+=`%c${S.text}`,r.push(S.style),S.data&&m.push(...S.data)):"data"in S&&m.push(...S.data)}M(n);const L=[k,...r];return L.push(...m),L}function f(n){return d(n,{color:"black"})}function t(n){return d(i(`${n}: `,10),{color:"black",bold:!0})}function d(n,r={color:"black"}){function m(M){return Object.entries(M).reduce((L,[S,g])=>`${L}${S}:${g};`,"")}const k={color:r.color};return r.strikeThrough&&(k["text-decoration"]="line-through"),r.bold&&(k["font-weight"]="bold"),{text:n,style:m(k)}}function $(n,r){switch(typeof n){case"number":return""+n;case"string":return n.length+2<=r?`"${n}"`:`"${n.substr(0,r-7)}"+...`;case"boolean":return n?"true":"false";case"undefined":return"undefined";case"object":return n===null?"null":Array.isArray(n)?l(n,r):o(n,r);case"symbol":return n.toString();case"function":return`[[Function${n.name?" "+n.name:""}]]`;default:return""+n}}function l(n,r){let m="[ ",k=!0;for(const M of n){if(k||(m+=", "),m.length-5>r){m+="...";break}k=!1,m+=`${$(M,r-m.length)}`}return m+=" ]",m}function o(n,r){let m="{ ",k=!0;for(const[M,L]of Object.entries(n)){if(k||(m+=", "),m.length-5>r){m+="...";break}k=!1,m+=`${M}: ${$(L,r-m.length)}`}return m+=" }",m}function h(n,r){let m="";for(let k=1;k<=r;k++)m+=n;return m}function i(n,r){for(;n.length<r;)n+=" ";return n}}),define(p[5],V([0,1,4]),function(H,e,P){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$Rd=e.$Qd=e.$Pd=e.$Od=e.$Nd=e.$Md=e.$Ld=e.$Kd=e.$Jd=e.$Id=e.$Hd=e.$Gd=e.$Fd=e.$Ed=e.$Dd=e.$Cd=void 0;let T;function y(C){T=C}e.$Cd=y;let N;function s(C){N=C}e.$Dd=s;let f;function t(C){f=C}e.$Ed=t;class d{get TChange(){return null}reportChanges(){this.get()}read(b){return b?b.readObservable(this):this.get()}map(b,a){const I=a===void 0?void 0:b,z=a===void 0?b:a;return f({owner:I,debugName:()=>{const q=F(z);if(q!==void 0)return q;const K=/^\s*\(?\s*([a-zA-Z_$][a-zA-Z_$0-9]*)\s*\)?\s*=>\s*\1(?:\??)\.([a-zA-Z_$][a-zA-Z_$0-9]*)\s*$/.exec(z.toString());if(K)return`${this.debugName}.${K[2]}`;if(!I)return`${this.debugName} (mapped)`}},q=>z(this.read(q),q))}recomputeInitiallyAndOnChange(b,a){return b.add(T(this,a)),this}keepObserved(b){return b.add(N(this)),this}}e.$Fd=d;class $ extends d{constructor(){super(...arguments),this.c=new Set}addObserver(b){const a=this.c.size;this.c.add(b),a===0&&this.f()}removeObserver(b){this.c.delete(b)&&this.c.size===0&&this.g()}f(){}g(){}}e.$Gd=$;function l(C,b){const a=new r(C,b);try{C(a)}finally{a.finish()}}e.$Hd=l;let o;function h(C){if(o)C(o);else{const b=new r(C,void 0);o=b;try{C(b)}finally{b.finish(),o=void 0}}}e.$Id=h;async function i(C,b){const a=new r(C,b);try{await C(a)}finally{a.finish()}}e.$Jd=i;function n(C,b,a){C?b(C):l(b,a)}e.$Kd=n;class r{constructor(b,a){this._fn=b,this.b=a,this.a=[],(0,P.$ud)()?.handleBeginTransaction(this)}getDebugName(){return this.b?this.b():F(this._fn)}updateObserver(b,a){this.a.push({observer:b,observable:a}),b.beginUpdate(a)}finish(){const b=this.a;for(let a=0;a<b.length;a++){const{observer:I,observable:z}=b[a];I.endUpdate(z)}this.a=null,(0,P.$ud)()?.handleEndTransaction()}}e.$Ld=r;const m=new Map,k=new WeakMap;function M(C,b,a,I){const z=k.get(C);if(z)return z;const q=L(C,b,a,I);if(q){let W=m.get(q)??0;W++,m.set(q,W);const K=W===1?q:`${q}#${W}`;return k.set(C,K),K}}e.$Md=M;function L(C,b,a,I){const z=k.get(C);if(z)return z;const q=I?v(I)+".":"";let W;if(b!==void 0)if(typeof b=="function"){if(W=b(),W!==void 0)return q+W}else return q+b;if(a!==void 0&&(W=F(a),W!==void 0))return q+W;if(I!==void 0){for(const K in I)if(I[K]===C)return q+K}}const S=new Map,g=new WeakMap;function v(C){const b=g.get(C);if(b)return b;const a=O(C);let I=S.get(a)??0;I++,S.set(a,I);const z=I===1?a:`${a}#${I}`;return g.set(C,z),z}function O(C){const b=C.constructor;return b?b.name:"Object"}function F(C){const b=C.toString(),I=/\/\*\*\s*@description\s*([^*]*)\*\//.exec(b);return(I?I[1]:void 0)?.trim()}e.$Nd=F;function D(C,b){return typeof C=="string"?new c(void 0,C,b):new c(C,void 0,b)}e.$Od=D;class c extends ${get debugName(){return M(this,this.d,void 0,this.b)??"ObservableValue"}constructor(b,a,I){super(),this.b=b,this.d=a,this.a=I}get(){return this.a}set(b,a,I){if(this.a===b)return;let z;a||(a=z=new r(()=>{},()=>`Setting ${this.debugName}`));try{const q=this.a;this.e(b),(0,P.$ud)()?.handleObservableChanged(this,{oldValue:q,newValue:b,change:I,didChange:!0,hadValue:!0});for(const W of this.c)a.updateObserver(W,this),W.handleChange(this,I)}finally{z&&z.finish()}}toString(){return`${this.debugName}: ${this.a}`}e(b){this.a=b}}e.$Pd=c;function E(C,b){return typeof C=="string"?new j(void 0,C,b):new j(C,void 0,b)}e.$Qd=E;class j extends c{e(b){this.a!==b&&(this.a&&this.a.dispose(),this.a=b)}dispose(){this.a?.dispose()}}e.$Rd=j}),define(p[9],V([0,1,23,2,5,4]),function(H,e,P,T,y,N){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$ed=e.$dd=e.$cd=e.$bd=e.$ad=e.$_c=e.$$c=void 0;function s(i){return new o(void 0,i,void 0,void 0)}e.$$c=s;function f(i,n){return new o(i.debugName,n,void 0,void 0)}e.$_c=f;function t(i,n){return new o(i.debugName,n,i.createEmptyChangeSummary,i.handleChange)}e.$ad=t;function d(i,n){const r=new T.$Sc,m=t({debugName:i.debugName??(()=>(0,y.$Nd)(n)),createEmptyChangeSummary:i.createEmptyChangeSummary,handleChange:i.handleChange},(k,M)=>{r.clear(),n(k,M,r)});return(0,T.$Rc)(()=>{m.dispose(),r.dispose()})}e.$bd=d;function $(i){const n=new T.$Sc,r=f({debugName:()=>(0,y.$Nd)(i)||"(anonymous)"},m=>{n.clear(),i(m,n)});return(0,T.$Rc)(()=>{r.dispose(),n.dispose()})}e.$cd=$;var l;(function(i){i[i.dependenciesMightHaveChanged=1]="dependenciesMightHaveChanged",i[i.stale=2]="stale",i[i.upToDate=3]="upToDate"})(l||(l={}));class o{get debugName(){if(typeof this.h=="string")return this.h;if(typeof this.h=="function"){const r=this.h();if(r!==void 0)return r}const n=(0,y.$Nd)(this._runFn);return n!==void 0?n:"(anonymous)"}constructor(n,r,m,k){this.h=n,this._runFn=r,this.i=m,this.j=k,this.a=2,this.b=0,this.c=!1,this.e=new Set,this.f=new Set,this.g=this.i?.(),(0,N.$ud)()?.handleAutorunCreated(this),this.k(),(0,T.$Kc)(this)}dispose(){this.c=!0;for(const n of this.e)n.removeObserver(this);this.e.clear(),(0,T.$Lc)(this)}k(){if(this.a===3)return;const n=this.f;this.f=this.e,this.e=n,this.a=3;const r=this.c;try{if(!r){(0,N.$ud)()?.handleAutorunTriggered(this);const m=this.g;this.g=this.i?.(),this._runFn(this,m)}}finally{r||(0,N.$ud)()?.handleAutorunFinished(this);for(const m of this.f)m.removeObserver(this);this.f.clear()}}toString(){return`Autorun<${this.debugName}>`}beginUpdate(){this.a===3&&(this.a=1),this.b++}endUpdate(){if(this.b===1)do{if(this.a===1){this.a=3;for(const n of this.e)if(n.reportChanges(),this.a===2)break}this.k()}while(this.a!==3);this.b--,(0,P.$9c)(()=>this.b>=0)}handlePossibleChange(n){this.a===3&&this.e.has(n)&&!this.f.has(n)&&(this.a=1)}handleChange(n,r){this.e.has(n)&&!this.f.has(n)&&(!this.j||this.j({changedObservable:n,change:r,didChange:k=>k===n},this.g))&&(this.a=2)}readObservable(n){if(this.c)return n.get();n.addObserver(this);const r=n.get();return this.e.add(n),this.f.delete(n),r}}e.$dd=o,function(i){i.Observer=o}(s||(e.$$c=s={}));function h(i,n){let r;return f({debugName:()=>(0,y.$Nd)(n)},m=>{const k=i.read(m),M=r;r=k,n({lastValue:M,newValue:k})})}e.$ed=h}),define(p[10],V([0,1,23,2,5,4]),function(H,e,P,T,y,N){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$Bd=e.$Ad=e.$zd=e.$yd=e.$xd=e.$wd=void 0;const s=(i,n)=>i===n;function f(i,n){return n!==void 0?new h(i,void 0,n,void 0,void 0,void 0,s):new h(void 0,void 0,i,void 0,void 0,void 0,s)}e.$wd=f;function t(i,n){return new h(i.owner,i.debugName,n,void 0,void 0,i.onLastObserverRemoved,i.equalityComparer??s)}e.$xd=t;function d(i,n){return new h(i.owner,i.debugName,n,i.createEmptyChangeSummary,i.handleChange,void 0,i.equalityComparer??s)}e.$yd=d;function $(i,n){let r,m;n===void 0?(r=i,m=void 0):(m=i,r=n);const k=new T.$Sc;return new h(m,()=>(0,y.$Nd)(r)??"(anonymous)",M=>(k.clear(),r(M,k)),void 0,void 0,()=>k.dispose(),s)}e.$zd=$;function l(i,n){let r,m;n===void 0?(r=i,m=void 0):(m=i,r=n);const k=new T.$Sc;return new h(m,()=>(0,y.$Nd)(r)??"(anonymous)",M=>{k.clear();const L=r(M);return L&&k.add(L),L},void 0,void 0,()=>k.dispose(),s)}e.$Ad=l,(0,y.$Ed)(t);var o;(function(i){i[i.initial=0]="initial",i[i.dependenciesMightHaveChanged=1]="dependenciesMightHaveChanged",i[i.stale=2]="stale",i[i.upToDate=3]="upToDate"})(o||(o={}));class h extends y.$Gd{get debugName(){return(0,y.$Md)(this,this.p,this._computeFn,this.n)??"(anonymous)"}constructor(n,r,m,k,M,L=void 0,S){super(),this.n=n,this.p=r,this._computeFn=m,this.q=k,this.s=M,this.t=L,this.u=S,this.e=0,this.h=void 0,this.j=0,this.k=new Set,this.l=new Set,this.m=void 0,this.m=this.q?.(),(0,N.$ud)()?.handleDerivedCreated(this)}g(){this.e=0,this.h=void 0;for(const n of this.k)n.removeObserver(this);this.k.clear(),this.t?.()}get(){if(this.c.size===0){const n=this._computeFn(this,this.q?.());return this.g(),n}else{do{if(this.e===1){for(const n of this.k)if(n.reportChanges(),this.e===2)break}this.e===1&&(this.e=3),this.w()}while(this.e!==3);return this.h}}w(){if(this.e===3)return;const n=this.l;this.l=this.k,this.k=n;const r=this.e!==0,m=this.h;this.e=3;const k=this.m;this.m=this.q?.();try{this.h=this._computeFn(this,k)}finally{for(const L of this.l)L.removeObserver(this);this.l.clear()}const M=r&&!this.u(m,this.h);if((0,N.$ud)()?.handleDerivedRecomputed(this,{oldValue:m,newValue:this.h,change:void 0,didChange:M,hadValue:r}),M)for(const L of this.c)L.handleChange(this,void 0)}toString(){return`LazyDerived<${this.debugName}>`}beginUpdate(n){this.j++;const r=this.j===1;if(this.e===3&&(this.e=1,!r))for(const m of this.c)m.handlePossibleChange(this);if(r)for(const m of this.c)m.beginUpdate(this)}endUpdate(n){if(this.j--,this.j===0){const r=[...this.c];for(const m of r)m.endUpdate(this)}(0,P.$9c)(()=>this.j>=0)}handlePossibleChange(n){if(this.e===3&&this.k.has(n)&&!this.l.has(n)){this.e=1;for(const r of this.c)r.handlePossibleChange(this)}}handleChange(n,r){if(this.k.has(n)&&!this.l.has(n)){const m=this.s?this.s({changedObservable:n,change:r,didChange:M=>M===n},this.m):!0,k=this.e===3;if(m&&(this.e===1||k)&&(this.e=2,k))for(const M of this.c)M.handlePossibleChange(this)}}readObservable(n){n.addObserver(this);const r=n.get();return this.k.add(n),this.l.delete(n),r}addObserver(n){const r=!this.c.has(n)&&this.j>0;super.addObserver(n),r&&n.beginUpdate(this)}removeObserver(n){const r=this.c.has(n)&&this.j>0;super.removeObserver(n),r&&n.endUpdate(this)}}e.$Bd=h}),define(p[24],V([0,1,2,9,5,10,4]),function(H,e,P,T,y,N,s){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$sd=e.$rd=e.$qd=e.$pd=e.$od=e.$nd=e.$md=e.$ld=e.$kd=e.$jd=e.$id=e.$hd=e.$gd=e.$fd=void 0;function f(D){return new t(D)}e.$fd=f;class t extends y.$Fd{constructor(c){super(),this.a=c}get debugName(){return this.toString()}get(){return this.a}addObserver(c){}removeObserver(c){}toString(){return`Const: ${this.a}`}}function d(D){const c=(0,y.$Od)("promiseValue",{});return D.then(E=>{c.set({value:E},void 0)}),c}e.$gd=d;function $(D,c){return new Promise(E=>{let j=!1,C=!1;const b=D.map(I=>({isFinished:c(I),state:I})),a=(0,T.$$c)(I=>{const{isFinished:z,state:q}=b.read(I);z&&(j?a.dispose():C=!0,E(q))});j=!0,C&&a.dispose()})}e.$hd=$;function l(D,c){return new o(D,c)}e.$id=l;class o extends y.$Gd{constructor(c,E){super(),this.h=c,this._getValue=E,this.b=!1,this.l=j=>{const C=this._getValue(j),b=this.a,a=!this.b||b!==C;let I=!1;a&&(this.a=C,this.b&&(I=!0,(0,y.$Kd)(o.globalTransaction,z=>{(0,s.$ud)()?.handleFromEventObservableTriggered(this,{oldValue:b,newValue:C,change:void 0,didChange:a,hadValue:this.b});for(const q of this.c)z.updateObserver(q,this),q.handleChange(this,void 0)},()=>{const z=this.j();return"Event fired"+(z?`: ${z}`:"")})),this.b=!0),I||(0,s.$ud)()?.handleFromEventObservableTriggered(this,{oldValue:b,newValue:C,change:void 0,didChange:a,hadValue:this.b})}}j(){return(0,y.$Nd)(this._getValue)}get debugName(){const c=this.j();return"From Event"+(c?`: ${c}`:"")}f(){this.e=this.h(this.l)}g(){this.e.dispose(),this.e=void 0,this.b=!1,this.a=void 0}get(){return this.e?(this.b||this.l(void 0),this.a):this._getValue(void 0)}}e.$jd=o,function(D){D.Observer=o;function c(E,j){let C=!1;o.globalTransaction===void 0&&(o.globalTransaction=E,C=!0);try{j()}finally{C&&(o.globalTransaction=void 0)}}D.batchEventsGlobally=c}(l||(e.$id=l={}));function h(D,c){return new i(D,c)}e.$kd=h;class i extends y.$Gd{constructor(c,E){super(),this.debugName=c,this.b=E,this.h=()=>{(0,y.$Hd)(j=>{for(const C of this.c)j.updateObserver(C,this),C.handleChange(this,void 0)},()=>this.debugName)}}f(){this.a=this.b(this.h)}g(){this.a.dispose(),this.a=void 0}get(){}}function n(D){return typeof D=="string"?new r(D):new r(void 0,D)}e.$ld=n;class r extends y.$Gd{get debugName(){return(0,y.$Md)(this,this.a,void 0,this.b)??"Observable Signal"}constructor(c,E){super(),this.a=c,this.b=E}trigger(c,E){if(!c){(0,y.$Hd)(j=>{this.trigger(j,E)},()=>`Trigger signal ${this.debugName}`);return}for(const j of this.c)c.updateObserver(j,this),j.handleChange(this,E)}get(){}}function m(D,c,E){const j=(0,y.$Od)("debounced",void 0);let C;return E.add((0,T.$$c)(b=>{const a=D.read(b);C&&clearTimeout(C),C=setTimeout(()=>{(0,y.$Hd)(I=>{j.set(a,I)})},c)})),j}e.$md=m;function k(D,c,E){const j=(0,y.$Od)("triggeredRecently",!1);let C;return E.add(D(()=>{j.set(!0,void 0),C&&clearTimeout(C),C=setTimeout(()=>{j.set(!1,void 0)},c)})),j}e.$nd=k;function M(D){const c=new S(!1,void 0);return D.addObserver(c),(0,P.$Rc)(()=>{D.removeObserver(c)})}e.$od=M,(0,y.$Dd)(M);function L(D,c){const E=new S(!0,c);return D.addObserver(E),c?c(D.get()):D.reportChanges(),(0,P.$Rc)(()=>{D.removeObserver(E)})}e.$pd=L,(0,y.$Cd)(L);class S{constructor(c,E){this.b=c,this.c=E,this.a=0}beginUpdate(c){this.a++}endUpdate(c){this.a--,this.a===0&&this.b&&(this.c?this.c(c.get()):c.reportChanges())}handlePossibleChange(c){}handleChange(c,E){}}function g(D){let c;return(0,N.$wd)(j=>(c=D(j,c),c))}e.$qd=g;function v(D,c){let E;const j=(0,y.$Od)("derivedObservableWithWritableCache.counter",0),C=(0,N.$wd)(D,b=>(j.read(b),E=c(b,E),E));return Object.assign(C,{clearCache:b=>{E=void 0,j.set(j.get()+1,b)}})}e.$rd=v;function O(D,c,E,j){let C=new F(E,j);return(0,N.$xd)({debugName:()=>(0,y.$Md)(C,void 0,E,D),owner:D,onLastObserverRemoved:()=>{C.dispose(),C=new F(E)}},a=>(C.setItems(c.read(a)),C.getItems()))}e.$sd=O;class F{constructor(c,E){this.c=c,this.e=E,this.a=new Map,this.b=[]}dispose(){this.a.forEach(c=>c.store.dispose()),this.a.clear()}setItems(c){const E=[],j=new Set(this.a.keys());for(const C of c){const b=this.e?this.e(C):C;let a=this.a.get(b);if(a)j.delete(b);else{const I=new P.$Sc;a={out:this.c(C,I),store:I},this.a.set(b,a)}E.push(a.out)}for(const C of j)this.a.get(C).store.dispose(),this.a.delete(C);this.b=E}getItems(){return this.b}}}),define(p[11],V([0,1,5,10,9,24,4]),function(H,e,P,T,y,N,s){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.wasEventTriggeredRecently=e.waitForState=e.observableSignalFromEvent=e.observableSignal=e.observableFromPromise=e.observableFromEvent=e.recomputeInitiallyAndOnChange=e.keepObserved=e.derivedObservableWithWritableCache=e.derivedObservableWithCache=e.debouncedObservable=e.constObservable=e.autorunWithStoreHandleChanges=e.autorunOpts=e.autorunWithStore=e.autorunHandleChanges=e.autorunDelta=e.autorun=e.derivedWithStore=e.derivedHandleChanges=e.derivedOpts=e.derived=e.subtransaction=e.transaction=e.disposableObservableValue=e.observableValue=void 0,Object.defineProperty(e,"observableValue",{enumerable:!0,get:function(){return P.$Od}}),Object.defineProperty(e,"disposableObservableValue",{enumerable:!0,get:function(){return P.$Qd}}),Object.defineProperty(e,"transaction",{enumerable:!0,get:function(){return P.$Hd}}),Object.defineProperty(e,"subtransaction",{enumerable:!0,get:function(){return P.$Kd}}),Object.defineProperty(e,"derived",{enumerable:!0,get:function(){return T.$wd}}),Object.defineProperty(e,"derivedOpts",{enumerable:!0,get:function(){return T.$xd}}),Object.defineProperty(e,"derivedHandleChanges",{enumerable:!0,get:function(){return T.$yd}}),Object.defineProperty(e,"derivedWithStore",{enumerable:!0,get:function(){return T.$zd}}),Object.defineProperty(e,"autorun",{enumerable:!0,get:function(){return y.$$c}}),Object.defineProperty(e,"autorunDelta",{enumerable:!0,get:function(){return y.$ed}}),Object.defineProperty(e,"autorunHandleChanges",{enumerable:!0,get:function(){return y.$ad}}),Object.defineProperty(e,"autorunWithStore",{enumerable:!0,get:function(){return y.$cd}}),Object.defineProperty(e,"autorunOpts",{enumerable:!0,get:function(){return y.$_c}}),Object.defineProperty(e,"autorunWithStoreHandleChanges",{enumerable:!0,get:function(){return y.$bd}}),Object.defineProperty(e,"constObservable",{enumerable:!0,get:function(){return N.$fd}}),Object.defineProperty(e,"debouncedObservable",{enumerable:!0,get:function(){return N.$md}}),Object.defineProperty(e,"derivedObservableWithCache",{enumerable:!0,get:function(){return N.$qd}}),Object.defineProperty(e,"derivedObservableWithWritableCache",{enumerable:!0,get:function(){return N.$rd}}),Object.defineProperty(e,"keepObserved",{enumerable:!0,get:function(){return N.$od}}),Object.defineProperty(e,"recomputeInitiallyAndOnChange",{enumerable:!0,get:function(){return N.$pd}}),Object.defineProperty(e,"observableFromEvent",{enumerable:!0,get:function(){return N.$id}}),Object.defineProperty(e,"observableFromPromise",{enumerable:!0,get:function(){return N.$gd}}),Object.defineProperty(e,"observableSignal",{enumerable:!0,get:function(){return N.$ld}}),Object.defineProperty(e,"observableSignalFromEvent",{enumerable:!0,get:function(){return N.$kd}}),Object.defineProperty(e,"waitForState",{enumerable:!0,get:function(){return N.$hd}}),Object.defineProperty(e,"wasEventTriggeredRecently",{enumerable:!0,get:function(){return N.$nd}}),!1&&(0,s.$td)(new s.$vd)}),define(p[25],V([0,1,6,2]),function(H,e,P,T){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$je=e.$ie=e.$he=e.$ge=e.$fe=e.$ee=e.$de=e.$ce=e.$be=e.$ae=e.$_d=e.$$d=e.$0d=e.$9d=e.$8d=void 0;function y(L){const S=L;return S?typeof S.read=="function":!1}e.$8d=y;function N(L){const S=L;return S?[S.on,S.pause,S.resume,S.destroy].every(g=>typeof g=="function"):!1}e.$9d=N;function s(L){const S=L;return S?N(S.stream)&&Array.isArray(S.buffer)&&typeof S.ended=="boolean":!1}e.$0d=s;function f(L,S){return new t(L,S)}e.$$d=f;class t{constructor(S,g){this.e=S,this.f=g,this.a={flowing:!1,ended:!1,destroyed:!1},this.b={data:[],error:[]},this.c={data:[],error:[],end:[]},this.d=[]}pause(){this.a.destroyed||(this.a.flowing=!1)}resume(){this.a.destroyed||this.a.flowing||(this.a.flowing=!0,this.j(),this.k(),this.l())}write(S){if(!this.a.destroyed){if(this.a.flowing)this.g(S);else if(this.b.data.push(S),typeof this.f?.highWaterMark=="number"&&this.b.data.length>this.f.highWaterMark)return new Promise(g=>this.d.push(g))}}error(S){this.a.destroyed||(this.a.flowing?this.h(S):this.b.error.push(S))}end(S){this.a.destroyed||(typeof S<"u"&&this.write(S),this.a.flowing?(this.i(),this.destroy()):this.a.ended=!0)}g(S){this.c.data.slice(0).forEach(g=>g(S))}h(S){this.c.error.length===0?(0,P.$1)(S):this.c.error.slice(0).forEach(g=>g(S))}i(){this.c.end.slice(0).forEach(S=>S())}on(S,g){if(!this.a.destroyed)switch(S){case"data":this.c.data.push(g),this.resume();break;case"end":this.c.end.push(g),this.a.flowing&&this.l()&&this.destroy();break;case"error":this.c.error.push(g),this.a.flowing&&this.k();break}}removeListener(S,g){if(this.a.destroyed)return;let v;switch(S){case"data":v=this.c.data;break;case"end":v=this.c.end;break;case"error":v=this.c.error;break}if(v){const O=v.indexOf(g);O>=0&&v.splice(O,1)}}j(){if(this.b.data.length>0){const S=this.e(this.b.data);this.g(S),this.b.data.length=0;const g=[...this.d];this.d.length=0,g.forEach(v=>v())}}k(){if(this.c.error.length>0){for(const S of this.b.error)this.h(S);this.b.error.length=0}}l(){return this.a.ended?(this.i(),this.c.end.length>0):!1}destroy(){this.a.destroyed||(this.a.destroyed=!0,this.a.ended=!0,this.b.data.length=0,this.b.error.length=0,this.c.data.length=0,this.c.error.length=0,this.c.end.length=0,this.d.length=0)}}function d(L,S){const g=[];let v;for(;(v=L.read())!==null;)g.push(v);return S(g)}e.$_d=d;function $(L,S,g){const v=[];let O;for(;(O=L.read())!==null&&v.length<g;)v.push(O);return O===null&&v.length>0?S(v):{read:()=>{if(v.length>0)return v.shift();if(typeof O<"u"){const F=O;return O=void 0,F}return L.read()}}}e.$ae=$;function l(L,S){return new Promise((g,v)=>{const O=[];o(L,{onData:F=>{S&&O.push(F)},onError:F=>{S?v(F):g(void 0)},onEnd:()=>{g(S?S(O):void 0)}})})}e.$be=l;function o(L,S,g){L.on("error",v=>{g?.isCancellationRequested||S.onError(v)}),L.on("end",()=>{g?.isCancellationRequested||S.onEnd()}),L.on("data",v=>{g?.isCancellationRequested||S.onData(v)})}e.$ce=o;function h(L,S){return new Promise((g,v)=>{const O=new T.$Sc,F=[],D=j=>{if(F.push(j),F.length>S)return O.dispose(),L.pause(),g({stream:L,buffer:F,ended:!1})},c=j=>(O.dispose(),v(j)),E=()=>(O.dispose(),g({stream:L,buffer:F,ended:!0}));O.add((0,T.$Rc)(()=>L.removeListener("error",c))),L.on("error",c),O.add((0,T.$Rc)(()=>L.removeListener("end",E))),L.on("end",E),O.add((0,T.$Rc)(()=>L.removeListener("data",D))),L.on("data",D)})}e.$de=h;function i(L,S){const g=f(S);return g.end(L),g}e.$ee=i;function n(){const L=f(()=>{throw new Error("not supported")});return L.end(),L}e.$fe=n;function r(L){let S=!1;return{read:()=>S?null:(S=!0,L)}}e.$ge=r;function m(L,S,g){const v=f(g);return o(L,{onData:O=>v.write(S.data(O)),onError:O=>v.error(S.error?S.error(O):O),onEnd:()=>v.end()}),v}e.$he=m;function k(L,S,g){let v=!1;return{read:()=>{const O=S.read();return v?O:(v=!0,O!==null?g([L,O]):L)}}}e.$ie=k;function M(L,S,g){let v=!1;const O=f(g);return o(S,{onData:F=>v?O.write(F):(v=!0,O.write(g([L,F]))),onError:F=>O.error(F),onEnd:()=>{v||(v=!0,O.write(L)),O.end()}}),O}e.$je=M}),define(p[12],V([0,1,26,25]),function(H,e,P,T){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$Ee=e.$De=e.$Ce=e.$Be=e.$Ae=e.$ze=e.$ye=e.$xe=e.$we=e.$ve=e.$ue=e.$te=e.$se=e.$re=e.$qe=e.$pe=e.$oe=e.$ne=e.$me=e.$le=e.$ke=void 0;const y=typeof Buffer<"u",N=new P.$V(()=>new Uint8Array(256));let s,f;class t{static alloc(a){return y?new t(Buffer.allocUnsafe(a)):new t(new Uint8Array(a))}static wrap(a){return y&&!Buffer.isBuffer(a)&&(a=Buffer.from(a.buffer,a.byteOffset,a.byteLength)),new t(a)}static fromString(a,I){return!(I?.dontUseNodeBuffer||!1)&&y?new t(Buffer.from(a)):(s||(s=new TextEncoder),new t(s.encode(a)))}static fromByteArray(a){const I=t.alloc(a.length);for(let z=0,q=a.length;z<q;z++)I.buffer[z]=a[z];return I}static concat(a,I){if(typeof I>"u"){I=0;for(let W=0,K=a.length;W<K;W++)I+=a[W].byteLength}const z=t.alloc(I);let q=0;for(let W=0,K=a.length;W<K;W++){const G=a[W];z.set(G,q),q+=G.byteLength}return z}constructor(a){this.buffer=a,this.byteLength=this.buffer.byteLength}clone(){const a=t.alloc(this.byteLength);return a.set(this),a}toString(){return y?this.buffer.toString():(f||(f=new TextDecoder),f.decode(this.buffer))}slice(a,I){return new t(this.buffer.subarray(a,I))}set(a,I){if(a instanceof t)this.buffer.set(a.buffer,I);else if(a instanceof Uint8Array)this.buffer.set(a,I);else if(a instanceof ArrayBuffer)this.buffer.set(new Uint8Array(a),I);else if(ArrayBuffer.isView(a))this.buffer.set(new Uint8Array(a.buffer,a.byteOffset,a.byteLength),I);else throw new Error("Unknown argument 'array'")}readUInt32BE(a){return o(this.buffer,a)}writeUInt32BE(a,I){h(this.buffer,a,I)}readUInt32LE(a){return i(this.buffer,a)}writeUInt32LE(a,I){n(this.buffer,a,I)}readUInt8(a){return r(this.buffer,a)}writeUInt8(a,I){m(this.buffer,a,I)}indexOf(a,I=0){return d(this.buffer,a instanceof t?a.buffer:a,I)}}e.$ke=t;function d(b,a,I=0){const z=a.byteLength,q=b.byteLength;if(z===0)return 0;if(z===1)return b.indexOf(a[0]);if(z>q-I)return-1;const W=N.value;W.fill(a.length);for(let J=0;J<a.length;J++)W[a[J]]=a.length-J-1;let K=I+a.length-1,G=K,_=-1;for(;K<q;)if(b[K]===a[G]){if(G===0){_=K;break}K--,G--}else K+=Math.max(a.length-G,W[b[K]]),G=a.length-1;return _}e.$le=d;function $(b,a){return b[a+0]<<0>>>0|b[a+1]<<8>>>0}e.$me=$;function l(b,a,I){b[I+0]=a&255,a=a>>>8,b[I+1]=a&255}e.$ne=l;function o(b,a){return b[a]*2**24+b[a+1]*2**16+b[a+2]*2**8+b[a+3]}e.$oe=o;function h(b,a,I){b[I+3]=a,a=a>>>8,b[I+2]=a,a=a>>>8,b[I+1]=a,a=a>>>8,b[I]=a}e.$pe=h;function i(b,a){return b[a+0]<<0>>>0|b[a+1]<<8>>>0|b[a+2]<<16>>>0|b[a+3]<<24>>>0}e.$qe=i;function n(b,a,I){b[I+0]=a&255,a=a>>>8,b[I+1]=a&255,a=a>>>8,b[I+2]=a&255,a=a>>>8,b[I+3]=a&255}e.$re=n;function r(b,a){return b[a]}e.$se=r;function m(b,a,I){b[I]=a}e.$te=m;function k(b){return T.$_d(b,a=>t.concat(a))}e.$ue=k;function M(b){return T.$ge(b)}e.$ve=M;function L(b){return T.$be(b,a=>t.concat(a))}e.$we=L;async function S(b){return b.ended?t.concat(b.buffer):t.concat([...b.buffer,await L(b.stream)])}e.$xe=S;function g(b){return T.$ee(b,a=>t.concat(a))}e.$ye=g;function v(b){return T.$he(b,{data:a=>typeof a=="string"?t.fromString(a):t.wrap(a)},a=>t.concat(a))}e.$ze=v;function O(b){return T.$$d(a=>t.concat(a),b)}e.$Ae=O;function F(b,a){return T.$ie(b,a,I=>t.concat(I))}e.$Be=F;function D(b,a){return T.$je(b,a,I=>t.concat(I))}e.$Ce=D;function c(b){let a=0,I=0,z=0;const q=new Uint8Array(Math.floor(b.length/4*3)),W=G=>{switch(I){case 3:q[z++]=a|G,I=0;break;case 2:q[z++]=a|G>>>2,a=G<<6,I=3;break;case 1:q[z++]=a|G>>>4,a=G<<4,I=2;break;default:a=G<<2,I=1}};for(let G=0;G<b.length;G++){const _=b.charCodeAt(G);if(_>=65&&_<=90)W(_-65);else if(_>=97&&_<=122)W(_-97+26);else if(_>=48&&_<=57)W(_-48+52);else if(_===43||_===45)W(62);else if(_===47||_===95)W(63);else{if(_===61)break;throw new SyntaxError(`Unexpected base64 character ${b[G]}`)}}const K=z;for(;I>0;)W(0);return t.wrap(q).slice(0,K)}e.$De=c;const E="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",j="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";function C({buffer:b},a=!0,I=!1){const z=I?j:E;let q="";const W=b.byteLength%3;let K=0;for(;K<b.byteLength-W;K+=3){const G=b[K+0],_=b[K+1],J=b[K+2];q+=z[G>>>2],q+=z[(G<<4|_>>>4)&63],q+=z[(_<<2|J>>>6)&63],q+=z[J&63]}if(W===1){const G=b[K+0];q+=z[G>>>2],q+=z[G<<4&63],a&&(q+="==")}else if(W===2){const G=b[K+0],_=b[K+1];q+=z[G>>>2],q+=z[(G<<4|_>>>4)&63],q+=z[_<<2&63],a&&(q+="=")}return q}e.$Ee=C}),define(p[27],V([0,1]),function(H,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$Td=void 0,e.$Td=Symbol("MicrotaskDelay")}),define(p[13],V([0,1]),function(H,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$vt=e.StringEOL=void 0;var P;(function(y){y[y.Unknown=0]="Unknown",y[y.Invalid=3]="Invalid",y[y.LF=1]="LF",y[y.CRLF=2]="CRLF"})(P||(e.StringEOL=P={}));function T(y){let N=0,s=0,f=0,t=0;for(let d=0,$=y.length;d<$;d++){const l=y.charCodeAt(d);l===13?(N===0&&(s=d),N++,d+1<$&&y.charCodeAt(d+1)===10?(t|=2,d++):t|=3,f=d+1):l===10&&(t|=1,N===0&&(s=d),N++,f=d+1)}return N===0&&(s=y.length),[N,s,y.length-f,t]}e.$vt=T}),define(p[14],V([0,1]),function(H,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$tt=e.MetadataConsts=e.StandardTokenType=e.ColorId=e.FontStyle=e.LanguageId=void 0;var P;(function(t){t[t.Null=0]="Null",t[t.PlainText=1]="PlainText"})(P||(e.LanguageId=P={}));var T;(function(t){t[t.NotSet=-1]="NotSet",t[t.None=0]="None",t[t.Italic=1]="Italic",t[t.Bold=2]="Bold",t[t.Underline=4]="Underline",t[t.Strikethrough=8]="Strikethrough"})(T||(e.FontStyle=T={}));var y;(function(t){t[t.None=0]="None",t[t.DefaultForeground=1]="DefaultForeground",t[t.DefaultBackground=2]="DefaultBackground"})(y||(e.ColorId=y={}));var N;(function(t){t[t.Other=0]="Other",t[t.Comment=1]="Comment",t[t.String=2]="String",t[t.RegEx=3]="RegEx"})(N||(e.StandardTokenType=N={}));var s;(function(t){t[t.LANGUAGEID_MASK=255]="LANGUAGEID_MASK",t[t.TOKEN_TYPE_MASK=768]="TOKEN_TYPE_MASK",t[t.BALANCED_BRACKETS_MASK=1024]="BALANCED_BRACKETS_MASK",t[t.FONT_STYLE_MASK=30720]="FONT_STYLE_MASK",t[t.FOREGROUND_MASK=16744448]="FOREGROUND_MASK",t[t.BACKGROUND_MASK=4278190080]="BACKGROUND_MASK",t[t.ITALIC_MASK=2048]="ITALIC_MASK",t[t.BOLD_MASK=4096]="BOLD_MASK",t[t.UNDERLINE_MASK=8192]="UNDERLINE_MASK",t[t.STRIKETHROUGH_MASK=16384]="STRIKETHROUGH_MASK",t[t.SEMANTIC_USE_ITALIC=1]="SEMANTIC_USE_ITALIC",t[t.SEMANTIC_USE_BOLD=2]="SEMANTIC_USE_BOLD",t[t.SEMANTIC_USE_UNDERLINE=4]="SEMANTIC_USE_UNDERLINE",t[t.SEMANTIC_USE_STRIKETHROUGH=8]="SEMANTIC_USE_STRIKETHROUGH",t[t.SEMANTIC_USE_FOREGROUND=16]="SEMANTIC_USE_FOREGROUND",t[t.SEMANTIC_USE_BACKGROUND=32]="SEMANTIC_USE_BACKGROUND",t[t.LANGUAGEID_OFFSET=0]="LANGUAGEID_OFFSET",t[t.TOKEN_TYPE_OFFSET=8]="TOKEN_TYPE_OFFSET",t[t.BALANCED_BRACKETS_OFFSET=10]="BALANCED_BRACKETS_OFFSET",t[t.FONT_STYLE_OFFSET=11]="FONT_STYLE_OFFSET",t[t.FOREGROUND_OFFSET=15]="FOREGROUND_OFFSET",t[t.BACKGROUND_OFFSET=24]="BACKGROUND_OFFSET"})(s||(e.MetadataConsts=s={}));class f{static getLanguageId(d){return(d&255)>>>0}static getTokenType(d){return(d&768)>>>8}static containsBalancedBrackets(d){return(d&1024)!==0}static getFontStyle(d){return(d&30720)>>>11}static getForeground(d){return(d&16744448)>>>15}static getBackground(d){return(d&4278190080)>>>24}static getClassNameFromMetadata(d){let l="mtk"+this.getForeground(d);const o=this.getFontStyle(d);return o&1&&(l+=" mtki"),o&2&&(l+=" mtkb"),o&4&&(l+=" mtku"),o&8&&(l+=" mtks"),l}static getInlineStyleFromMetadata(d,$){const l=this.getForeground(d),o=this.getFontStyle(d);let h=`color: ${$[l]};`;o&1&&(h+="font-style: italic;"),o&2&&(h+="font-weight: bold;");let i="";return o&4&&(i+=" underline"),o&8&&(i+=" line-through"),i&&(h+=`text-decoration:${i};`),h}static getPresentationFromMetadata(d){const $=this.getForeground(d),l=this.getFontStyle(d);return{foreground:$,italic:!!(l&1),bold:!!(l&2),underline:!!(l&4),strikethrough:!!(l&8)}}}e.$tt=f}),define(p[28],V([0,1,29]),function(H,e,P){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$hC=void 0;class T{constructor(s){this.b=s,this.a=[]}get(s){return s<this.a.length?this.a[s]:this.b}set(s,f){for(;s>=this.a.length;)this.a[this.a.length]=this.b;this.a[s]=f}replace(s,f,t){if(s>=this.a.length)return;if(f===0){this.insert(s,t);return}else if(t===0){this.delete(s,f);return}const d=this.a.slice(0,s),$=this.a.slice(s+f),l=y(t,this.b);this.a=d.concat(l,$)}delete(s,f){f===0||s>=this.a.length||this.a.splice(s,f)}insert(s,f){if(f===0||s>=this.a.length)return;const t=[];for(let d=0;d<f;d++)t[d]=this.b;this.a=(0,P.$Wb)(this.a,s,t)}}e.$hC=T;function y(N,s){const f=[];for(let t=0;t<N;t++)f[t]=s;return f}}),define(p[7],V([0,1,14]),function(H,e,P){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$wt=void 0;class T{static{this.defaultTokenMetadata=(0<<11|1<<15|2<<24)>>>0}static createEmpty(s,f){const t=T.defaultTokenMetadata,d=new Uint32Array(2);return d[0]=s.length,d[1]=t,new T(d,s,f)}constructor(s,f,t){this._lineTokensBrand=void 0,this.a=s,this.b=this.a.length>>>1,this.c=f,this.d=t}equals(s){return s instanceof T?this.slicedEquals(s,0,this.b):!1}slicedEquals(s,f,t){if(this.c!==s.c||this.b!==s.b)return!1;const d=f<<1,$=d+(t<<1);for(let l=d;l<$;l++)if(this.a[l]!==s.a[l])return!1;return!0}getLineContent(){return this.c}getCount(){return this.b}getStartOffset(s){return s>0?this.a[s-1<<1]:0}getMetadata(s){return this.a[(s<<1)+1]}getLanguageId(s){const f=this.a[(s<<1)+1],t=P.$tt.getLanguageId(f);return this.d.decodeLanguageId(t)}getStandardTokenType(s){const f=this.a[(s<<1)+1];return P.$tt.getTokenType(f)}getForeground(s){const f=this.a[(s<<1)+1];return P.$tt.getForeground(f)}getClassName(s){const f=this.a[(s<<1)+1];return P.$tt.getClassNameFromMetadata(f)}getInlineStyle(s,f){const t=this.a[(s<<1)+1];return P.$tt.getInlineStyleFromMetadata(t,f)}getPresentation(s){const f=this.a[(s<<1)+1];return P.$tt.getPresentationFromMetadata(f)}getEndOffset(s){return this.a[s<<1]}findTokenIndexAtOffset(s){return T.findIndexInTokensArray(this.a,s)}inflate(){return this}sliceAndInflate(s,f,t){return new y(this,s,f,t)}static convertToEndOffset(s,f){const d=(s.length>>>1)-1;for(let $=0;$<d;$++)s[$<<1]=s[$+1<<1];s[d<<1]=f}static findIndexInTokensArray(s,f){if(s.length<=2)return 0;let t=0,d=(s.length>>>1)-1;for(;t<d;){const $=t+Math.floor((d-t)/2),l=s[$<<1];if(l===f)return $+1;l<f?t=$+1:l>f&&(d=$)}return t}withInserted(s){if(s.length===0)return this;let f=0,t=0,d="";const $=new Array;let l=0;for(;;){const o=f<this.b?this.a[f<<1]:-1,h=t<s.length?s[t]:null;if(o!==-1&&(h===null||o<=h.offset)){d+=this.c.substring(l,o);const i=this.a[(f<<1)+1];$.push(d.length,i),f++,l=o}else if(h){if(h.offset>l){d+=this.c.substring(l,h.offset);const i=this.a[(f<<1)+1];$.push(d.length,i),l=h.offset}d+=h.text,$.push(d.length,h.tokenMetadata),t++}else break}return new T(new Uint32Array($),d,this.d)}}e.$wt=T;class y{constructor(s,f,t,d){this.a=s,this.b=f,this.c=t,this.d=d,this.e=s.findTokenIndexAtOffset(f),this.f=0;for(let $=this.e,l=s.getCount();$<l&&!(s.getStartOffset($)>=t);$++)this.f++}getMetadata(s){return this.a.getMetadata(this.e+s)}getLanguageId(s){return this.a.getLanguageId(this.e+s)}getLineContent(){return this.a.getLineContent().substring(this.b,this.c)}equals(s){return s instanceof y?this.b===s.b&&this.c===s.c&&this.d===s.d&&this.a.slicedEquals(s.a,this.e,this.f):!1}getCount(){return this.f}getForeground(s){return this.a.getForeground(this.e+s)}getEndOffset(s){const f=this.a.getEndOffset(this.e+s);return Math.min(this.c,f)-this.b+this.d}getClassName(s){return this.a.getClassName(this.e+s)}getInlineStyle(s,f){return this.a.getInlineStyle(this.e+s,f)}getPresentation(s){return this.a.getPresentation(this.e+s)}findTokenIndexAtOffset(s){return this.a.findTokenIndexAtOffset(s+this.b-this.d)-this.e}}}),define(p[30],V([0,1,7]),function(H,e,P){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$zt=e.$yt=e.$xt=void 0,e.$xt=new Uint32Array(0).buffer;class T{static deleteBeginning(s,f){return s===null||s===e.$xt?s:T.delete(s,0,f)}static deleteEnding(s,f){if(s===null||s===e.$xt)return s;const t=y(s),d=t[t.length-2];return T.delete(s,f,d)}static delete(s,f,t){if(s===null||s===e.$xt||f===t)return s;const d=y(s),$=d.length>>>1;if(f===0&&d[d.length-2]===t)return e.$xt;const l=P.$wt.findIndexInTokensArray(d,f),o=l>0?d[l-1<<1]:0,h=d[l<<1];if(t<h){const k=t-f;for(let M=l;M<$;M++)d[M<<1]-=k;return s}let i,n;o!==f?(d[l<<1]=f,i=l+1<<1,n=f):(i=l<<1,n=o);const r=t-f;for(let k=l+1;k<$;k++){const M=d[k<<1]-r;M>n&&(d[i++]=M,d[i++]=d[(k<<1)+1],n=M)}if(i===d.length)return s;const m=new Uint32Array(i);return m.set(d.subarray(0,i),0),m.buffer}static append(s,f){if(f===e.$xt)return s;if(s===e.$xt)return f;if(s===null)return s;if(f===null)return null;const t=y(s),d=y(f),$=d.length>>>1,l=new Uint32Array(t.length+d.length);l.set(t,0);let o=t.length;const h=t[t.length-2];for(let i=0;i<$;i++)l[o++]=d[i<<1]+h,l[o++]=d[(i<<1)+1];return l.buffer}static insert(s,f,t){if(s===null||s===e.$xt)return s;const d=y(s),$=d.length>>>1;let l=P.$wt.findIndexInTokensArray(d,f);l>0&&d[l-1<<1]===f&&l--;for(let o=l;o<$;o++)d[o<<1]+=t;return s}}e.$yt=T;function y(N){return N instanceof Uint32Array?N:new Uint32Array(N)}e.$zt=y}),define(p[31],V([0,1,29,12,44,13,30,15]),function(H,e,P,T,y,N,s,f){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$At=void 0;class t{static deserialize($,l,o){const h=new Uint32Array($.buffer),i=(0,T.$oe)($,l);l+=4;const n=(0,T.$oe)($,l);l+=4;const r=[];for(let m=0;m<n;m++){const k=(0,T.$oe)($,l);l+=4,r.push(h.subarray(l/4,l/4+k/4)),l+=k}return o.push(new t(i,r)),l}get startLineNumber(){return this.a}get endLineNumber(){return this.a+this.b.length-1}constructor($,l){this.a=$,this.b=l}getLineRange(){return new f.$5s(this.a,this.a+this.b.length)}getLineTokens($){return this.b[$-this.a]}appendLineTokens($){this.b.push($)}serializeSize(){let $=0;$+=4,$+=4;for(let l=0;l<this.b.length;l++){const o=this.b[l];if(!(o instanceof Uint32Array))throw new Error("Not supported!");$+=4,$+=o.byteLength}return $}serialize($,l){(0,T.$pe)($,this.a,l),l+=4,(0,T.$pe)($,this.b.length,l),l+=4;for(let o=0;o<this.b.length;o++){const h=this.b[o];if(!(h instanceof Uint32Array))throw new Error("Not supported!");(0,T.$pe)($,h.byteLength,l),l+=4,$.set(new Uint8Array(h.buffer),l),l+=h.byteLength}return l}applyEdit($,l){const[o,h]=(0,N.$vt)(l);this.c($),this.d(new y.$Us($.startLineNumber,$.startColumn),o,h)}c($){if($.startLineNumber===$.endLineNumber&&$.startColumn===$.endColumn)return;const l=$.startLineNumber-this.a,o=$.endLineNumber-this.a;if(o<0){const h=o-l;this.a-=h;return}if(!(l>=this.b.length)){if(l<0&&o>=this.b.length){this.a=0,this.b=[];return}if(l===o){this.b[l]=s.$yt.delete(this.b[l],$.startColumn-1,$.endColumn-1);return}if(l>=0)if(this.b[l]=s.$yt.deleteEnding(this.b[l],$.startColumn-1),o<this.b.length){const h=s.$yt.deleteBeginning(this.b[o],$.endColumn-1);this.b[l]=s.$yt.append(this.b[l],h),this.b.splice(l+1,o-l)}else this.b[l]=s.$yt.append(this.b[l],null),this.b=this.b.slice(0,l+1);else{const h=-l;this.a-=h,this.b[o]=s.$yt.deleteBeginning(this.b[o],$.endColumn-1),this.b=this.b.slice(o)}}}d($,l,o){if(l===0&&o===0)return;const h=$.lineNumber-this.a;if(h<0){this.a+=l;return}if(!(h>=this.b.length)){if(l===0){this.b[h]=s.$yt.insert(this.b[h],$.column-1,o);return}this.b[h]=s.$yt.deleteEnding(this.b[h],$.column-1),this.b[h]=s.$yt.insert(this.b[h],$.column-1,o),this.e($.lineNumber,l)}}e($,l){if(l===0)return;const o=[];for(let h=0;h<l;h++)o[h]=null;this.b=P.$Wb(this.b,$,o)}}e.$At=t}),define(p[16],V([0,1,12,31]),function(H,e,P,T){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$iC=void 0;class y{static deserialize(s){let f=0;const t=(0,P.$oe)(s,f);f+=4;const d=[];for(let $=0;$<t;$++)f=T.$At.deserialize(s,f,d);return d}constructor(){this.a=[]}add(s,f){if(this.a.length>0){const t=this.a[this.a.length-1];if(t.endLineNumber+1===s){t.appendLineTokens(f);return}}this.a.push(new T.$At(s,[f]))}finalize(){return this.a}serialize(){const s=this.b(),f=new Uint8Array(s);return this.c(f),f}b(){let s=0;s+=4;for(let f=0;f<this.a.length;f++)s+=this.a[f].serializeSize();return s}c(s){let f=0;(0,P.$pe)(s,this.a.length,f),f+=4;for(let t=0;t<this.a.length;t++)f=this.a[t].serialize(s,f)}}e.$iC=y}),define(p[32],V([0,1,33,3,17,45]),function(H,e,P,T,y,N){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$eg=e.$dg=e.$cg=e.$bg=e.$ag=e.$_f=e.$$f=e.$0f=e.$9f=e.$8f=e.$7f=e.$6f=e.$5f=e.$4f=e.$3f=e.$2f=void 0;function s(c){return c===47||c===92}e.$2f=s;function f(c){return c.replace(/[\\/]/g,P.$gc.sep)}e.$3f=f;function t(c){return c.indexOf("/")===-1&&(c=f(c)),/^[a-zA-Z]:(\/|$)/.test(c)&&(c="/"+c),c}e.$4f=t;function d(c,E=P.$gc.sep){if(!c)return"";const j=c.length,C=c.charCodeAt(0);if(s(C)){if(s(c.charCodeAt(1))&&!s(c.charCodeAt(2))){let a=3;const I=a;for(;a<j&&!s(c.charCodeAt(a));a++);if(I!==a&&!s(c.charCodeAt(a+1))){for(a+=1;a<j;a++)if(s(c.charCodeAt(a)))return c.slice(0,a+1).replace(/[\\/]/g,E)}}return E}else if(m(C)&&c.charCodeAt(1)===58)return s(c.charCodeAt(2))?c.slice(0,2)+E:c.slice(0,2);let b=c.indexOf("://");if(b!==-1){for(b+=3;b<j;b++)if(s(c.charCodeAt(b)))return c.slice(0,b+1)}return""}e.$5f=d;function $(c){if(!T.$i||!c||c.length<5)return!1;let E=c.charCodeAt(0);if(E!==92||(E=c.charCodeAt(1),E!==92))return!1;let j=2;const C=j;for(;j<c.length&&(E=c.charCodeAt(j),E!==92);j++);return!(C===j||(E=c.charCodeAt(j+1),isNaN(E)||E===92))}e.$6f=$;const l=/[\\/:\*\?"<>\|]/g,o=/[\\/]/g,h=/^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])(\.(.*?))?$/i;function i(c,E=T.$i){const j=E?l:o;return!(!c||c.length===0||/^\s+$/.test(c)||(j.lastIndex=0,j.test(c))||E&&h.test(c)||c==="."||c===".."||E&&c[c.length-1]==="."||E&&c.length!==c.trim().length||c.length>255)}e.$7f=i;function n(c,E,j){const C=c===E;return!j||C?C:!c||!E?!1:(0,y.$af)(c,E)}e.$8f=n;function r(c,E,j,C=P.sep){if(c===E)return!0;if(!c||!E||E.length>c.length)return!1;if(j){if(!(0,y.$bf)(c,E))return!1;if(E.length===c.length)return!0;let a=E.length;return E.charAt(E.length-1)===C&&a--,c.charAt(a)===C}return E.charAt(E.length-1)!==C&&(E+=C),c.indexOf(E)===0}e.$9f=r;function m(c){return c>=65&&c<=90||c>=97&&c<=122}e.$0f=m;function k(c,E){return T.$i&&c.endsWith(":")&&(c+=P.sep),(0,P.$ic)(c)||(c=(0,P.$jc)(E,c)),c=(0,P.$hc)(c),T.$i?(c=(0,y.$Ve)(c,P.sep),c.endsWith(":")&&(c+=P.sep)):(c=(0,y.$Ve)(c,P.sep),c||(c=P.sep)),c}e.$$f=k;function M(c){const E=(0,P.$hc)(c);return T.$i?c.length>3?!1:L(E)&&(c.length===2||E.charCodeAt(2)===92):E===P.$gc.sep}e.$_f=M;function L(c,E=T.$i){return E?m(c.charCodeAt(0))&&c.charCodeAt(1)===58:!1}e.$ag=L;function S(c,E=T.$i){return L(c,E)?c[0]:void 0}e.$bg=S;function g(c,E,j){return E.length>c.length?-1:c===E?0:(j&&(c=c.toLowerCase(),E=E.toLowerCase()),c.indexOf(E))}e.$cg=g;function v(c){const E=c.split(":");let j,C,b;for(const a of E){const I=Number(a);(0,N.$Nf)(I)?C===void 0?C=I:b===void 0&&(b=I):j=j?[j,a].join(":"):a}if(!j)throw new Error("Format for `--goto` should be: `FILE:LINE(:COLUMN)`");return{path:j,line:C!==void 0?C:void 0,column:b!==void 0?b:C!==void 0?1:void 0}}e.$dg=v;const O="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",F="BDEFGHIJKMOQRSTUVWXYZbdefghijkmoqrstuvwxyz0123456789";function D(c,E,j=8){let C="";for(let a=0;a<j;a++){let I;a===0&&T.$i&&!E&&(j===3||j===4)?I=F:I=O,C+=I.charAt(Math.floor(Math.random()*I.length))}let b;return E?b=`${E}-${C}`:b=C,c?(0,P.$jc)(c,b):b}e.$eg=D}),define(p[18],V([0,1,6,3,17,8]),function(H,e,P,T,y,N){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.COI=e.$pg=e.$og=e.$ng=e.$mg=e.$lg=e.$kg=e.$jg=e.$ig=e.$hg=e.$gg=e.$fg=e.Schemas=void 0;var s;(function(o){o.inMemory="inmemory",o.vscode="vscode",o.internal="private",o.walkThrough="walkThrough",o.walkThroughSnippet="walkThroughSnippet",o.http="http",o.https="https",o.file="file",o.mailto="mailto",o.untitled="untitled",o.data="data",o.command="command",o.vscodeRemote="vscode-remote",o.vscodeRemoteResource="vscode-remote-resource",o.vscodeManagedRemoteResource="vscode-managed-remote-resource",o.vscodeUserData="vscode-userdata",o.vscodeCustomEditor="vscode-custom-editor",o.vscodeNotebookCell="vscode-notebook-cell",o.vscodeNotebookCellMetadata="vscode-notebook-cell-metadata",o.vscodeNotebookCellOutput="vscode-notebook-cell-output",o.vscodeInteractiveInput="vscode-interactive-input",o.vscodeSettings="vscode-settings",o.vscodeWorkspaceTrust="vscode-workspace-trust",o.vscodeTerminal="vscode-terminal",o.vscodeChatSesssion="vscode-chat-editor",o.webviewPanel="webview-panel",o.vscodeWebview="vscode-webview",o.extension="extension",o.vscodeFileResource="vscode-file",o.tmp="tmp",o.vsls="vsls",o.vscodeSourceControl="vscode-scm"})(s||(e.Schemas=s={}));function f(o,h){return N.URI.isUri(o)?(0,y.$af)(o.scheme,h):(0,y.$bf)(o,h+":")}e.$fg=f;function t(o,...h){return h.some(i=>f(o,i))}e.$gg=t,e.$hg="vscode-tkn",e.$ig="tkn";class d{constructor(){this.a=Object.create(null),this.b=Object.create(null),this.c=Object.create(null),this.d="http",this.e=null,this.f=`/${s.vscodeRemoteResource}`}setPreferredWebSchema(h){this.d=h}setDelegate(h){this.e=h}setServerRootPath(h){this.f=`${h}/${s.vscodeRemoteResource}`}set(h,i,n){this.a[h]=i,this.b[h]=n}setConnectionToken(h,i){this.c[h]=i}getPreferredWebSchema(){return this.d}rewrite(h){if(this.e)try{return this.e(h)}catch(M){return P.$1(M),h}const i=h.authority;let n=this.a[i];n&&n.indexOf(":")!==-1&&n.indexOf("[")===-1&&(n=`[${n}]`);const r=this.b[i],m=this.c[i];let k=`path=${encodeURIComponent(h.path)}`;return typeof m=="string"&&(k+=`&${e.$ig}=${encodeURIComponent(m)}`),N.URI.from({scheme:T.$o?this.d:s.vscodeRemoteResource,authority:`${n}:${r}`,path:this.f,query:k})}}e.$jg=new d,e.$kg="vs/../../extensions",e.$lg="vs/../../node_modules",e.$mg="vs/../../node_modules.asar",e.$ng="vs/../../node_modules.asar.unpacked",e.$og="vscode-app";class ${static{this.a=e.$og}asBrowserUri(h){const i=this.b(h,H);return this.uriToBrowserUri(i)}uriToBrowserUri(h){return h.scheme===s.vscodeRemote?e.$jg.rewrite(h):h.scheme===s.file&&(T.$m||T.$q===`${s.vscodeFileResource}://${$.a}`)?h.with({scheme:s.vscodeFileResource,authority:h.authority||$.a,query:null,fragment:null}):h}asFileUri(h){const i=this.b(h,H);return this.uriToFileUri(i)}uriToFileUri(h){return h.scheme===s.vscodeFileResource?h.with({scheme:s.file,authority:h.authority!==$.a?h.authority:null,query:null,fragment:null}):h}b(h,i){return N.URI.isUri(h)?h:N.URI.parse(i.toUrl(h))}}e.$pg=new $;var l;(function(o){const h=new Map([["1",{"Cross-Origin-Opener-Policy":"same-origin"}],["2",{"Cross-Origin-Embedder-Policy":"require-corp"}],["3",{"Cross-Origin-Opener-Policy":"same-origin","Cross-Origin-Embedder-Policy":"require-corp"}]]);o.CoopAndCoep=Object.freeze(h.get("3"));const i="vscode-coi";function n(m){let k;typeof m=="string"?k=new URL(m).searchParams:m instanceof URL?k=m.searchParams:N.URI.isUri(m)&&(k=new URL(m.toString(!0)).searchParams);const M=k?.get(i);if(M)return h.get(M)}o.getHeadersFromQuery=n;function r(m,k,M){if(!globalThis.crossOriginIsolated)return;const L=k&&M?"3":M?"2":"1";m instanceof URLSearchParams?m.set(i,L):m[i]=L}o.addSearchParam=r})(l||(e.COI=l={}))}),define(p[34],V([0,1,22,18,3,8]),function(H,e,P,T,y,N){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$iD=void 0;class s{constructor(o,h,i){this.id=o,this.dependencies=h,this.callback=i}}class f{static{this.INSTANCE=new f}constructor(){this.a=typeof self=="object"&&self.constructor&&self.constructor.name==="DedicatedWorkerGlobalScope",this.b=typeof document=="object",this.c=[],this.d=!1}g(){this.d||(this.d=!0,globalThis.define=(o,h,i)=>{typeof o!="string"&&(i=h,h=o,o=null),(typeof h!="object"||!Array.isArray(h))&&(i=h,h=null),this.c.push(new s(o,h,i))},globalThis.define.amd=!0,this.b?this.f=window.trustedTypes?.createPolicy("amdLoader",{createScriptURL(o){if(o.startsWith(window.location.origin)||o.startsWith("vscode-file://vscode-app"))return o;throw new Error(`[trusted_script_src] Invalid script url: ${o}`)}}):this.a&&(this.f=globalThis.trustedTypes?.createPolicy("amdLoader",{createScriptURL(o){return o}})))}async load(o){this.g();const h=await(this.a?this.i(o):this.b?this.h(o):this.j(o));if(!h)throw new Error(`Did not receive a define call from script ${o}`);if(Array.isArray(h.dependencies)&&h.dependencies.length>0)throw new Error(`Cannot resolve dependencies for script ${o}. The dependencies are: ${h.dependencies.join(", ")}`);return typeof h.callback=="function"?h.callback([]):h.callback}h(o){return new Promise((h,i)=>{const n=document.createElement("script");n.setAttribute("async","async"),n.setAttribute("type","text/javascript");const r=()=>{n.removeEventListener("load",m),n.removeEventListener("error",k)},m=M=>{r(),h(this.c.pop())},k=M=>{r(),i(M)};n.addEventListener("load",m),n.addEventListener("error",k),this.f&&(o=this.f.createScriptURL(o)),n.setAttribute("src",o),window.document.getElementsByTagName("head")[0].appendChild(n)})}i(o){return new Promise((h,i)=>{try{this.f&&(o=this.f.createScriptURL(o)),importScripts(o),h(this.c.pop())}catch(n){i(n)}})}async j(o){try{const h=globalThis._VSCODE_NODE_MODULES.fs,i=globalThis._VSCODE_NODE_MODULES.vm,n=globalThis._VSCODE_NODE_MODULES.module,r=N.URI.parse(o).fsPath,m=h.readFileSync(r).toString(),k=n.wrap(m.replace(/^#!.*/,""));return new i.Script(k).runInThisContext().apply(),this.c.pop()}catch(h){throw h}}}const t=new Map;let d={};typeof globalThis.require=="object"&&(d=globalThis.require.paths??{});async function $(l,o,h){if(P.$T){h===void 0&&(h=!!(globalThis._VSCODE_PRODUCT_JSON??globalThis.vscode?.context?.configuration()?.product)?.commit),d[l]&&(l=d[l]);const i=`${l}/${o}`;if(t.has(i))return t.get(i);let n;if(/^\w[\w\d+.-]*:\/\//.test(i))n=i;else{const M=`${h&&!y.$o?T.$mg:T.$lg}/${i}`;n=T.$pg.asBrowserUri(M).toString(!0)}const r=f.INSTANCE.load(n);return t.set(i,r),r}else return await new Promise((i,n)=>{H([l],i,n)})}e.$iD=$}),define(p[19],V([0,1,32,18,33,3,17,8]),function(H,e,P,T,y,N,s,f){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$Sg=e.DataUri=e.$Rg=e.$Qg=e.$Pg=e.$Og=e.$Ng=e.$Mg=e.$Lg=e.$Kg=e.$Jg=e.$Ig=e.$Hg=e.$Gg=e.$Fg=e.$Eg=e.$Dg=e.$Cg=e.$Bg=e.$Ag=e.$zg=e.$yg=e.$xg=e.$wg=void 0;function t(h){return(0,f.$wc)(h,!0)}e.$wg=t;class d{constructor(i){this.a=i}compare(i,n,r=!1){return i===n?0:(0,s.$6e)(this.getComparisonKey(i,r),this.getComparisonKey(n,r))}isEqual(i,n,r=!1){return i===n?!0:!i||!n?!1:this.getComparisonKey(i,r)===this.getComparisonKey(n,r)}getComparisonKey(i,n=!1){return i.with({path:this.a(i)?i.path.toLowerCase():void 0,fragment:n?null:void 0}).toString()}ignorePathCasing(i){return this.a(i)}isEqualOrParent(i,n,r=!1){if(i.scheme===n.scheme){if(i.scheme===T.Schemas.file)return P.$9f(t(i),t(n),this.a(i))&&i.query===n.query&&(r||i.fragment===n.fragment);if((0,e.$Ng)(i.authority,n.authority))return P.$9f(i.path,n.path,this.a(i),"/")&&i.query===n.query&&(r||i.fragment===n.fragment)}return!1}joinPath(i,...n){return f.URI.joinPath(i,...n)}basenameOrAuthority(i){return(0,e.$Fg)(i)||i.authority}basename(i){return y.$gc.basename(i.path)}extname(i){return y.$gc.extname(i.path)}dirname(i){if(i.path.length===0)return i;let n;return i.scheme===T.Schemas.file?n=f.URI.file(y.$mc(t(i))).path:(n=y.$gc.dirname(i.path),i.authority&&n.length&&n.charCodeAt(0)!==47&&(console.error(`dirname("${i.toString})) resulted in a relative path`),n="/")),i.with({path:n})}normalizePath(i){if(!i.path.length)return i;let n;return i.scheme===T.Schemas.file?n=f.URI.file(y.$hc(t(i))).path:n=y.$gc.normalize(i.path),i.with({path:n})}relativePath(i,n){if(i.scheme!==n.scheme||!(0,e.$Ng)(i.authority,n.authority))return;if(i.scheme===T.Schemas.file){const k=y.$lc(t(i),t(n));return N.$i?P.$3f(k):k}let r=i.path||"/";const m=n.path||"/";if(this.a(i)){let k=0;for(const M=Math.min(r.length,m.length);k<M&&!(r.charCodeAt(k)!==m.charCodeAt(k)&&r.charAt(k).toLowerCase()!==m.charAt(k).toLowerCase());k++);r=m.substr(0,k)+r.substr(k)}return y.$gc.relative(r,m)}resolvePath(i,n){if(i.scheme===T.Schemas.file){const r=f.URI.file(y.$kc(t(i),n));return i.with({authority:r.authority,path:r.path})}return n=P.$4f(n),i.with({path:y.$gc.resolve(i.path,n)})}isAbsolutePath(i){return!!i.path&&i.path[0]==="/"}isEqualAuthority(i,n){return i===n||i!==void 0&&n!==void 0&&(0,s.$af)(i,n)}hasTrailingPathSeparator(i,n=y.sep){if(i.scheme===T.Schemas.file){const r=t(i);return r.length>P.$5f(r).length&&r[r.length-1]===n}else{const r=i.path;return r.length>1&&r.charCodeAt(r.length-1)===47&&!/^[a-zA-Z]:(\/$|\\$)/.test(i.fsPath)}}removeTrailingPathSeparator(i,n=y.sep){return(0,e.$Og)(i,n)?i.with({path:i.path.substr(0,i.path.length-1)}):i}addTrailingPathSeparator(i,n=y.sep){let r=!1;if(i.scheme===T.Schemas.file){const m=t(i);r=m!==void 0&&m.length===P.$5f(m).length&&m[m.length-1]===n}else{n="/";const m=i.path;r=m.length===1&&m.charCodeAt(m.length-1)===47}return!r&&!(0,e.$Og)(i,n)?i.with({path:i.path+"/"}):i}}e.$xg=d,e.$yg=new d(()=>!1),e.$zg=new d(h=>h.scheme===T.Schemas.file?!N.$k:!0),e.$Ag=new d(h=>!0),e.$Bg=e.$yg.isEqual.bind(e.$yg),e.$Cg=e.$yg.isEqualOrParent.bind(e.$yg),e.$Dg=e.$yg.getComparisonKey.bind(e.$yg),e.$Eg=e.$yg.basenameOrAuthority.bind(e.$yg),e.$Fg=e.$yg.basename.bind(e.$yg),e.$Gg=e.$yg.extname.bind(e.$yg),e.$Hg=e.$yg.dirname.bind(e.$yg),e.$Ig=e.$yg.joinPath.bind(e.$yg),e.$Jg=e.$yg.normalizePath.bind(e.$yg),e.$Kg=e.$yg.relativePath.bind(e.$yg),e.$Lg=e.$yg.resolvePath.bind(e.$yg),e.$Mg=e.$yg.isAbsolutePath.bind(e.$yg),e.$Ng=e.$yg.isEqualAuthority.bind(e.$yg),e.$Og=e.$yg.hasTrailingPathSeparator.bind(e.$yg),e.$Pg=e.$yg.removeTrailingPathSeparator.bind(e.$yg),e.$Qg=e.$yg.addTrailingPathSeparator.bind(e.$yg);function $(h,i){const n=[];for(let r=0;r<h.length;r++){const m=i(h[r]);h.some((k,M)=>M===r?!1:(0,e.$Cg)(m,i(k)))||n.push(h[r])}return n}e.$Rg=$;var l;(function(h){h.META_DATA_LABEL="label",h.META_DATA_DESCRIPTION="description",h.META_DATA_SIZE="size",h.META_DATA_MIME="mime";function i(n){const r=new Map;n.path.substring(n.path.indexOf(";")+1,n.path.lastIndexOf(";")).split(";").forEach(M=>{const[L,S]=M.split(":");L&&S&&r.set(L,S)});const k=n.path.substring(0,n.path.indexOf(";"));return k&&r.set(h.META_DATA_MIME,k),r}h.parseMetaData=i})(l||(e.DataUri=l={}));function o(h,i,n){if(i){let r=h.path;return r&&r[0]!==y.$gc.sep&&(r=y.$gc.sep+r),h.with({scheme:n,authority:i,path:r})}return h.with({scheme:n})}e.$Sg=o}),define(p[20],V([0,1,46,6,35,2,19,3,27,26]),function(H,e,P,T,y,N,s,f,t,d){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$xh=e.$wh=e.$vh=e.$uh=e.$th=e.$sh=e.Promises=e.$rh=e.$qh=e.$ph=e.$oh=e.$nh=e.$mh=e.$lh=e.$kh=e.$jh=e.$ih=e.$hh=e.$gh=e.$fh=e.$eh=e.$dh=e.$ch=e.$bh=e.$ah=e.$_g=e.$$g=e.$0g=e.$9g=e.$8g=e.$7g=e.$6g=e.$5g=e.$4g=e.$3g=e.$2g=e.$1g=e.$Zg=e.$Yg=e.$Xg=e.$Wg=e.$Vg=e.$Ug=e.$Tg=void 0;function $(R){return!!R&&typeof R.then=="function"}e.$Tg=$;function l(R){const u=new P.$7d,w=R(u.token),A=new Promise((U,B)=>{const Y=u.token.onCancellationRequested(()=>{Y.dispose(),B(new T.$5)});Promise.resolve(w).then(Q=>{Y.dispose(),u.dispose(),U(Q)},Q=>{Y.dispose(),u.dispose(),B(Q)})});return new class{cancel(){u.cancel(),u.dispose()}then(U,B){return A.then(U,B)}catch(U){return this.then(void 0,U)}finally(U){return A.finally(U)}}}e.$Ug=l;function o(R,u,w){return new Promise((A,U)=>{const B=u.onCancellationRequested(()=>{B.dispose(),A(w)});R.then(A,U).finally(()=>B.dispose())})}e.$Vg=o;function h(R,u){return new Promise((w,A)=>{const U=u.onCancellationRequested(()=>{U.dispose(),A(new T.$5)});R.then(w,A).finally(()=>U.dispose())})}e.$Wg=h;async function i(R){let u=-1;const w=R.map((A,U)=>A.then(B=>(u=U,B)));try{return await Promise.race(w)}finally{R.forEach((A,U)=>{U!==u&&A.cancel()})}}e.$Xg=i;function n(R,u,w){let A;const U=setTimeout(()=>{A?.(void 0),w?.()},u);return Promise.race([R.finally(()=>clearTimeout(U)),new Promise(B=>A=B)])}e.$Yg=n;function r(R){return new Promise((u,w)=>{const A=R();$(A)?A.then(u,w):u(A)})}e.$Zg=r;class m{constructor(){this.f=!1,this.a=null,this.b=null,this.d=null}queue(u){if(this.f)return Promise.reject(new Error("Throttler is disposed"));if(this.a){if(this.d=u,!this.b){const w=()=>{if(this.b=null,this.f)return;const A=this.queue(this.d);return this.d=null,A};this.b=new Promise(A=>{this.a.then(w,w).then(A)})}return new Promise((w,A)=>{this.b.then(w,A)})}return this.a=u(),new Promise((w,A)=>{this.a.then(U=>{this.a=null,w(U)},U=>{this.a=null,A(U)})})}dispose(){this.f=!0}}e.$1g=m;class k{constructor(){this.a=Promise.resolve(null)}queue(u){return this.a=this.a.then(()=>u(),()=>u())}}e.$2g=k;class M{constructor(){this.a=new Map}queue(u,w){const U=(this.a.get(u)??Promise.resolve()).catch(()=>{}).then(w).finally(()=>{this.a.get(u)===U&&this.a.delete(u)});return this.a.set(u,U),U}}e.$3g=M;const L=(R,u)=>{let w=!0;const A=setTimeout(()=>{w=!1,u()},R);return{isTriggered:()=>w,dispose:()=>{clearTimeout(A),w=!1}}},S=R=>{let u=!0;return queueMicrotask(()=>{u&&(u=!1,R())}),{isTriggered:()=>u,dispose:()=>{u=!1}}};class g{constructor(u){this.defaultDelay=u,this.a=null,this.b=null,this.d=null,this.f=null,this.g=null}trigger(u,w=this.defaultDelay){this.g=u,this.h(),this.b||(this.b=new Promise((U,B)=>{this.d=U,this.f=B}).then(()=>{if(this.b=null,this.d=null,this.g){const U=this.g;return this.g=null,U()}}));const A=()=>{this.a=null,this.d?.(null)};return this.a=w===t.$Td?S(A):L(w,A),this.b}isTriggered(){return!!this.a?.isTriggered()}cancel(){this.h(),this.b&&(this.f?.(new T.$5),this.b=null)}h(){this.a?.dispose(),this.a=null}dispose(){this.cancel()}}e.$4g=g;class v{constructor(u){this.a=new g(u),this.b=new m}trigger(u,w){return this.a.trigger(()=>this.b.queue(u),w)}isTriggered(){return this.a.isTriggered()}cancel(){this.a.cancel()}dispose(){this.a.dispose(),this.b.dispose()}}e.$5g=v;class O{constructor(){this.a=!1,this.b=new Promise((u,w)=>{this.d=u})}isOpen(){return this.a}open(){this.a=!0,this.d(!0)}wait(){return this.b}}e.$6g=O;class F extends O{constructor(u){super(),this.f=setTimeout(()=>this.open(),u)}open(){clearTimeout(this.f),super.open()}}e.$7g=F;function D(R,u){return u?new Promise((w,A)=>{const U=setTimeout(()=>{B.dispose(),w()},R),B=u.onCancellationRequested(()=>{clearTimeout(U),B.dispose(),A(new T.$5)})}):l(w=>D(R,w))}e.$8g=D;function c(R,u=0,w){const A=setTimeout(()=>{R(),w&&U.dispose()},u),U=(0,N.$Rc)(()=>{clearTimeout(A),w?.deleteAndLeak(U)});return w?.add(U),U}e.$9g=c;function E(R){const u=[];let w=0;const A=R.length;function U(){return w<A?R[w++]():null}function B(Y){Y!=null&&u.push(Y);const Q=U();return Q?Q.then(B):Promise.resolve(u)}return Promise.resolve(null).then(B)}e.$0g=E;function j(R,u=A=>!!A,w=null){let A=0;const U=R.length,B=()=>{if(A>=U)return Promise.resolve(w);const Y=R[A++];return Promise.resolve(Y()).then(X=>u(X)?Promise.resolve(X):B())};return B()}e.$$g=j;function C(R,u=A=>!!A,w=null){if(R.length===0)return Promise.resolve(w);let A=R.length;const U=()=>{A=-1;for(const B of R)B.cancel?.()};return new Promise((B,Y)=>{for(const Q of R)Q.then(X=>{--A>=0&&u(X)?(U(),B(X)):A===0&&B(w)}).catch(X=>{--A>=0&&(U(),Y(X))})})}e.$_g=C;class b{constructor(u){this.a=0,this.b=!1,this.f=u,this.g=[],this.d=0,this.h=new y.$Wd}whenIdle(){return this.size>0?y.Event.toPromise(this.onDrained):Promise.resolve()}get onDrained(){return this.h.event}get size(){return this.a}queue(u){if(this.b)throw new Error("Object has been disposed");return this.a++,new Promise((w,A)=>{this.g.push({factory:u,c:w,e:A}),this.j()})}j(){for(;this.g.length&&this.d<this.f;){const u=this.g.shift();this.d++;const w=u.factory();w.then(u.c,u.e),w.then(()=>this.k(),()=>this.k())}}k(){this.b||(this.d--,--this.a===0&&this.h.fire(),this.g.length>0&&this.j())}clear(){if(this.b)throw new Error("Object has been disposed");this.g.length=0,this.a=this.d}dispose(){this.b=!0,this.g.length=0,this.a=0,this.h.dispose()}}e.$ah=b;class a extends b{constructor(){super(1)}}e.$bh=a;class I{constructor(){this.a=new te,this.b=0}queue(u){return this.a.isRunning()?this.a.queue(()=>this.a.run(this.b++,u())):this.a.run(this.b++,u())}}e.$ch=I;class z{constructor(){this.a=new Map,this.b=new Set,this.d=void 0,this.f=0}async whenDrained(){if(this.g())return;const u=new x;return this.b.add(u),u.p}g(){for(const[,u]of this.a)if(u.size>0)return!1;return!0}queueSize(u,w=s.$yg){const A=w.getComparisonKey(u);return this.a.get(A)?.size??0}queueFor(u,w,A=s.$yg){const U=A.getComparisonKey(u);let B=this.a.get(U);if(!B){B=new a;const Y=this.f++,Q=y.Event.once(B.onDrained)(()=>{B?.dispose(),this.a.delete(U),this.h(),this.d?.deleteAndDispose(Y),this.d?.size===0&&(this.d.dispose(),this.d=void 0)});this.d||(this.d=new N.$3c),this.d.set(Y,Q),this.a.set(U,B)}return B.queue(w)}h(){this.g()&&this.j()}j(){for(const u of this.b)u.complete();this.b.clear()}dispose(){for(const[,u]of this.a)u.dispose();this.a.clear(),this.j(),this.d?.dispose()}}e.$dh=z;class q{constructor(u,w){this.a=-1,typeof u=="function"&&typeof w=="number"&&this.setIfNotSet(u,w)}dispose(){this.cancel()}cancel(){this.a!==-1&&(clearTimeout(this.a),this.a=-1)}cancelAndSet(u,w){this.cancel(),this.a=setTimeout(()=>{this.a=-1,u()},w)}setIfNotSet(u,w){this.a===-1&&(this.a=setTimeout(()=>{this.a=-1,u()},w))}}e.$eh=q;class W{constructor(){this.d=void 0}cancel(){this.d?.dispose(),this.d=void 0}cancelAndSet(u,w,A=globalThis){this.cancel();const U=A.setInterval(()=>{u()},w);this.d=(0,N.$Rc)(()=>{A.clearInterval(U),this.d=void 0})}dispose(){this.cancel()}}e.$fh=W;class K{constructor(u,w){this.b=-1,this.a=u,this.d=w,this.f=this.g.bind(this)}dispose(){this.cancel(),this.a=null}cancel(){this.isScheduled()&&(clearTimeout(this.b),this.b=-1)}schedule(u=this.d){this.cancel(),this.b=setTimeout(this.f,u)}get delay(){return this.d}set delay(u){this.d=u}isScheduled(){return this.b!==-1}flush(){this.isScheduled()&&(this.cancel(),this.h())}g(){this.b=-1,this.a&&this.h()}h(){this.a?.()}}e.$gh=K;class G{constructor(u,w){w%1e3!==0&&console.warn(`ProcessTimeRunOnceScheduler resolution is 1s, ${w}ms is not a multiple of 1000ms.`),this.a=u,this.b=w,this.d=0,this.f=-1,this.g=this.h.bind(this)}dispose(){this.cancel(),this.a=null}cancel(){this.isScheduled()&&(clearInterval(this.f),this.f=-1)}schedule(u=this.b){u%1e3!==0&&console.warn(`ProcessTimeRunOnceScheduler resolution is 1s, ${u}ms is not a multiple of 1000ms.`),this.cancel(),this.d=Math.ceil(u/1e3),this.f=setInterval(this.g,1e3)}isScheduled(){return this.f!==-1}h(){this.d--,!(this.d>0)&&(clearInterval(this.f),this.f=-1,this.a?.())}}e.$hh=G;class _ extends K{constructor(u,w){super(u,w),this.j=[]}work(u){this.j.push(u),this.isScheduled()||this.schedule()}h(){const u=this.j;this.j=[],this.a?.(u)}dispose(){this.j=[],super.dispose()}}e.$ih=_;class J extends N.$Tc{constructor(u,w){super(),this.g=u,this.h=w,this.a=[],this.b=this.B(new N.$Uc),this.f=!1}get pending(){return this.a.length}work(u){if(this.f)return!1;if(typeof this.g.maxBufferedWork=="number"){if(this.b.value){if(this.pending+u.length>this.g.maxBufferedWork)return!1}else if(this.pending+u.length-this.g.maxWorkChunkSize>this.g.maxBufferedWork)return!1}for(const w of u)this.a.push(w);return this.b.value||this.j(),!0}j(){this.h(this.a.splice(0,this.g.maxWorkChunkSize)),this.a.length>0&&(this.b.value=new K(()=>{this.b.clear(),this.j()},this.g.throttleDelay),this.b.value.schedule())}dispose(){super.dispose(),this.f=!0}}e.$jh=J,function(){typeof globalThis.requestIdleCallback!="function"||typeof globalThis.cancelIdleCallback!="function"?e.$lh=(R,u)=>{(0,f.$B)(()=>{if(w)return;const A=Date.now()+15;u(Object.freeze({didTimeout:!0,timeRemaining(){return Math.max(0,A-Date.now())}}))});let w=!1;return{dispose(){w||(w=!0)}}}:e.$lh=(R,u,w)=>{const A=R.requestIdleCallback(u,typeof w=="number"?{timeout:w}:void 0);let U=!1;return{dispose(){U||(U=!0,R.cancelIdleCallback(A))}}},e.$kh=R=>(0,e.$lh)(globalThis,R)}();class ee{constructor(u,w){this.g=!1,this.d=()=>{try{this.j=w()}catch(A){this.l=A}finally{this.g=!0}},this.f=(0,e.$lh)(u,()=>this.d())}dispose(){this.f.dispose()}get value(){if(this.g||(this.f.dispose(),this.d()),this.l)throw this.l;return this.j}get isInitialized(){return this.g}}e.$mh=ee;class he extends ee{constructor(u){super(globalThis,u)}}e.$nh=he;async function oe(R,u,w){let A;for(let U=0;U<w;U++)try{return await R()}catch(B){A=B,await D(u)}throw A}e.$oh=oe;class te{isRunning(u){return typeof u=="number"?this.a?.taskId===u:!!this.a}get running(){return this.a?.promise}cancelRunning(){this.a?.cancel()}run(u,w,A){return this.a={taskId:u,cancel:()=>A?.(),promise:w},w.then(()=>this.d(u),()=>this.d(u)),w}d(u){this.a&&u===this.a.taskId&&(this.a=void 0,this.f())}f(){if(this.b){const u=this.b;this.b=void 0,u.run().then(u.promiseResolve,u.promiseReject)}}queue(u){if(this.b)this.b.run=u;else{let w,A;const U=new Promise((B,Y)=>{w=B,A=Y});this.b={run:u,promise:U,promiseResolve:w,promiseReject:A}}return this.b.promise}hasQueued(){return!!this.b}async join(){return this.b?.promise??this.a?.promise}}e.$ph=te;class ue{constructor(u,w=()=>Date.now()){this.d=u,this.f=w,this.a=0,this.b=0}increment(){const u=this.f();return u-this.a>this.d&&(this.a=u,this.b=0),this.b++,this.b}}e.$qh=ue;var ne;(function(R){R[R.Resolved=0]="Resolved",R[R.Rejected=1]="Rejected"})(ne||(ne={}));class x{get isRejected(){return this.d?.outcome===1}get isResolved(){return this.d?.outcome===0}get isSettled(){return!!this.d}get value(){return this.d?.outcome===0?this.d?.value:void 0}constructor(){this.p=new Promise((u,w)=>{this.a=u,this.b=w})}complete(u){return new Promise(w=>{this.a(u),this.d={outcome:0,value:u},w()})}error(u){return new Promise(w=>{this.b(u),this.d={outcome:1,value:u},w()})}cancel(){return this.error(new T.$5)}}e.$rh=x;var ie;(function(R){async function u(A){let U;const B=await Promise.all(A.map(Y=>Y.then(Q=>Q,Q=>{U||(U=Q)})));if(typeof U<"u")throw U;return B}R.settled=u;function w(A){return new Promise(async(U,B)=>{try{await A(U,B)}catch(Y){B(Y)}})}R.withAsyncBody=w})(ie||(e.Promises=ie={}));class se{get value(){return this.a}get error(){return this.b}get isResolved(){return this.d}constructor(u){this.a=void 0,this.b=void 0,this.d=!1,this.promise=u.then(w=>(this.a=w,this.d=!0,w),w=>{throw this.b=w,this.d=!0,w})}requireValue(){if(!this.d)throw new T.$cb("Promise is not resolved yet");if(this.b)throw this.b;return this.a}}e.$sh=se;class ce{constructor(u){this.b=u,this.a=new d.$V(()=>new se(this.b()))}requireValue(){return this.a.value.requireValue()}getPromise(){return this.a.value.promise}get currentValue(){return this.a.rawValue?.value}}e.$th=ce;var re;(function(R){R[R.Initial=0]="Initial",R[R.DoneOK=1]="DoneOK",R[R.DoneError=2]="DoneError"})(re||(re={}));class Z{static fromArray(u){return new Z(w=>{w.emitMany(u)})}static fromPromise(u){return new Z(async w=>{w.emitMany(await u)})}static fromPromises(u){return new Z(async w=>{await Promise.all(u.map(async A=>w.emitOne(await A)))})}static merge(u){return new Z(async w=>{await Promise.all(u.map(async A=>{for await(const U of A)w.emitOne(U)}))})}static{this.EMPTY=Z.fromArray([])}constructor(u){this.a=0,this.b=[],this.d=null,this.f=new y.$Wd,queueMicrotask(async()=>{const w={emitOne:A=>this.g(A),emitMany:A=>this.h(A),reject:A=>this.k(A)};try{await Promise.resolve(u(w)),this.j()}catch(A){this.k(A)}finally{w.emitOne=void 0,w.emitMany=void 0,w.reject=void 0}})}[Symbol.asyncIterator](){let u=0;return{next:async()=>{do{if(this.a===2)throw this.d;if(u<this.b.length)return{done:!1,value:this.b[u++]};if(this.a===1)return{done:!0,value:void 0};await y.Event.toPromise(this.f.event)}while(!0)}}}static map(u,w){return new Z(async A=>{for await(const U of u)A.emitOne(w(U))})}map(u){return Z.map(this,u)}static filter(u,w){return new Z(async A=>{for await(const U of u)w(U)&&A.emitOne(U)})}filter(u){return Z.filter(this,u)}static coalesce(u){return Z.filter(u,w=>!!w)}coalesce(){return Z.coalesce(this)}static async toPromise(u){const w=[];for await(const A of u)w.push(A);return w}toPromise(){return Z.toPromise(this)}g(u){this.a===0&&(this.b.push(u),this.f.fire())}h(u){this.a===0&&(this.b=this.b.concat(u),this.f.fire())}j(){this.a===0&&(this.a=1,this.f.fire())}k(u){this.a===0&&(this.a=2,this.d=u,this.f.fire())}}e.$uh=Z;class ae extends Z{constructor(u,w){super(w),this.l=u}cancel(){this.l.cancel()}}e.$vh=ae;function de(R){const u=new P.$7d,w=R(u.token);return new ae(u,async A=>{const U=u.token.onCancellationRequested(()=>{U.dispose(),u.dispose(),A.reject(new T.$5)});try{for await(const B of w){if(u.token.isCancellationRequested)return;A.emitOne(B)}U.dispose(),u.dispose()}catch(B){U.dispose(),u.dispose(),A.reject(B)}})}e.$wh=de;class le{constructor(){this.a=new x,this.b=new Z(A=>{if(u){A.reject(u);return}return w&&A.emitMany(w),this.d=U=>A.reject(U),this.f=U=>A.emitOne(U),this.a.p});let u,w;this.f=A=>{w||(w=[]),w.push(A)},this.d=A=>{u||(u=A)}}get asyncIterable(){return this.b}resolve(){this.a.complete()}reject(u){this.d(u),this.a.complete()}emitOne(u){this.f(u)}}e.$xh=le}),define(p[21],V([0,1,36]),function(H,e,P){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$gC=e.$fC=e.$eC=void 0,e.$eC=new class{clone(){return this}equals(N){return this===N}};function T(N,s){return new P.$Et([new P.$Dt(0,"",N)],s)}e.$fC=T;function y(N,s){const f=new Uint32Array(2);return f[0]=0,f[1]=(N<<0|0<<8|0<<11|1<<15|2<<24)>>>0,new P.$Ft(f,s===null?e.$eC:s)}e.$gC=y}),define(p[37],V([0,1,20,6,3,38,13,15,47,21,28,16,7]),function(H,e,P,T,y,N,s,f,t,d,$,l,o){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$oC=e.$nC=e.$mC=e.$lC=e.$kC=e.$jC=void 0;var h;(function(S){S[S.CHEAP_TOKENIZATION_LENGTH_LIMIT=2048]="CHEAP_TOKENIZATION_LENGTH_LIMIT"})(h||(h={}));class i{constructor(g,v){this.tokenizationSupport=v,this.a=this.tokenizationSupport.getInitialState(),this.store=new r(g)}getStartState(g){return this.store.getStartState(g,this.a)}getFirstInvalidLine(){return this.store.getFirstInvalidLine(this.a)}}e.$jC=i;class n extends i{constructor(g,v,O,F){super(g,v),this._textModel=O,this._languageIdCodec=F}updateTokensUntilLine(g,v){const O=this._textModel.getLanguageId();for(;;){const F=this.getFirstInvalidLine();if(!F||F.lineNumber>v)break;const D=this._textModel.getLineContent(F.lineNumber),c=M(this._languageIdCodec,O,this.tokenizationSupport,D,!0,F.startState);g.add(F.lineNumber,c.tokens),this.store.setEndState(F.lineNumber,c.endState)}}getTokenTypeIfInsertingCharacter(g,v){const O=this.getStartState(g.lineNumber);if(!O)return 0;const F=this._textModel.getLanguageId(),D=this._textModel.getLineContent(g.lineNumber),c=D.substring(0,g.column-1)+v+D.substring(g.column-1),E=M(this._languageIdCodec,F,this.tokenizationSupport,c,!0,O),j=new o.$wt(E.tokens,c,this._languageIdCodec);if(j.getCount()===0)return 0;const C=j.findTokenIndexAtOffset(g.column-1);return j.getStandardTokenType(C)}tokenizeLineWithEdit(g,v,O){const F=g.lineNumber,D=g.column,c=this.getStartState(F);if(!c)return null;const E=this._textModel.getLineContent(F),j=E.substring(0,D-1)+O+E.substring(D-1+v),C=this._textModel.getLanguageIdAtPosition(F,0),b=M(this._languageIdCodec,C,this.tokenizationSupport,j,!0,c);return new o.$wt(b.tokens,j,this._languageIdCodec)}isCheapToTokenize(g){const v=this.store.getFirstInvalidEndStateLineNumberOrMax();return g<v||g===v&&this._textModel.getLineLength(g)<2048}tokenizeHeuristically(g,v,O){if(O<=this.store.getFirstInvalidEndStateLineNumberOrMax())return{heuristicTokens:!1};if(v<=this.store.getFirstInvalidEndStateLineNumberOrMax())return this.updateTokensUntilLine(g,O),{heuristicTokens:!1};let F=this.b(v);const D=this._textModel.getLanguageId();for(let c=v;c<=O;c++){const E=this._textModel.getLineContent(c),j=M(this._languageIdCodec,D,this.tokenizationSupport,E,!0,F);g.add(c,j.tokens),F=j.endState}return{heuristicTokens:!0}}b(g){let v=this._textModel.getLineFirstNonWhitespaceColumn(g);const O=[];let F=null;for(let E=g-1;v>1&&E>=1;E--){const j=this._textModel.getLineFirstNonWhitespaceColumn(E);if(j!==0&&j<v&&(O.push(this._textModel.getLineContent(E)),v=j,F=this.getStartState(E),F))break}F||(F=this.tokenizationSupport.getInitialState()),O.reverse();const D=this._textModel.getLanguageId();let c=F;for(const E of O)c=M(this._languageIdCodec,D,this.tokenizationSupport,E,!1,c).endState;return c}}e.$kC=n;class r{constructor(g){this.d=g,this.a=new m,this.b=new k,this.b.addRange(new t.$3s(1,g+1))}getEndState(g){return this.a.getEndState(g)}setEndState(g,v){if(!v)throw new T.$cb("Cannot set null/undefined state");this.b.delete(g);const O=this.a.setEndState(g,v);return O&&g<this.d&&this.b.addRange(new t.$3s(g+1,g+2)),O}acceptChange(g,v){this.d+=v-g.length,this.a.acceptChange(g,v),this.b.addRangeAndResize(new t.$3s(g.startLineNumber,g.endLineNumberExclusive),v)}acceptChanges(g){for(const v of g){const[O]=(0,s.$vt)(v.text);this.acceptChange(new f.$5s(v.range.startLineNumber,v.range.endLineNumber+1),O+1)}}invalidateEndStateRange(g){this.b.addRange(new t.$3s(g.startLineNumber,g.endLineNumberExclusive))}getFirstInvalidEndStateLineNumber(){return this.b.min}getFirstInvalidEndStateLineNumberOrMax(){return this.getFirstInvalidEndStateLineNumber()||Number.MAX_SAFE_INTEGER}allStatesValid(){return this.b.min===null}getStartState(g,v){return g===1?v:this.getEndState(g-1)}getFirstInvalidLine(g){const v=this.getFirstInvalidEndStateLineNumber();if(v===null)return null;const O=this.getStartState(v,g);if(!O)throw new T.$cb("Start state must be defined");return{lineNumber:v,startState:O}}}e.$lC=r;class m{constructor(){this.a=new $.$hC(null)}getEndState(g){return this.a.get(g)}setEndState(g,v){const O=this.a.get(g);return O&&O.equals(v)?!1:(this.a.set(g,v),!0)}acceptChange(g,v){let O=g.length;v>0&&O>0&&(O--,v--),this.a.replace(g.startLineNumber,O,v)}acceptChanges(g){for(const v of g){const[O]=(0,s.$vt)(v.text);this.acceptChange(new f.$5s(v.range.startLineNumber,v.range.endLineNumber+1),O+1)}}}e.$mC=m;class k{constructor(){this.a=[]}getRanges(){return this.a}get min(){return this.a.length===0?null:this.a[0].start}removeMin(){if(this.a.length===0)return null;const g=this.a[0];return g.start+1===g.endExclusive?this.a.shift():this.a[0]=new t.$3s(g.start+1,g.endExclusive),g.start}delete(g){const v=this.a.findIndex(O=>O.contains(g));if(v!==-1){const O=this.a[v];O.start===g?O.endExclusive===g+1?this.a.splice(v,1):this.a[v]=new t.$3s(g+1,O.endExclusive):O.endExclusive===g+1?this.a[v]=new t.$3s(O.start,g):this.a.splice(v,1,new t.$3s(O.start,g),new t.$3s(g+1,O.endExclusive))}}addRange(g){t.$3s.addRange(g,this.a)}addRangeAndResize(g,v){let O=0;for(;!(O>=this.a.length||g.start<=this.a[O].endExclusive);)O++;let F=O;for(;!(F>=this.a.length||g.endExclusive<this.a[F].start);)F++;const D=v-g.length;for(let c=F;c<this.a.length;c++)this.a[c]=this.a[c].delta(D);if(O===F){const c=new t.$3s(g.start,g.start+v);c.isEmpty||this.a.splice(O,0,c)}else{const c=Math.min(g.start,this.a[O].start),E=Math.max(g.endExclusive,this.a[F-1].endExclusive),j=new t.$3s(c,E+D);j.isEmpty?this.a.splice(O,F-O):this.a.splice(O,F-O,j)}}toString(){return this.a.map(g=>g.toString()).join(" + ")}}e.$nC=k;function M(S,g,v,O,F,D){let c=null;if(v)try{c=v.tokenizeEncoded(O,F,D.clone())}catch(E){(0,T.$1)(E)}return c||(c=(0,d.$gC)(S.encodeLanguageId(g),D)),o.$wt.convertToEndOffset(c.tokens,O.length),c}class L{constructor(g,v){this.b=g,this.d=v,this.a=!1,this.f=!1}dispose(){this.a=!0}handleChanges(){this.g()}g(){this.f||!this.b._textModel.isAttachedToEditor()||!this.k()||(this.f=!0,(0,P.$kh)(g=>{this.f=!1,this.h(g)}))}h(g){const v=Date.now()+g.timeRemaining(),O=()=>{this.a||!this.b._textModel.isAttachedToEditor()||!this.k()||(this.j(),Date.now()<v?(0,y.$B)(O):this.g())};O()}j(){const g=this.b._textModel.getLineCount(),v=new l.$iC,O=N.$Sd.create(!1);do if(O.elapsed()>1||this.l(v)>=g)break;while(this.k());this.d.setTokens(v.finalize()),this.checkFinished()}k(){return this.b?!this.b.store.allStatesValid():!1}l(g){const v=this.b?.getFirstInvalidLine();return v?(this.b.updateTokensUntilLine(g,v.lineNumber),v.lineNumber):this.b._textModel.getLineCount()+1}checkFinished(){this.a||this.b.store.allStatesValid()&&this.d.backgroundTokenizationFinished()}requestTokens(g,v){this.b.store.invalidateEndStateRange(new f.$5s(g,v))}}e.$oC=L}),define(p[39],V([0,1,35,2,38,14,36]),function(H,e,P,T,y,N,s){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$AHb=void 0;class f extends T.$Tc{constructor(d,$,l,o,h,i,n){super(),this.c=d,this.f=$,this.g=l,this.h=o,this.j=h,this.m=i,this.n=n,this.a=[],this.b=this.B(new P.$Wd),this.onDidEncounterLanguage=this.b.event}get backgroundTokenizerShouldOnlyVerifyTokens(){return this.j()}getInitialState(){return this.f}tokenize(d,$,l){throw new Error("Not supported!")}createBackgroundTokenizer(d,$){if(this.h)return this.h(d,$)}tokenizeEncoded(d,$,l){const o=Math.random()*1e4<1,h=this.n||o,i=h?new y.$Sd(!0):void 0,n=this.c.tokenizeLine2(d,l,500);if(h){const m=i.elapsed();(o||m>32)&&this.m(m,d.length,o)}if(n.stoppedEarly)return console.warn(`Time limit reached when tokenizing line: ${d.substring(0,100)}`),new s.$Ft(n.tokens,l);if(this.g){const m=this.a,k=n.tokens;for(let M=0,L=k.length>>>1;M<L;M++){const S=k[(M<<1)+1],g=N.$tt.getLanguageId(S);m[g]||(m[g]=!0,this.b.fire(g))}}let r;return l.equals(n.ruleStack)?r=l:r=n.ruleStack,new s.$Ft(n.tokens,r)}}e.$AHb=f}),define(p[40],V([0,1,21,2,11]),function(H,e,P,T,y){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$BHb=void 0;class N extends T.$Tc{get backgroundTokenizerShouldOnlyVerifyTokens(){return this.b.backgroundTokenizerShouldOnlyVerifyTokens}constructor(f,t,d){super(),this.a=f,this.b=t,this.c=d,this.B((0,y.keepObserved)(this.c))}getInitialState(){return this.b.getInitialState()}tokenize(f,t,d){throw new Error("Not supported!")}tokenizeEncoded(f,t,d){return f.length>=this.c.get()?(0,P.$gC)(this.a,d):this.b.tokenizeEncoded(f,t,d)}createBackgroundTokenizer(f,t){if(this.b.createBackgroundTokenizer)return this.b.createBackgroundTokenizer(f,t)}}e.$BHb=N}),define(p[41],V([0,1,34,20,11,3,15,48,37,16,7,39,40]),function(H,e,P,T,y,N,s,f,t,d,$,l,o){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$GHb=void 0;class h extends f.$mv{constructor(r,m,k,M,L,S,g,v){super(r,m,k,M),this.s=L,this.t=S,this.u=g,this.a=null,this.b=!1,this.c=(0,y.observableValue)(this,-1),this.q=new T.$gh(()=>this.w(),10),this.c.set(v,void 0),this.v()}dispose(){this.b=!0,super.dispose()}onLanguageId(r,m){this.t=r,this.u=m,this.v()}onEvents(r){super.onEvents(r),this.a?.store.acceptChanges(r.changes),this.q.schedule()}acceptMaxTokenizationLineLength(r){this.c.set(r,void 0)}retokenize(r,m){this.a&&(this.a.store.invalidateEndStateRange(new s.$5s(r,m)),this.q.schedule())}async v(){this.a=null;const r=this.t,m=this.u,k=await this.s.getOrCreateGrammar(r,m);if(!(this.b||r!==this.t||m!==this.u||!k)){if(k.grammar){const M=new o.$BHb(this.u,new l.$AHb(k.grammar,k.initialState,!1,void 0,()=>!1,(L,S,g)=>{this.s.reportTokenizationTime(L,r,k.sourceExtensionId,S,g)},!1),this.c);this.a=new t.$jC(this.f.length,M)}else this.a=null;this.w()}}async w(){if(this.b||!this.a)return;if(!this.m){const{diffStateStacksRefEq:m}=await(0,P.$iD)("vscode-textmate","release/main.js");this.m=m}const r=new Date().getTime();for(;;){let m=0;const k=new d.$iC,M=new i;for(;;){const g=this.a.getFirstInvalidLine();if(g===null||m>200)break;m++;const v=this.f[g.lineNumber-1],O=this.a.tokenizationSupport.tokenizeEncoded(v,!0,g.startState);if(this.a.store.setEndState(g.lineNumber,O.endState)){const D=this.m(g.startState,O.endState);M.setState(g.lineNumber,D)}else M.setState(g.lineNumber,null);if($.$wt.convertToEndOffset(O.tokens,v.length),k.add(g.lineNumber,O.tokens),new Date().getTime()-r>20)break}if(m===0)break;const L=M.getStateDeltas();if(this.s.setTokensAndStates(this.h,k.serialize(),L),new Date().getTime()-r>20){(0,N.$B)(()=>this.w());return}}}}e.$GHb=h;class i{constructor(){this.a=-1,this.b=[]}setState(r,m){r===this.a+1?this.b[this.b.length-1].stateDeltas.push(m):this.b.push({startLineNumber:r,stateDeltas:[m]}),this.a=r}getStateDeltas(){return this.b}}}),define(p[42],V([0,1,19]),function(H,e,P){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$DHb=void 0;class T{constructor(){this.a=Object.create(null)}reset(){this.a=Object.create(null)}register(N){if(this.a[N.scopeName]){const s=this.a[N.scopeName];P.$Bg(s.location,N.location)||console.warn(`Overwriting grammar scope name to file mapping for scope ${N.scopeName}.
-Old grammar file: ${s.location.toString()}.
-New grammar file: ${N.location.toString()}`)}this.a[N.scopeName]=N}getGrammarDefinition(N){return this.a[N]||null}}e.$DHb=T}),define(p[43],V([0,1,2,42]),function(H,e,P,T){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.$FHb=e.$EHb=void 0,e.$EHb="No TM Grammar registered for this language.";class y extends P.$Tc{constructor(s,f,t,d){super(),this.a=s,this.b=t.INITIAL,this.c=new T.$DHb,this.f={},this.g={},this.h=new Map,this.j=this.B(new t.Registry({onigLib:d,loadGrammar:async $=>{const l=this.c.getGrammarDefinition($);if(!l)return this.a.logTrace(`No grammar found for scope ${$}`),null;const o=l.location;try{const h=await this.a.readFile(o);return t.parseRawGrammar(h,o.path)}catch(h){return this.a.logError(`Unable to load and parse grammar for scope ${$} from ${o}`,h),null}},getInjections:$=>{const l=$.split(".");let o=[];for(let h=1;h<=l.length;h++){const i=l.slice(0,h).join(".");o=[...o,...this.f[i]||[]]}return o}}));for(const $ of f){if(this.c.register($),$.injectTo){for(const l of $.injectTo){let o=this.f[l];o||(this.f[l]=o=[]),o.push($.scopeName)}if($.embeddedLanguages)for(const l of $.injectTo){let o=this.g[l];o||(this.g[l]=o=[]),o.push($.embeddedLanguages)}}$.language&&this.h.set($.language,$.scopeName)}}has(s){return this.h.has(s)}setTheme(s,f){this.j.setTheme(s,f)}getColorMap(){return this.j.getColorMap()}async createGrammar(s,f){const t=this.h.get(s);if(typeof t!="string")throw new Error(e.$EHb);const d=this.c.getGrammarDefinition(t);if(!d)throw new Error(e.$EHb);const $=d.embeddedLanguages;if(this.g[t]){const h=this.g[t];for(const i of h)for(const n of Object.keys(i))$[n]=i[n]}const l=Object.keys($).length>0;let o;try{o=await this.j.loadGrammarWithConfiguration(t,f,{embeddedLanguages:$,tokenTypes:d.tokenTypes,balancedBracketSelectors:d.balancedBracketSelectors,unbalancedBracketSelectors:d.unbalancedBracketSelectors})}catch(h){throw h.message&&h.message.startsWith("No grammar provided for")?new Error(e.$EHb):h}return{languageId:s,grammar:o,initialState:this.b,containsEmbeddedLanguages:l,sourceExtensionId:d.sourceExtensionId}}}e.$FHb=y}),define(p[49],V([0,1,8,43,41]),function(H,e,P,T,y){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.TextMateTokenizationWorker=e.create=void 0;function N(f,t){return new s(f,t)}e.create=N;class s{constructor(t,d){this.f=d,this.b=new Map,this.c=[],this.a=t.host;const $=d.grammarDefinitions.map(l=>({location:P.URI.revive(l.location),language:l.language,scopeName:l.scopeName,embeddedLanguages:l.embeddedLanguages,tokenTypes:l.tokenTypes,injectTo:l.injectTo,balancedBracketSelectors:l.balancedBracketSelectors,unbalancedBracketSelectors:l.unbalancedBracketSelectors,sourceExtensionId:l.sourceExtensionId}));this.d=this.g($)}async g(t){const d=this.f.textmateMainUri,$=await new Promise((n,r)=>{H([d],n,r)}),l=await new Promise((n,r)=>{H([this.f.onigurumaMainUri],n,r)}),h=await(await fetch(this.f.onigurumaWASMUri)).arrayBuffer();await l.loadWASM(h);const i=Promise.resolve({createOnigScanner:n=>l.createOnigScanner(n),createOnigString:n=>l.createOnigString(n)});return new T.$FHb({logTrace:n=>{},logError:(n,r)=>console.error(n,r),readFile:n=>this.a.readFile(n)},t,$,i)}acceptNewModel(t){const d=P.URI.revive(t.uri),$=this;this.b.set(t.controllerId,new y.$GHb(d,t.lines,t.EOL,t.versionId,{async getOrCreateGrammar(l,o){const h=await $.d;return h?($.c[o]||($.c[o]=h.createGrammar(l,o)),$.c[o]):Promise.resolve(null)},setTokensAndStates(l,o,h){$.a.setTokensAndStates(t.controllerId,l,o,h)},reportTokenizationTime(l,o,h,i,n){$.a.reportTokenizationTime(l,o,h,i,n)}},t.languageId,t.encodedLanguageId,t.maxTokenizationLineLength))}acceptModelChanged(t,d){this.b.get(t).onEvents(d)}retokenize(t,d,$){this.b.get(t).retokenize(d,$)}acceptModelLanguageChanged(t,d,$){this.b.get(t).onLanguageId(d,$)}acceptRemovedModel(t){const d=this.b.get(t);d&&(d.dispose(),this.b.delete(t))}async acceptTheme(t,d){(await this.d)?.setTheme(t,d)}acceptMaxTokenizationLineLength(t,d){this.b.get(t).acceptMaxTokenizationLineLength(d)}}e.TextMateTokenizationWorker=s})}).call(this);
+ *--------------------------------------------------------*/
+(function() {
+var __m = ["require","exports","vs/base/common/lifecycle","vs/base/common/platform","vs/base/common/observableInternal/debugName","vs/base/common/observableInternal/logging","vs/base/common/observableInternal/base","vs/base/common/observableInternal/autorun","vs/base/common/observableInternal/derived","vs/base/common/errors","vs/editor/common/tokens/lineTokens","vs/base/common/uri","vs/base/common/observable","vs/base/common/buffer","vs/editor/common/core/eolCounter","vs/editor/common/encodedTokenAttributes","vs/editor/common/core/lineRange","vs/editor/common/tokens/contiguousMultilineTokensBuilder","vs/base/common/path","vs/base/common/strings","vs/base/common/network","vs/base/common/resources","vs/base/common/async","vs/editor/common/languages/nullTokenize","vs/base/common/amd","vs/base/common/assert","vs/base/common/observableInternal/utils","vs/base/common/observableInternal/promise","vs/base/common/cancellation","vs/base/common/stream","vs/base/common/lazy","vs/base/common/symbols","vs/editor/common/model/fixedArray","vs/base/common/arrays","vs/editor/common/tokens/contiguousTokensEditing","vs/editor/common/tokens/contiguousMultilineTokens","vs/base/common/extpath","vs/amdX","vs/base/common/event","vs/editor/common/languages","vs/editor/common/model/textModelTokens","vs/base/common/stopwatch","vs/workbench/services/textMate/browser/tokenizationSupport/textMateTokenizationSupport","vs/workbench/services/textMate/browser/tokenizationSupport/tokenizationSupportWithLineLimit","vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateWorkerTokenizer","vs/workbench/services/textMate/common/TMScopeRegistry","vs/workbench/services/textMate/common/TMGrammarFactory","vs/editor/common/core/position","vs/base/common/types","vs/editor/common/core/offsetRange","vs/editor/common/model/mirrorTextModel","vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateTokenizationWorker.worker"];
+var __M = function(deps) {
+  var result = [];
+  for (var i = 0, len = deps.length; i < len; i++) {
+    result[i] = __m[deps[i]];
+  }
+  return result;
+};
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[24/*vs/base/common/amd*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$U = exports.$T = void 0;
+    // ESM-comment-begin
+    exports.$T = false;
+    // ESM-comment-end
+    // ESM-uncomment-begin
+    // export const isESM = true;
+    // ESM-uncomment-end
+    class $U {
+        static get() {
+            const amdLoadScript = new Map();
+            const amdInvokeFactory = new Map();
+            const nodeRequire = new Map();
+            const nodeEval = new Map();
+            function mark(map, stat) {
+                if (map.has(stat.detail)) {
+                    // console.warn('BAD events, DOUBLE start', stat);
+                    // map.delete(stat.detail);
+                    return;
+                }
+                map.set(stat.detail, -stat.timestamp);
+            }
+            function diff(map, stat) {
+                const duration = map.get(stat.detail);
+                if (!duration) {
+                    // console.warn('BAD events, end WITHOUT start', stat);
+                    // map.delete(stat.detail);
+                    return;
+                }
+                if (duration >= 0) {
+                    // console.warn('BAD events, DOUBLE end', stat);
+                    // map.delete(stat.detail);
+                    return;
+                }
+                map.set(stat.detail, duration + stat.timestamp);
+            }
+            let stats = [];
+            if (typeof require === 'function' && typeof require.getStats === 'function') {
+                stats = require.getStats().slice(0).sort((a, b) => a.timestamp - b.timestamp);
+            }
+            for (const stat of stats) {
+                switch (stat.type) {
+                    case 10 /* LoaderEventType.BeginLoadingScript */:
+                        mark(amdLoadScript, stat);
+                        break;
+                    case 11 /* LoaderEventType.EndLoadingScriptOK */:
+                    case 12 /* LoaderEventType.EndLoadingScriptError */:
+                        diff(amdLoadScript, stat);
+                        break;
+                    case 21 /* LoaderEventType.BeginInvokeFactory */:
+                        mark(amdInvokeFactory, stat);
+                        break;
+                    case 22 /* LoaderEventType.EndInvokeFactory */:
+                        diff(amdInvokeFactory, stat);
+                        break;
+                    case 33 /* LoaderEventType.NodeBeginNativeRequire */:
+                        mark(nodeRequire, stat);
+                        break;
+                    case 34 /* LoaderEventType.NodeEndNativeRequire */:
+                        diff(nodeRequire, stat);
+                        break;
+                    case 31 /* LoaderEventType.NodeBeginEvaluatingScript */:
+                        mark(nodeEval, stat);
+                        break;
+                    case 32 /* LoaderEventType.NodeEndEvaluatingScript */:
+                        diff(nodeEval, stat);
+                        break;
+                }
+            }
+            let nodeRequireTotal = 0;
+            nodeRequire.forEach(value => nodeRequireTotal += value);
+            function to2dArray(map) {
+                const res = [];
+                map.forEach((value, index) => res.push([index, value]));
+                return res;
+            }
+            return {
+                amdLoad: to2dArray(amdLoadScript),
+                amdInvoke: to2dArray(amdInvokeFactory),
+                nodeRequire: to2dArray(nodeRequire),
+                nodeEval: to2dArray(nodeEval),
+                nodeRequireTotal
+            };
+        }
+        static toMarkdownTable(header, rows) {
+            let result = '';
+            const lengths = [];
+            header.forEach((cell, ci) => {
+                lengths[ci] = cell.length;
+            });
+            rows.forEach(row => {
+                row.forEach((cell, ci) => {
+                    if (typeof cell === 'undefined') {
+                        cell = row[ci] = '-';
+                    }
+                    const len = cell.toString().length;
+                    lengths[ci] = Math.max(len, lengths[ci]);
+                });
+            });
+            // header
+            header.forEach((cell, ci) => { result += `| ${cell + ' '.repeat(lengths[ci] - cell.toString().length)} `; });
+            result += '|\n';
+            header.forEach((_cell, ci) => { result += `| ${'-'.repeat(lengths[ci])} `; });
+            result += '|\n';
+            // cells
+            rows.forEach(row => {
+                row.forEach((cell, ci) => {
+                    if (typeof cell !== 'undefined') {
+                        result += `| ${cell + ' '.repeat(lengths[ci] - cell.toString().length)} `;
+                    }
+                });
+                result += '|\n';
+            });
+            return result;
+        }
+    }
+    exports.$U = $U;
+});
 
-//# sourceMappingURL=https://ticino.blob.core.windows.net/sourcemaps/903b1e9d8990623e3d7da1df3d33db3e42d80eda/core/vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateTokenizationWorker.worker.js.map
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[4/*vs/base/common/observableInternal/debugName*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$6c = void 0;
+    exports.$7c = $7c;
+    exports.$8c = $8c;
+    class $6c {
+        constructor(owner, debugNameSource, referenceFn) {
+            this.owner = owner;
+            this.debugNameSource = debugNameSource;
+            this.referenceFn = referenceFn;
+        }
+        getDebugName(target) {
+            return $7c(target, this);
+        }
+    }
+    exports.$6c = $6c;
+    const countPerName = new Map();
+    const cachedDebugName = new WeakMap();
+    function $7c(target, data) {
+        const cached = cachedDebugName.get(target);
+        if (cached) {
+            return cached;
+        }
+        const dbgName = computeDebugName(target, data);
+        if (dbgName) {
+            let count = countPerName.get(dbgName) ?? 0;
+            count++;
+            countPerName.set(dbgName, count);
+            const result = count === 1 ? dbgName : `${dbgName}#${count}`;
+            cachedDebugName.set(target, result);
+            return result;
+        }
+        return undefined;
+    }
+    function computeDebugName(self, data) {
+        const cached = cachedDebugName.get(self);
+        if (cached) {
+            return cached;
+        }
+        const ownerStr = data.owner ? formatOwner(data.owner) + `.` : '';
+        let result;
+        const debugNameSource = data.debugNameSource;
+        if (debugNameSource !== undefined) {
+            if (typeof debugNameSource === 'function') {
+                result = debugNameSource();
+                if (result !== undefined) {
+                    return ownerStr + result;
+                }
+            }
+            else {
+                return ownerStr + debugNameSource;
+            }
+        }
+        const referenceFn = data.referenceFn;
+        if (referenceFn !== undefined) {
+            result = $8c(referenceFn);
+            if (result !== undefined) {
+                return ownerStr + result;
+            }
+        }
+        if (data.owner !== undefined) {
+            const key = findKey(data.owner, self);
+            if (key !== undefined) {
+                return ownerStr + key;
+            }
+        }
+        return undefined;
+    }
+    function findKey(obj, value) {
+        for (const key in obj) {
+            if (obj[key] === value) {
+                return key;
+            }
+        }
+        return undefined;
+    }
+    const countPerClassName = new Map();
+    const ownerId = new WeakMap();
+    function formatOwner(owner) {
+        const id = ownerId.get(owner);
+        if (id) {
+            return id;
+        }
+        const className = getClassName(owner);
+        let count = countPerClassName.get(className) ?? 0;
+        count++;
+        countPerClassName.set(className, count);
+        const result = count === 1 ? className : `${className}#${count}`;
+        ownerId.set(owner, result);
+        return result;
+    }
+    function getClassName(obj) {
+        const ctor = obj.constructor;
+        if (ctor) {
+            return ctor.name;
+        }
+        return 'Object';
+    }
+    function $8c(fn) {
+        const fnSrc = fn.toString();
+        // Pattern: /** @description ... */
+        const regexp = /\/\*\*\s*@description\s*([^*]*)\*\//;
+        const match = regexp.exec(fnSrc);
+        const result = match ? match[1] : undefined;
+        return result?.trim();
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[5/*vs/base/common/observableInternal/logging*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Ad = void 0;
+    exports.$yd = $yd;
+    exports.$zd = $zd;
+    let globalObservableLogger;
+    function $yd(logger) {
+        globalObservableLogger = logger;
+    }
+    function $zd() {
+        return globalObservableLogger;
+    }
+    class $Ad {
+        constructor() {
+            this.a = 0;
+            this.d = new WeakMap();
+        }
+        b(text) {
+            return consoleTextToArgs([
+                normalText(repeat('|  ', this.a)),
+                text,
+            ]);
+        }
+        c(info) {
+            if (!info.hadValue) {
+                return [
+                    normalText(` `),
+                    styled(formatValue(info.newValue, 60), {
+                        color: 'green',
+                    }),
+                    normalText(` (initial)`),
+                ];
+            }
+            return info.didChange
+                ? [
+                    normalText(` `),
+                    styled(formatValue(info.oldValue, 70), {
+                        color: 'red',
+                        strikeThrough: true,
+                    }),
+                    normalText(` `),
+                    styled(formatValue(info.newValue, 60), {
+                        color: 'green',
+                    }),
+                ]
+                : [normalText(` (unchanged)`)];
+        }
+        handleObservableChanged(observable, info) {
+            console.log(...this.b([
+                formatKind('observable value changed'),
+                styled(observable.debugName, { color: 'BlueViolet' }),
+                ...this.c(info),
+            ]));
+        }
+        formatChanges(changes) {
+            if (changes.size === 0) {
+                return undefined;
+            }
+            return styled(' (changed deps: ' +
+                [...changes].map((o) => o.debugName).join(', ') +
+                ')', { color: 'gray' });
+        }
+        handleDerivedCreated(derived) {
+            const existingHandleChange = derived.handleChange;
+            this.d.set(derived, new Set());
+            derived.handleChange = (observable, change) => {
+                this.d.get(derived).add(observable);
+                return existingHandleChange.apply(derived, [observable, change]);
+            };
+        }
+        handleDerivedRecomputed(derived, info) {
+            const changedObservables = this.d.get(derived);
+            console.log(...this.b([
+                formatKind('derived recomputed'),
+                styled(derived.debugName, { color: 'BlueViolet' }),
+                ...this.c(info),
+                this.formatChanges(changedObservables),
+                { data: [{ fn: derived._computeFn }] }
+            ]));
+            changedObservables.clear();
+        }
+        handleFromEventObservableTriggered(observable, info) {
+            console.log(...this.b([
+                formatKind('observable from event triggered'),
+                styled(observable.debugName, { color: 'BlueViolet' }),
+                ...this.c(info),
+                { data: [{ fn: observable._getValue }] }
+            ]));
+        }
+        handleAutorunCreated(autorun) {
+            const existingHandleChange = autorun.handleChange;
+            this.d.set(autorun, new Set());
+            autorun.handleChange = (observable, change) => {
+                this.d.get(autorun).add(observable);
+                return existingHandleChange.apply(autorun, [observable, change]);
+            };
+        }
+        handleAutorunTriggered(autorun) {
+            const changedObservables = this.d.get(autorun);
+            console.log(...this.b([
+                formatKind('autorun'),
+                styled(autorun.debugName, { color: 'BlueViolet' }),
+                this.formatChanges(changedObservables),
+                { data: [{ fn: autorun._runFn }] }
+            ]));
+            changedObservables.clear();
+            this.a++;
+        }
+        handleAutorunFinished(autorun) {
+            this.a--;
+        }
+        handleBeginTransaction(transaction) {
+            let transactionName = transaction.getDebugName();
+            if (transactionName === undefined) {
+                transactionName = '';
+            }
+            console.log(...this.b([
+                formatKind('transaction'),
+                styled(transactionName, { color: 'BlueViolet' }),
+                { data: [{ fn: transaction._fn }] }
+            ]));
+            this.a++;
+        }
+        handleEndTransaction() {
+            this.a--;
+        }
+    }
+    exports.$Ad = $Ad;
+    function consoleTextToArgs(text) {
+        const styles = new Array();
+        const data = [];
+        let firstArg = '';
+        function process(t) {
+            if ('length' in t) {
+                for (const item of t) {
+                    if (item) {
+                        process(item);
+                    }
+                }
+            }
+            else if ('text' in t) {
+                firstArg += `%c${t.text}`;
+                styles.push(t.style);
+                if (t.data) {
+                    data.push(...t.data);
+                }
+            }
+            else if ('data' in t) {
+                data.push(...t.data);
+            }
+        }
+        process(text);
+        const result = [firstArg, ...styles];
+        result.push(...data);
+        return result;
+    }
+    function normalText(text) {
+        return styled(text, { color: 'black' });
+    }
+    function formatKind(kind) {
+        return styled(padStr(`${kind}: `, 10), { color: 'black', bold: true });
+    }
+    function styled(text, options = {
+        color: 'black',
+    }) {
+        function objToCss(styleObj) {
+            return Object.entries(styleObj).reduce((styleString, [propName, propValue]) => {
+                return `${styleString}${propName}:${propValue};`;
+            }, '');
+        }
+        const style = {
+            color: options.color,
+        };
+        if (options.strikeThrough) {
+            style['text-decoration'] = 'line-through';
+        }
+        if (options.bold) {
+            style['font-weight'] = 'bold';
+        }
+        return {
+            text,
+            style: objToCss(style),
+        };
+    }
+    function formatValue(value, availableLen) {
+        switch (typeof value) {
+            case 'number':
+                return '' + value;
+            case 'string':
+                if (value.length + 2 <= availableLen) {
+                    return `"${value}"`;
+                }
+                return `"${value.substr(0, availableLen - 7)}"+...`;
+            case 'boolean':
+                return value ? 'true' : 'false';
+            case 'undefined':
+                return 'undefined';
+            case 'object':
+                if (value === null) {
+                    return 'null';
+                }
+                if (Array.isArray(value)) {
+                    return formatArray(value, availableLen);
+                }
+                return formatObject(value, availableLen);
+            case 'symbol':
+                return value.toString();
+            case 'function':
+                return `[[Function${value.name ? ' ' + value.name : ''}]]`;
+            default:
+                return '' + value;
+        }
+    }
+    function formatArray(value, availableLen) {
+        let result = '[ ';
+        let first = true;
+        for (const val of value) {
+            if (!first) {
+                result += ', ';
+            }
+            if (result.length - 5 > availableLen) {
+                result += '...';
+                break;
+            }
+            first = false;
+            result += `${formatValue(val, availableLen - result.length)}`;
+        }
+        result += ' ]';
+        return result;
+    }
+    function formatObject(value, availableLen) {
+        let result = '{ ';
+        let first = true;
+        for (const [key, val] of Object.entries(value)) {
+            if (!first) {
+                result += ', ';
+            }
+            if (result.length - 5 > availableLen) {
+                result += '...';
+                break;
+            }
+            first = false;
+            result += `${key}: ${formatValue(val, availableLen - result.length)}`;
+        }
+        result += ' }';
+        return result;
+    }
+    function repeat(str, count) {
+        let result = '';
+        for (let i = 1; i <= count; i++) {
+            result += str;
+        }
+        return result;
+    }
+    function padStr(str, length) {
+        while (str.length < length) {
+            str += ' ';
+        }
+        return str;
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[7/*vs/base/common/observableInternal/autorun*/], __M([0/*require*/,1/*exports*/,25/*vs/base/common/assert*/,2/*vs/base/common/lifecycle*/,4/*vs/base/common/observableInternal/debugName*/,5/*vs/base/common/observableInternal/logging*/]), function (require, exports, assert_1, lifecycle_1, debugName_1, logging_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$id = void 0;
+    exports.$cd = $cd;
+    exports.$dd = $dd;
+    exports.$ed = $ed;
+    exports.$fd = $fd;
+    exports.$gd = $gd;
+    exports.$hd = $hd;
+    /**
+     * Runs immediately and whenever a transaction ends and an observed observable changed.
+     * {@link fn} should start with a JS Doc using `@description` to name the autorun.
+     */
+    function $cd(fn) {
+        return new $id(new debugName_1.$6c(undefined, undefined, fn), fn, undefined, undefined);
+    }
+    /**
+     * Runs immediately and whenever a transaction ends and an observed observable changed.
+     * {@link fn} should start with a JS Doc using `@description` to name the autorun.
+     */
+    function $dd(options, fn) {
+        return new $id(new debugName_1.$6c(options.owner, options.debugName, options.debugReferenceFn ?? fn), fn, undefined, undefined);
+    }
+    /**
+     * Runs immediately and whenever a transaction ends and an observed observable changed.
+     * {@link fn} should start with a JS Doc using `@description` to name the autorun.
+     *
+     * Use `createEmptyChangeSummary` to create a "change summary" that can collect the changes.
+     * Use `handleChange` to add a reported change to the change summary.
+     * The run function is given the last change summary.
+     * The change summary is discarded after the run function was called.
+     *
+     * @see $cd
+     */
+    function $ed(options, fn) {
+        return new $id(new debugName_1.$6c(options.owner, options.debugName, options.debugReferenceFn ?? fn), fn, options.createEmptyChangeSummary, options.handleChange);
+    }
+    /**
+     * @see $ed (but with a disposable store that is cleared before the next run or on dispose)
+     */
+    function $fd(options, fn) {
+        const store = new lifecycle_1.$Tc();
+        const disposable = $ed({
+            owner: options.owner,
+            debugName: options.debugName,
+            debugReferenceFn: options.debugReferenceFn,
+            createEmptyChangeSummary: options.createEmptyChangeSummary,
+            handleChange: options.handleChange,
+        }, (reader, changeSummary) => {
+            store.clear();
+            fn(reader, changeSummary, store);
+        });
+        return (0, lifecycle_1.$Sc)(() => {
+            disposable.dispose();
+            store.dispose();
+        });
+    }
+    /**
+     * @see $cd (but with a disposable store that is cleared before the next run or on dispose)
+     */
+    function $gd(fn) {
+        const store = new lifecycle_1.$Tc();
+        const disposable = $dd({
+            owner: undefined,
+            debugName: undefined,
+            debugReferenceFn: fn,
+        }, reader => {
+            store.clear();
+            fn(reader, store);
+        });
+        return (0, lifecycle_1.$Sc)(() => {
+            disposable.dispose();
+            store.dispose();
+        });
+    }
+    function $hd(observable, handler) {
+        let _lastValue;
+        return $dd({ debugReferenceFn: handler }, (reader) => {
+            const newValue = observable.read(reader);
+            const lastValue = _lastValue;
+            _lastValue = newValue;
+            handler({ lastValue, newValue });
+        });
+    }
+    var AutorunState;
+    (function (AutorunState) {
+        /**
+         * A dependency could have changed.
+         * We need to explicitly ask them if at least one dependency changed.
+         */
+        AutorunState[AutorunState["dependenciesMightHaveChanged"] = 1] = "dependenciesMightHaveChanged";
+        /**
+         * A dependency changed and we need to recompute.
+         */
+        AutorunState[AutorunState["stale"] = 2] = "stale";
+        AutorunState[AutorunState["upToDate"] = 3] = "upToDate";
+    })(AutorunState || (AutorunState = {}));
+    class $id {
+        get debugName() {
+            return this.h.getDebugName(this) ?? '(anonymous)';
+        }
+        constructor(h, _runFn, i, j) {
+            this.h = h;
+            this._runFn = _runFn;
+            this.i = i;
+            this.j = j;
+            this.a = 2 /* AutorunState.stale */;
+            this.b = 0;
+            this.c = false;
+            this.e = new Set();
+            this.f = new Set();
+            this.g = this.i?.();
+            (0, logging_1.$zd)()?.handleAutorunCreated(this);
+            this.k();
+            (0, lifecycle_1.$Lc)(this);
+        }
+        dispose() {
+            this.c = true;
+            for (const o of this.e) {
+                o.removeObserver(this);
+            }
+            this.e.clear();
+            (0, lifecycle_1.$Mc)(this);
+        }
+        k() {
+            if (this.a === 3 /* AutorunState.upToDate */) {
+                return;
+            }
+            const emptySet = this.f;
+            this.f = this.e;
+            this.e = emptySet;
+            this.a = 3 /* AutorunState.upToDate */;
+            const isDisposed = this.c;
+            try {
+                if (!isDisposed) {
+                    (0, logging_1.$zd)()?.handleAutorunTriggered(this);
+                    const changeSummary = this.g;
+                    this.g = this.i?.();
+                    this._runFn(this, changeSummary);
+                }
+            }
+            finally {
+                if (!isDisposed) {
+                    (0, logging_1.$zd)()?.handleAutorunFinished(this);
+                }
+                // We don't want our observed observables to think that they are (not even temporarily) not being observed.
+                // Thus, we only unsubscribe from observables that are definitely not read anymore.
+                for (const o of this.f) {
+                    o.removeObserver(this);
+                }
+                this.f.clear();
+            }
+        }
+        toString() {
+            return `Autorun<${this.debugName}>`;
+        }
+        // IObserver implementation
+        beginUpdate() {
+            if (this.a === 3 /* AutorunState.upToDate */) {
+                this.a = 1 /* AutorunState.dependenciesMightHaveChanged */;
+            }
+            this.b++;
+        }
+        endUpdate() {
+            if (this.b === 1) {
+                do {
+                    if (this.a === 1 /* AutorunState.dependenciesMightHaveChanged */) {
+                        this.a = 3 /* AutorunState.upToDate */;
+                        for (const d of this.e) {
+                            d.reportChanges();
+                            if (this.a === 2 /* AutorunState.stale */) {
+                                // The other dependencies will refresh on demand
+                                break;
+                            }
+                        }
+                    }
+                    this.k();
+                } while (this.a !== 3 /* AutorunState.upToDate */);
+            }
+            this.b--;
+            (0, assert_1.$ad)(() => this.b >= 0);
+        }
+        handlePossibleChange(observable) {
+            if (this.a === 3 /* AutorunState.upToDate */ && this.e.has(observable) && !this.f.has(observable)) {
+                this.a = 1 /* AutorunState.dependenciesMightHaveChanged */;
+            }
+        }
+        handleChange(observable, change) {
+            if (this.e.has(observable) && !this.f.has(observable)) {
+                const shouldReact = this.j ? this.j({
+                    changedObservable: observable,
+                    change,
+                    didChange: o => o === observable,
+                }, this.g) : true;
+                if (shouldReact) {
+                    this.a = 2 /* AutorunState.stale */;
+                }
+            }
+        }
+        // IReader implementation
+        readObservable(observable) {
+            // In case the run action disposes the autorun
+            if (this.c) {
+                return observable.get();
+            }
+            observable.addObserver(this);
+            const value = observable.get();
+            this.e.add(observable);
+            this.f.delete(observable);
+            return value;
+        }
+    }
+    exports.$id = $id;
+    (function ($cd) {
+        $cd.Observer = $id;
+    })($cd || (exports.$cd = $cd = {}));
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[6/*vs/base/common/observableInternal/base*/], __M([0/*require*/,1/*exports*/,4/*vs/base/common/observableInternal/debugName*/,5/*vs/base/common/observableInternal/logging*/]), function (require, exports, debugName_1, logging_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Vd = exports.$Td = exports.$Rd = exports.$Md = exports.$Ld = void 0;
+    exports.$Id = $Id;
+    exports.$Jd = $Jd;
+    exports.$Kd = $Kd;
+    exports.$Nd = $Nd;
+    exports.$Od = $Od;
+    exports.$Pd = $Pd;
+    exports.$Qd = $Qd;
+    exports.$Sd = $Sd;
+    exports.$Ud = $Ud;
+    let _recomputeInitiallyAndOnChange;
+    function $Id(recomputeInitiallyAndOnChange) {
+        _recomputeInitiallyAndOnChange = recomputeInitiallyAndOnChange;
+    }
+    let _keepObserved;
+    function $Jd(keepObserved) {
+        _keepObserved = keepObserved;
+    }
+    let _derived;
+    /**
+     * @internal
+     * This is to allow splitting files.
+    */
+    function $Kd(derived) {
+        _derived = derived;
+    }
+    class $Ld {
+        get TChange() { return null; }
+        reportChanges() {
+            this.get();
+        }
+        /** @sealed */
+        read(reader) {
+            if (reader) {
+                return reader.readObservable(this);
+            }
+            else {
+                return this.get();
+            }
+        }
+        map(fnOrOwner, fnOrUndefined) {
+            const owner = fnOrUndefined === undefined ? undefined : fnOrOwner;
+            const fn = fnOrUndefined === undefined ? fnOrOwner : fnOrUndefined;
+            return _derived({
+                owner,
+                debugName: () => {
+                    const name = (0, debugName_1.$8c)(fn);
+                    if (name !== undefined) {
+                        return name;
+                    }
+                    // regexp to match `x => x.y` or `x => x?.y` where x and y can be arbitrary identifiers (uses backref):
+                    const regexp = /^\s*\(?\s*([a-zA-Z_$][a-zA-Z_$0-9]*)\s*\)?\s*=>\s*\1(?:\??)\.([a-zA-Z_$][a-zA-Z_$0-9]*)\s*$/;
+                    const match = regexp.exec(fn.toString());
+                    if (match) {
+                        return `${this.debugName}.${match[2]}`;
+                    }
+                    if (!owner) {
+                        return `${this.debugName} (mapped)`;
+                    }
+                    return undefined;
+                },
+            }, (reader) => fn(this.read(reader), reader));
+        }
+        recomputeInitiallyAndOnChange(store, handleValue) {
+            store.add(_recomputeInitiallyAndOnChange(this, handleValue));
+            return this;
+        }
+        /**
+         * Ensures that this observable is observed. This keeps the cache alive.
+         * However, in case of deriveds, it does not force eager evaluation (only when the value is read/get).
+         * Use `recomputeInitiallyAndOnChange` for eager evaluation.
+         */
+        keepObserved(store) {
+            store.add(_keepObserved(this));
+            return this;
+        }
+    }
+    exports.$Ld = $Ld;
+    class $Md extends $Ld {
+        constructor() {
+            super(...arguments);
+            this.c = new Set();
+        }
+        addObserver(observer) {
+            const len = this.c.size;
+            this.c.add(observer);
+            if (len === 0) {
+                this.f();
+            }
+        }
+        removeObserver(observer) {
+            const deleted = this.c.delete(observer);
+            if (deleted && this.c.size === 0) {
+                this.g();
+            }
+        }
+        f() { }
+        g() { }
+    }
+    exports.$Md = $Md;
+    /**
+     * Starts a transaction in which many observables can be changed at once.
+     * {@link fn} should start with a JS Doc using `@description` to give the transaction a debug name.
+     * Reaction run on demand or when the transaction ends.
+     */
+    function $Nd(fn, getDebugName) {
+        const tx = new $Rd(fn, getDebugName);
+        try {
+            fn(tx);
+        }
+        finally {
+            tx.finish();
+        }
+    }
+    let _globalTransaction = undefined;
+    function $Od(fn) {
+        if (_globalTransaction) {
+            fn(_globalTransaction);
+        }
+        else {
+            const tx = new $Rd(fn, undefined);
+            _globalTransaction = tx;
+            try {
+                fn(tx);
+            }
+            finally {
+                tx.finish(); // During finish, more actions might be added to the transaction.
+                // Which is why we only clear the global transaction after finish.
+                _globalTransaction = undefined;
+            }
+        }
+    }
+    async function $Pd(fn, getDebugName) {
+        const tx = new $Rd(fn, getDebugName);
+        try {
+            await fn(tx);
+        }
+        finally {
+            tx.finish();
+        }
+    }
+    /**
+     * Allows to chain transactions.
+     */
+    function $Qd(tx, fn, getDebugName) {
+        if (!tx) {
+            $Nd(fn, getDebugName);
+        }
+        else {
+            fn(tx);
+        }
+    }
+    class $Rd {
+        constructor(_fn, b) {
+            this._fn = _fn;
+            this.b = b;
+            this.a = [];
+            (0, logging_1.$zd)()?.handleBeginTransaction(this);
+        }
+        getDebugName() {
+            if (this.b) {
+                return this.b();
+            }
+            return (0, debugName_1.$8c)(this._fn);
+        }
+        updateObserver(observer, observable) {
+            // When this gets called while finish is active, they will still get considered
+            this.a.push({ observer, observable });
+            observer.beginUpdate(observable);
+        }
+        finish() {
+            const updatingObservers = this.a;
+            for (let i = 0; i < updatingObservers.length; i++) {
+                const { observer, observable } = updatingObservers[i];
+                observer.endUpdate(observable);
+            }
+            // Prevent anyone from updating observers from now on.
+            this.a = null;
+            (0, logging_1.$zd)()?.handleEndTransaction();
+        }
+    }
+    exports.$Rd = $Rd;
+    function $Sd(nameOrOwner, initialValue) {
+        if (typeof nameOrOwner === 'string') {
+            return new $Td(undefined, nameOrOwner, initialValue);
+        }
+        else {
+            return new $Td(nameOrOwner, undefined, initialValue);
+        }
+    }
+    class $Td extends $Md {
+        get debugName() {
+            return new debugName_1.$6c(this.b, this.d, undefined).getDebugName(this) ?? 'ObservableValue';
+        }
+        constructor(b, d, initialValue) {
+            super();
+            this.b = b;
+            this.d = d;
+            this.a = initialValue;
+        }
+        get() {
+            return this.a;
+        }
+        set(value, tx, change) {
+            if (this.a === value) {
+                return;
+            }
+            let _tx;
+            if (!tx) {
+                tx = _tx = new $Rd(() => { }, () => `Setting ${this.debugName}`);
+            }
+            try {
+                const oldValue = this.a;
+                this.e(value);
+                (0, logging_1.$zd)()?.handleObservableChanged(this, { oldValue, newValue: value, change, didChange: true, hadValue: true });
+                for (const observer of this.c) {
+                    tx.updateObserver(observer, this);
+                    observer.handleChange(this, change);
+                }
+            }
+            finally {
+                if (_tx) {
+                    _tx.finish();
+                }
+            }
+        }
+        toString() {
+            return `${this.debugName}: ${this.a}`;
+        }
+        e(newValue) {
+            this.a = newValue;
+        }
+    }
+    exports.$Td = $Td;
+    /**
+     * A disposable observable. When disposed, its value is also disposed.
+     * When a new value is set, the previous value is disposed.
+     */
+    function $Ud(nameOrOwner, initialValue) {
+        if (typeof nameOrOwner === 'string') {
+            return new $Vd(undefined, nameOrOwner, initialValue);
+        }
+        else {
+            return new $Vd(nameOrOwner, undefined, initialValue);
+        }
+    }
+    class $Vd extends $Td {
+        e(newValue) {
+            if (this.a === newValue) {
+                return;
+            }
+            if (this.a) {
+                this.a.dispose();
+            }
+            this.a = newValue;
+        }
+        dispose() {
+            this.a?.dispose();
+        }
+    }
+    exports.$Vd = $Vd;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[8/*vs/base/common/observableInternal/derived*/], __M([0/*require*/,1/*exports*/,25/*vs/base/common/assert*/,2/*vs/base/common/lifecycle*/,6/*vs/base/common/observableInternal/base*/,4/*vs/base/common/observableInternal/debugName*/,5/*vs/base/common/observableInternal/logging*/]), function (require, exports, assert_1, lifecycle_1, base_1, debugName_1, logging_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Hd = exports.$Bd = void 0;
+    exports.$Cd = $Cd;
+    exports.$Dd = $Dd;
+    exports.$Ed = $Ed;
+    exports.$Fd = $Fd;
+    exports.$Gd = $Gd;
+    const $Bd = (a, b) => a === b;
+    exports.$Bd = $Bd;
+    function $Cd(computeFnOrOwner, computeFn) {
+        if (computeFn !== undefined) {
+            return new $Hd(new debugName_1.$6c(computeFnOrOwner, undefined, computeFn), computeFn, undefined, undefined, undefined, exports.$Bd);
+        }
+        return new $Hd(new debugName_1.$6c(undefined, undefined, computeFnOrOwner), computeFnOrOwner, undefined, undefined, undefined, exports.$Bd);
+    }
+    function $Dd(options, computeFn) {
+        return new $Hd(new debugName_1.$6c(options.owner, options.debugName, options.debugReferenceFn), computeFn, undefined, undefined, options.onLastObserverRemoved, options.equalityComparer ?? exports.$Bd);
+    }
+    (0, base_1.$Kd)($Dd);
+    /**
+     * Represents an observable that is derived from other observables.
+     * The value is only recomputed when absolutely needed.
+     *
+     * {@link computeFn} should start with a JS Doc using `@description` to name the derived.
+     *
+     * Use `createEmptyChangeSummary` to create a "change summary" that can collect the changes.
+     * Use `handleChange` to add a reported change to the change summary.
+     * The compute function is given the last change summary.
+     * The change summary is discarded after the compute function was called.
+     *
+     * @see $Cd
+     */
+    function $Ed(options, computeFn) {
+        return new $Hd(new debugName_1.$6c(options.owner, options.debugName, undefined), computeFn, options.createEmptyChangeSummary, options.handleChange, undefined, options.equalityComparer ?? exports.$Bd);
+    }
+    function $Fd(computeFnOrOwner, computeFnOrUndefined) {
+        let computeFn;
+        let owner;
+        if (computeFnOrUndefined === undefined) {
+            computeFn = computeFnOrOwner;
+            owner = undefined;
+        }
+        else {
+            owner = computeFnOrOwner;
+            computeFn = computeFnOrUndefined;
+        }
+        const store = new lifecycle_1.$Tc();
+        return new $Hd(new debugName_1.$6c(owner, undefined, computeFn), r => {
+            store.clear();
+            return computeFn(r, store);
+        }, undefined, undefined, () => store.dispose(), exports.$Bd);
+    }
+    function $Gd(computeFnOrOwner, computeFnOrUndefined) {
+        let computeFn;
+        let owner;
+        if (computeFnOrUndefined === undefined) {
+            computeFn = computeFnOrOwner;
+            owner = undefined;
+        }
+        else {
+            owner = computeFnOrOwner;
+            computeFn = computeFnOrUndefined;
+        }
+        const store = new lifecycle_1.$Tc();
+        return new $Hd(new debugName_1.$6c(owner, undefined, computeFn), r => {
+            store.clear();
+            const result = computeFn(r);
+            if (result) {
+                store.add(result);
+            }
+            return result;
+        }, undefined, undefined, () => store.dispose(), exports.$Bd);
+    }
+    var DerivedState;
+    (function (DerivedState) {
+        /** Initial state, no previous value, recomputation needed */
+        DerivedState[DerivedState["initial"] = 0] = "initial";
+        /**
+         * A dependency could have changed.
+         * We need to explicitly ask them if at least one dependency changed.
+         */
+        DerivedState[DerivedState["dependenciesMightHaveChanged"] = 1] = "dependenciesMightHaveChanged";
+        /**
+         * A dependency changed and we need to recompute.
+         * After recomputation, we need to check the previous value to see if we changed as well.
+         */
+        DerivedState[DerivedState["stale"] = 2] = "stale";
+        /**
+         * No change reported, our cached value is up to date.
+         */
+        DerivedState[DerivedState["upToDate"] = 3] = "upToDate";
+    })(DerivedState || (DerivedState = {}));
+    class $Hd extends base_1.$Md {
+        get debugName() {
+            return this.n.getDebugName(this) ?? '(anonymous)';
+        }
+        constructor(n, _computeFn, p, q, s = undefined, t) {
+            super();
+            this.n = n;
+            this._computeFn = _computeFn;
+            this.p = p;
+            this.q = q;
+            this.s = s;
+            this.t = t;
+            this.e = 0 /* DerivedState.initial */;
+            this.h = undefined;
+            this.j = 0;
+            this.k = new Set();
+            this.l = new Set();
+            this.m = undefined;
+            this.m = this.p?.();
+            (0, logging_1.$zd)()?.handleDerivedCreated(this);
+        }
+        g() {
+            /**
+             * We are not tracking changes anymore, thus we have to assume
+             * that our cache is invalid.
+             */
+            this.e = 0 /* DerivedState.initial */;
+            this.h = undefined;
+            for (const d of this.k) {
+                d.removeObserver(this);
+            }
+            this.k.clear();
+            this.s?.();
+        }
+        get() {
+            if (this.c.size === 0) {
+                // Without observers, we don't know when to clean up stuff.
+                // Thus, we don't cache anything to prevent memory leaks.
+                const result = this._computeFn(this, this.p?.());
+                // Clear new dependencies
+                this.g();
+                return result;
+            }
+            else {
+                do {
+                    // We might not get a notification for a dependency that changed while it is updating,
+                    // thus we also have to ask all our depedencies if they changed in this case.
+                    if (this.e === 1 /* DerivedState.dependenciesMightHaveChanged */) {
+                        for (const d of this.k) {
+                            /** might call {@link handleChange} indirectly, which could make us stale */
+                            d.reportChanges();
+                            if (this.e === 2 /* DerivedState.stale */) {
+                                // The other dependencies will refresh on demand, so early break
+                                break;
+                            }
+                        }
+                    }
+                    // We called report changes of all dependencies.
+                    // If we are still not stale, we can assume to be up to date again.
+                    if (this.e === 1 /* DerivedState.dependenciesMightHaveChanged */) {
+                        this.e = 3 /* DerivedState.upToDate */;
+                    }
+                    this.v();
+                    // In case recomputation changed one of our dependencies, we need to recompute again.
+                } while (this.e !== 3 /* DerivedState.upToDate */);
+                return this.h;
+            }
+        }
+        v() {
+            if (this.e === 3 /* DerivedState.upToDate */) {
+                return;
+            }
+            const emptySet = this.l;
+            this.l = this.k;
+            this.k = emptySet;
+            const hadValue = this.e !== 0 /* DerivedState.initial */;
+            const oldValue = this.h;
+            this.e = 3 /* DerivedState.upToDate */;
+            const changeSummary = this.m;
+            this.m = this.p?.();
+            try {
+                /** might call {@link handleChange} indirectly, which could invalidate us */
+                this.h = this._computeFn(this, changeSummary);
+            }
+            finally {
+                // We don't want our observed observables to think that they are (not even temporarily) not being observed.
+                // Thus, we only unsubscribe from observables that are definitely not read anymore.
+                for (const o of this.l) {
+                    o.removeObserver(this);
+                }
+                this.l.clear();
+            }
+            const didChange = hadValue && !(this.t(oldValue, this.h));
+            (0, logging_1.$zd)()?.handleDerivedRecomputed(this, {
+                oldValue,
+                newValue: this.h,
+                change: undefined,
+                didChange,
+                hadValue,
+            });
+            if (didChange) {
+                for (const r of this.c) {
+                    r.handleChange(this, undefined);
+                }
+            }
+        }
+        toString() {
+            return `LazyDerived<${this.debugName}>`;
+        }
+        // IObserver Implementation
+        beginUpdate(_observable) {
+            this.j++;
+            const propagateBeginUpdate = this.j === 1;
+            if (this.e === 3 /* DerivedState.upToDate */) {
+                this.e = 1 /* DerivedState.dependenciesMightHaveChanged */;
+                // If we propagate begin update, that will already signal a possible change.
+                if (!propagateBeginUpdate) {
+                    for (const r of this.c) {
+                        r.handlePossibleChange(this);
+                    }
+                }
+            }
+            if (propagateBeginUpdate) {
+                for (const r of this.c) {
+                    r.beginUpdate(this); // This signals a possible change
+                }
+            }
+        }
+        endUpdate(_observable) {
+            this.j--;
+            if (this.j === 0) {
+                // End update could change the observer list.
+                const observers = [...this.c];
+                for (const r of observers) {
+                    r.endUpdate(this);
+                }
+            }
+            (0, assert_1.$ad)(() => this.j >= 0);
+        }
+        handlePossibleChange(observable) {
+            // In all other states, observers already know that we might have changed.
+            if (this.e === 3 /* DerivedState.upToDate */ && this.k.has(observable) && !this.l.has(observable)) {
+                this.e = 1 /* DerivedState.dependenciesMightHaveChanged */;
+                for (const r of this.c) {
+                    r.handlePossibleChange(this);
+                }
+            }
+        }
+        handleChange(observable, change) {
+            if (this.k.has(observable) && !this.l.has(observable)) {
+                const shouldReact = this.q ? this.q({
+                    changedObservable: observable,
+                    change,
+                    didChange: o => o === observable,
+                }, this.m) : true;
+                const wasUpToDate = this.e === 3 /* DerivedState.upToDate */;
+                if (shouldReact && (this.e === 1 /* DerivedState.dependenciesMightHaveChanged */ || wasUpToDate)) {
+                    this.e = 2 /* DerivedState.stale */;
+                    if (wasUpToDate) {
+                        for (const r of this.c) {
+                            r.handlePossibleChange(this);
+                        }
+                    }
+                }
+            }
+        }
+        // IReader Implementation
+        readObservable(observable) {
+            // Subscribe before getting the value to enable caching
+            observable.addObserver(this);
+            /** This might call {@link handleChange} indirectly, which could invalidate us */
+            const value = observable.get();
+            // Which is why we only add the observable to the dependencies now.
+            this.k.add(observable);
+            this.l.delete(observable);
+            return value;
+        }
+        addObserver(observer) {
+            const shouldCallBeginUpdate = !this.c.has(observer) && this.j > 0;
+            super.addObserver(observer);
+            if (shouldCallBeginUpdate) {
+                observer.beginUpdate(this);
+            }
+        }
+        removeObserver(observer) {
+            const shouldCallEndUpdate = this.c.has(observer) && this.j > 0;
+            super.removeObserver(observer);
+            if (shouldCallEndUpdate) {
+                // Calling end update after removing the observer makes sure endUpdate cannot be called twice here.
+                observer.endUpdate(this);
+            }
+        }
+    }
+    exports.$Hd = $Hd;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[26/*vs/base/common/observableInternal/utils*/], __M([0/*require*/,1/*exports*/,2/*vs/base/common/lifecycle*/,7/*vs/base/common/observableInternal/autorun*/,6/*vs/base/common/observableInternal/base*/,4/*vs/base/common/observableInternal/debugName*/,8/*vs/base/common/observableInternal/derived*/,5/*vs/base/common/observableInternal/logging*/]), function (require, exports, lifecycle_1, autorun_1, base_1, debugName_1, derived_1, logging_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$ud = exports.$md = void 0;
+    exports.$jd = $jd;
+    exports.$kd = $kd;
+    exports.$ld = $ld;
+    exports.$nd = $nd;
+    exports.$od = $od;
+    exports.$pd = $pd;
+    exports.$qd = $qd;
+    exports.$rd = $rd;
+    exports.$sd = $sd;
+    exports.$td = $td;
+    exports.$vd = $vd;
+    exports.$wd = $wd;
+    exports.$xd = $xd;
+    /**
+     * Represents an efficient observable whose value never changes.
+     */
+    function $jd(value) {
+        return new ConstObservable(value);
+    }
+    class ConstObservable extends base_1.$Ld {
+        constructor(a) {
+            super();
+            this.a = a;
+        }
+        get debugName() {
+            return this.toString();
+        }
+        get() {
+            return this.a;
+        }
+        addObserver(observer) {
+            // NO OP
+        }
+        removeObserver(observer) {
+            // NO OP
+        }
+        toString() {
+            return `Const: ${this.a}`;
+        }
+    }
+    function $kd(promise) {
+        const observable = (0, base_1.$Sd)('promiseValue', {});
+        promise.then((value) => {
+            observable.set({ value }, undefined);
+        });
+        return observable;
+    }
+    function $ld(event, getValue) {
+        return new $md(event, getValue);
+    }
+    class $md extends base_1.$Md {
+        constructor(h, _getValue) {
+            super();
+            this.h = h;
+            this._getValue = _getValue;
+            this.b = false;
+            this.l = (args) => {
+                const newValue = this._getValue(args);
+                const oldValue = this.a;
+                const didChange = !this.b || oldValue !== newValue;
+                let didRunTransaction = false;
+                if (didChange) {
+                    this.a = newValue;
+                    if (this.b) {
+                        didRunTransaction = true;
+                        (0, base_1.$Qd)($md.globalTransaction, (tx) => {
+                            (0, logging_1.$zd)()?.handleFromEventObservableTriggered(this, { oldValue, newValue, change: undefined, didChange, hadValue: this.b });
+                            for (const o of this.c) {
+                                tx.updateObserver(o, this);
+                                o.handleChange(this, undefined);
+                            }
+                        }, () => {
+                            const name = this.j();
+                            return 'Event fired' + (name ? `: ${name}` : '');
+                        });
+                    }
+                    this.b = true;
+                }
+                if (!didRunTransaction) {
+                    (0, logging_1.$zd)()?.handleFromEventObservableTriggered(this, { oldValue, newValue, change: undefined, didChange, hadValue: this.b });
+                }
+            };
+        }
+        j() {
+            return (0, debugName_1.$8c)(this._getValue);
+        }
+        get debugName() {
+            const name = this.j();
+            return 'From Event' + (name ? `: ${name}` : '');
+        }
+        f() {
+            this.e = this.h(this.l);
+        }
+        g() {
+            this.e.dispose();
+            this.e = undefined;
+            this.b = false;
+            this.a = undefined;
+        }
+        get() {
+            if (this.e) {
+                if (!this.b) {
+                    this.l(undefined);
+                }
+                return this.a;
+            }
+            else {
+                // no cache, as there are no subscribers to keep it updated
+                return this._getValue(undefined);
+            }
+        }
+    }
+    exports.$md = $md;
+    (function ($ld) {
+        $ld.Observer = $md;
+        function batchEventsGlobally(tx, fn) {
+            let didSet = false;
+            if ($md.globalTransaction === undefined) {
+                $md.globalTransaction = tx;
+                didSet = true;
+            }
+            try {
+                fn();
+            }
+            finally {
+                if (didSet) {
+                    $md.globalTransaction = undefined;
+                }
+            }
+        }
+        $ld.batchEventsGlobally = batchEventsGlobally;
+    })($ld || (exports.$ld = $ld = {}));
+    function $nd(debugName, event) {
+        return new FromEventObservableSignal(debugName, event);
+    }
+    class FromEventObservableSignal extends base_1.$Md {
+        constructor(debugName, b) {
+            super();
+            this.debugName = debugName;
+            this.b = b;
+            this.h = () => {
+                (0, base_1.$Nd)((tx) => {
+                    for (const o of this.c) {
+                        tx.updateObserver(o, this);
+                        o.handleChange(this, undefined);
+                    }
+                }, () => this.debugName);
+            };
+        }
+        f() {
+            this.a = this.b(this.h);
+        }
+        g() {
+            this.a.dispose();
+            this.a = undefined;
+        }
+        get() {
+            // NO OP
+        }
+    }
+    function $od(debugNameOrOwner) {
+        if (typeof debugNameOrOwner === 'string') {
+            return new ObservableSignal(debugNameOrOwner);
+        }
+        else {
+            return new ObservableSignal(undefined, debugNameOrOwner);
+        }
+    }
+    class ObservableSignal extends base_1.$Md {
+        get debugName() {
+            return new debugName_1.$6c(this.b, this.a, undefined).getDebugName(this) ?? 'Observable Signal';
+        }
+        constructor(a, b) {
+            super();
+            this.a = a;
+            this.b = b;
+        }
+        trigger(tx, change) {
+            if (!tx) {
+                (0, base_1.$Nd)(tx => {
+                    this.trigger(tx, change);
+                }, () => `Trigger signal ${this.debugName}`);
+                return;
+            }
+            for (const o of this.c) {
+                tx.updateObserver(o, this);
+                o.handleChange(this, change);
+            }
+        }
+        get() {
+            // NO OP
+        }
+    }
+    /**
+     * @deprecated Use `debouncedObservable2` instead.
+     */
+    function $pd(observable, debounceMs, disposableStore) {
+        const debouncedObservable = (0, base_1.$Sd)('debounced', undefined);
+        let timeout = undefined;
+        disposableStore.add((0, autorun_1.$cd)(reader => {
+            /** @description debounce */
+            const value = observable.read(reader);
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(() => {
+                (0, base_1.$Nd)(tx => {
+                    debouncedObservable.set(value, tx);
+                });
+            }, debounceMs);
+        }));
+        return debouncedObservable;
+    }
+    /**
+     * Creates an observable that debounces the input observable.
+     */
+    function $qd(observable, debounceMs) {
+        let hasValue = false;
+        let lastValue;
+        let timeout = undefined;
+        return $ld(cb => {
+            const d = (0, autorun_1.$cd)(reader => {
+                const value = observable.read(reader);
+                if (!hasValue) {
+                    hasValue = true;
+                    lastValue = value;
+                }
+                else {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                    }
+                    timeout = setTimeout(() => {
+                        lastValue = value;
+                        cb();
+                    }, debounceMs);
+                }
+            });
+            return {
+                dispose() {
+                    d.dispose();
+                    hasValue = false;
+                    lastValue = undefined;
+                },
+            };
+        }, () => {
+            if (hasValue) {
+                return lastValue;
+            }
+            else {
+                return observable.get();
+            }
+        });
+    }
+    function $rd(event, timeoutMs, disposableStore) {
+        const observable = (0, base_1.$Sd)('triggeredRecently', false);
+        let timeout = undefined;
+        disposableStore.add(event(() => {
+            observable.set(true, undefined);
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(() => {
+                observable.set(false, undefined);
+            }, timeoutMs);
+        }));
+        return observable;
+    }
+    /**
+     * This makes sure the observable is being observed and keeps its cache alive.
+     */
+    function $sd(observable) {
+        const o = new $ud(false, undefined);
+        observable.addObserver(o);
+        return (0, lifecycle_1.$Sc)(() => {
+            observable.removeObserver(o);
+        });
+    }
+    (0, base_1.$Jd)($sd);
+    /**
+     * This converts the given observable into an autorun.
+     */
+    function $td(observable, handleValue) {
+        const o = new $ud(true, handleValue);
+        observable.addObserver(o);
+        if (handleValue) {
+            handleValue(observable.get());
+        }
+        else {
+            observable.reportChanges();
+        }
+        return (0, lifecycle_1.$Sc)(() => {
+            observable.removeObserver(o);
+        });
+    }
+    (0, base_1.$Id)($td);
+    class $ud {
+        constructor(b, c) {
+            this.b = b;
+            this.c = c;
+            this.a = 0;
+        }
+        beginUpdate(observable) {
+            this.a++;
+        }
+        endUpdate(observable) {
+            this.a--;
+            if (this.a === 0 && this.b) {
+                if (this.c) {
+                    this.c(observable.get());
+                }
+                else {
+                    observable.reportChanges();
+                }
+            }
+        }
+        handlePossibleChange(observable) {
+            // NO OP
+        }
+        handleChange(observable, change) {
+            // NO OP
+        }
+    }
+    exports.$ud = $ud;
+    function $vd(computeFn) {
+        let lastValue = undefined;
+        const observable = (0, derived_1.$Cd)(reader => {
+            lastValue = computeFn(reader, lastValue);
+            return lastValue;
+        });
+        return observable;
+    }
+    function $wd(owner, computeFn) {
+        let lastValue = undefined;
+        const counter = (0, base_1.$Sd)('derivedObservableWithWritableCache.counter', 0);
+        const observable = (0, derived_1.$Cd)(owner, reader => {
+            counter.read(reader);
+            lastValue = computeFn(reader, lastValue);
+            return lastValue;
+        });
+        return Object.assign(observable, {
+            clearCache: (transaction) => {
+                lastValue = undefined;
+                counter.set(counter.get() + 1, transaction);
+            },
+        });
+    }
+    /**
+     * When the items array changes, referential equal items are not mapped again.
+     */
+    function $xd(owner, items, map, keySelector) {
+        let m = new ArrayMap(map, keySelector);
+        const self = (0, derived_1.$Dd)({
+            debugReferenceFn: map,
+            owner,
+            onLastObserverRemoved: () => {
+                m.dispose();
+                m = new ArrayMap(map);
+            }
+        }, (reader) => {
+            m.setItems(items.read(reader));
+            return m.getItems();
+        });
+        return self;
+    }
+    class ArrayMap {
+        constructor(c, e) {
+            this.c = c;
+            this.e = e;
+            this.a = new Map();
+            this.b = [];
+        }
+        dispose() {
+            this.a.forEach(entry => entry.store.dispose());
+            this.a.clear();
+        }
+        setItems(items) {
+            const newItems = [];
+            const itemsToRemove = new Set(this.a.keys());
+            for (const item of items) {
+                const key = this.e ? this.e(item) : item;
+                let entry = this.a.get(key);
+                if (!entry) {
+                    const store = new lifecycle_1.$Tc();
+                    const out = this.c(item, store);
+                    entry = { out, store };
+                    this.a.set(key, entry);
+                }
+                else {
+                    itemsToRemove.delete(key);
+                }
+                newItems.push(entry.out);
+            }
+            for (const item of itemsToRemove) {
+                const entry = this.a.get(item);
+                entry.store.dispose();
+                this.a.delete(item);
+            }
+            this.b = newItems;
+        }
+        getItems() {
+            return this.b;
+        }
+    }
+});
+
+define(__m[27/*vs/base/common/observableInternal/promise*/], __M([0/*require*/,1/*exports*/,7/*vs/base/common/observableInternal/autorun*/,6/*vs/base/common/observableInternal/base*/,8/*vs/base/common/observableInternal/derived*/,28/*vs/base/common/cancellation*/,4/*vs/base/common/observableInternal/debugName*/]), function (require, exports, autorun_1, base_1, derived_1, cancellation_1, debugName_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Zd = exports.$Yd = exports.$Xd = exports.$Wd = void 0;
+    exports.$1d = $1d;
+    exports.$2d = $2d;
+    class $Wd {
+        /**
+         * The cached value.
+         * Does not force a computation of the value.
+         */
+        get cachedValue() { return this.a; }
+        constructor(b) {
+            this.b = b;
+            this.a = (0, base_1.$Sd)(this, undefined);
+        }
+        /**
+         * Returns the cached value.
+         * Computes the value if the value has not been cached yet.
+         */
+        getValue() {
+            let v = this.a.get();
+            if (!v) {
+                v = this.b();
+                this.a.set(v, undefined);
+            }
+            return v;
+        }
+    }
+    exports.$Wd = $Wd;
+    /**
+     * A promise whose state is observable.
+     */
+    class $Xd {
+        constructor(promise) {
+            this.a = (0, base_1.$Sd)(this, undefined);
+            /**
+             * The current state of the promise.
+             * Is `undefined` if the promise didn't resolve yet.
+             */
+            this.promiseResult = this.a;
+            this.promise = promise.then(value => {
+                (0, base_1.$Nd)(tx => {
+                    /** @description onPromiseResolved */
+                    this.a.set(new $Yd(value, undefined), tx);
+                });
+                return value;
+            }, error => {
+                (0, base_1.$Nd)(tx => {
+                    /** @description onPromiseRejected */
+                    this.a.set(new $Yd(undefined, error), tx);
+                });
+                throw error;
+            });
+        }
+    }
+    exports.$Xd = $Xd;
+    class $Yd {
+        constructor(
+        /**
+         * The value of the resolved promise.
+         * Undefined if the promise rejected.
+         */
+        data, 
+        /**
+         * The error in case of a rejected promise.
+         * Undefined if the promise resolved.
+         */
+        error) {
+            this.data = data;
+            this.error = error;
+        }
+        /**
+         * Returns the value if the promise resolved, otherwise throws the error.
+         */
+        getDataOrThrow() {
+            if (this.error) {
+                throw this.error;
+            }
+            return this.data;
+        }
+    }
+    exports.$Yd = $Yd;
+    /**
+     * A lazy promise whose state is observable.
+     */
+    class $Zd {
+        constructor(b) {
+            this.b = b;
+            this.a = new $Wd(() => new $Xd(this.b()));
+            /**
+             * Does not enforce evaluation of the promise compute function.
+             * Is undefined if the promise has not been computed yet.
+             */
+            this.cachedPromiseResult = (0, derived_1.$Cd)(this, reader => this.a.cachedValue.read(reader)?.promiseResult.read(reader));
+        }
+        getPromise() {
+            return this.a.getValue().promise;
+        }
+    }
+    exports.$Zd = $Zd;
+    function $1d(observable, predicate, isError) {
+        return new Promise((resolve, reject) => {
+            let isImmediateRun = true;
+            let shouldDispose = false;
+            const stateObs = observable.map(state => {
+                /** @description waitForState.state */
+                return {
+                    isFinished: predicate(state),
+                    error: isError ? isError(state) : false,
+                    state
+                };
+            });
+            const d = (0, autorun_1.$cd)(reader => {
+                /** @description waitForState */
+                const { isFinished, error, state } = stateObs.read(reader);
+                if (isFinished || error) {
+                    if (isImmediateRun) {
+                        // The variable `d` is not initialized yet
+                        shouldDispose = true;
+                    }
+                    else {
+                        d.dispose();
+                    }
+                    if (error) {
+                        reject(error === true ? state : error);
+                    }
+                    else {
+                        resolve(state);
+                    }
+                }
+            });
+            isImmediateRun = false;
+            if (shouldDispose) {
+                d.dispose();
+            }
+        });
+    }
+    function $2d(computeFnOrOwner, computeFnOrUndefined) {
+        let computeFn;
+        let owner;
+        if (computeFnOrUndefined === undefined) {
+            computeFn = computeFnOrOwner;
+            owner = undefined;
+        }
+        else {
+            owner = computeFnOrOwner;
+            computeFn = computeFnOrUndefined;
+        }
+        let cancellationTokenSource = undefined;
+        return new derived_1.$Hd(new debugName_1.$6c(owner, undefined, computeFn), r => {
+            if (cancellationTokenSource) {
+                cancellationTokenSource.dispose(true);
+            }
+            cancellationTokenSource = new cancellation_1.$ee();
+            return computeFn(r, cancellationTokenSource.token);
+        }, undefined, undefined, () => cancellationTokenSource?.dispose(), derived_1.$Bd);
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[12/*vs/base/common/observable*/], __M([0/*require*/,1/*exports*/,6/*vs/base/common/observableInternal/base*/,8/*vs/base/common/observableInternal/derived*/,7/*vs/base/common/observableInternal/autorun*/,26/*vs/base/common/observableInternal/utils*/,27/*vs/base/common/observableInternal/promise*/,5/*vs/base/common/observableInternal/logging*/]), function (require, exports, base_1, derived_1, autorun_1, utils_1, promise_1, logging_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.derivedWithCancellationToken = exports.waitForState = exports.PromiseResult = exports.ObservablePromise = exports.ObservableLazyPromise = exports.ObservableLazy = exports.wasEventTriggeredRecently = exports.observableSignalFromEvent = exports.observableSignal = exports.observableFromPromise = exports.observableFromEvent = exports.recomputeInitiallyAndOnChange = exports.keepObserved = exports.derivedObservableWithWritableCache = exports.derivedObservableWithCache = exports.debouncedObservable = exports.constObservable = exports.autorunWithStoreHandleChanges = exports.autorunOpts = exports.autorunWithStore = exports.autorunHandleChanges = exports.autorunDelta = exports.autorun = exports.derivedWithStore = exports.derivedHandleChanges = exports.derivedOpts = exports.derived = exports.subtransaction = exports.transaction = exports.disposableObservableValue = exports.observableValue = void 0;
+    Object.defineProperty(exports, "observableValue", { enumerable: true, get: function () { return base_1.$Sd; } });
+    Object.defineProperty(exports, "disposableObservableValue", { enumerable: true, get: function () { return base_1.$Ud; } });
+    Object.defineProperty(exports, "transaction", { enumerable: true, get: function () { return base_1.$Nd; } });
+    Object.defineProperty(exports, "subtransaction", { enumerable: true, get: function () { return base_1.$Qd; } });
+    Object.defineProperty(exports, "derived", { enumerable: true, get: function () { return derived_1.$Cd; } });
+    Object.defineProperty(exports, "derivedOpts", { enumerable: true, get: function () { return derived_1.$Dd; } });
+    Object.defineProperty(exports, "derivedHandleChanges", { enumerable: true, get: function () { return derived_1.$Ed; } });
+    Object.defineProperty(exports, "derivedWithStore", { enumerable: true, get: function () { return derived_1.$Fd; } });
+    Object.defineProperty(exports, "autorun", { enumerable: true, get: function () { return autorun_1.$cd; } });
+    Object.defineProperty(exports, "autorunDelta", { enumerable: true, get: function () { return autorun_1.$hd; } });
+    Object.defineProperty(exports, "autorunHandleChanges", { enumerable: true, get: function () { return autorun_1.$ed; } });
+    Object.defineProperty(exports, "autorunWithStore", { enumerable: true, get: function () { return autorun_1.$gd; } });
+    Object.defineProperty(exports, "autorunOpts", { enumerable: true, get: function () { return autorun_1.$dd; } });
+    Object.defineProperty(exports, "autorunWithStoreHandleChanges", { enumerable: true, get: function () { return autorun_1.$fd; } });
+    Object.defineProperty(exports, "constObservable", { enumerable: true, get: function () { return utils_1.$jd; } });
+    Object.defineProperty(exports, "debouncedObservable", { enumerable: true, get: function () { return utils_1.$pd; } });
+    Object.defineProperty(exports, "derivedObservableWithCache", { enumerable: true, get: function () { return utils_1.$vd; } });
+    Object.defineProperty(exports, "derivedObservableWithWritableCache", { enumerable: true, get: function () { return utils_1.$wd; } });
+    Object.defineProperty(exports, "keepObserved", { enumerable: true, get: function () { return utils_1.$sd; } });
+    Object.defineProperty(exports, "recomputeInitiallyAndOnChange", { enumerable: true, get: function () { return utils_1.$td; } });
+    Object.defineProperty(exports, "observableFromEvent", { enumerable: true, get: function () { return utils_1.$ld; } });
+    Object.defineProperty(exports, "observableFromPromise", { enumerable: true, get: function () { return utils_1.$kd; } });
+    Object.defineProperty(exports, "observableSignal", { enumerable: true, get: function () { return utils_1.$od; } });
+    Object.defineProperty(exports, "observableSignalFromEvent", { enumerable: true, get: function () { return utils_1.$nd; } });
+    Object.defineProperty(exports, "wasEventTriggeredRecently", { enumerable: true, get: function () { return utils_1.$rd; } });
+    Object.defineProperty(exports, "ObservableLazy", { enumerable: true, get: function () { return promise_1.$Wd; } });
+    Object.defineProperty(exports, "ObservableLazyPromise", { enumerable: true, get: function () { return promise_1.$Zd; } });
+    Object.defineProperty(exports, "ObservablePromise", { enumerable: true, get: function () { return promise_1.$Xd; } });
+    Object.defineProperty(exports, "PromiseResult", { enumerable: true, get: function () { return promise_1.$Yd; } });
+    Object.defineProperty(exports, "waitForState", { enumerable: true, get: function () { return promise_1.$1d; } });
+    Object.defineProperty(exports, "derivedWithCancellationToken", { enumerable: true, get: function () { return promise_1.$2d; } });
+    // Remove "//" in the next line to enable logging
+    const enableLogging = false;
+    if (enableLogging) {
+        (0, logging_1.$yd)(new logging_1.$Ad());
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[29/*vs/base/common/stream*/], __M([0/*require*/,1/*exports*/,9/*vs/base/common/errors*/,2/*vs/base/common/lifecycle*/]), function (require, exports, errors_1, lifecycle_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$fe = $fe;
+    exports.$ge = $ge;
+    exports.$he = $he;
+    exports.$ie = $ie;
+    exports.$je = $je;
+    exports.$ke = $ke;
+    exports.$le = $le;
+    exports.$me = $me;
+    exports.$ne = $ne;
+    exports.$oe = $oe;
+    exports.$pe = $pe;
+    exports.$qe = $qe;
+    exports.$re = $re;
+    exports.$se = $se;
+    exports.$te = $te;
+    function $fe(obj) {
+        const candidate = obj;
+        if (!candidate) {
+            return false;
+        }
+        return typeof candidate.read === 'function';
+    }
+    function $ge(obj) {
+        const candidate = obj;
+        if (!candidate) {
+            return false;
+        }
+        return [candidate.on, candidate.pause, candidate.resume, candidate.destroy].every(fn => typeof fn === 'function');
+    }
+    function $he(obj) {
+        const candidate = obj;
+        if (!candidate) {
+            return false;
+        }
+        return $ge(candidate.stream) && Array.isArray(candidate.buffer) && typeof candidate.ended === 'boolean';
+    }
+    function $ie(reducer, options) {
+        return new WriteableStreamImpl(reducer, options);
+    }
+    class WriteableStreamImpl {
+        constructor(e, f) {
+            this.e = e;
+            this.f = f;
+            this.a = {
+                flowing: false,
+                ended: false,
+                destroyed: false
+            };
+            this.b = {
+                data: [],
+                error: []
+            };
+            this.c = {
+                data: [],
+                error: [],
+                end: []
+            };
+            this.d = [];
+        }
+        pause() {
+            if (this.a.destroyed) {
+                return;
+            }
+            this.a.flowing = false;
+        }
+        resume() {
+            if (this.a.destroyed) {
+                return;
+            }
+            if (!this.a.flowing) {
+                this.a.flowing = true;
+                // emit buffered events
+                this.j();
+                this.k();
+                this.l();
+            }
+        }
+        write(data) {
+            if (this.a.destroyed) {
+                return;
+            }
+            // flowing: directly send the data to listeners
+            if (this.a.flowing) {
+                this.g(data);
+            }
+            // not yet flowing: buffer data until flowing
+            else {
+                this.b.data.push(data);
+                // highWaterMark: if configured, signal back when buffer reached limits
+                if (typeof this.f?.highWaterMark === 'number' && this.b.data.length > this.f.highWaterMark) {
+                    return new Promise(resolve => this.d.push(resolve));
+                }
+            }
+        }
+        error(error) {
+            if (this.a.destroyed) {
+                return;
+            }
+            // flowing: directly send the error to listeners
+            if (this.a.flowing) {
+                this.h(error);
+            }
+            // not yet flowing: buffer errors until flowing
+            else {
+                this.b.error.push(error);
+            }
+        }
+        end(result) {
+            if (this.a.destroyed) {
+                return;
+            }
+            // end with data if provided
+            if (typeof result !== 'undefined') {
+                this.write(result);
+            }
+            // flowing: send end event to listeners
+            if (this.a.flowing) {
+                this.i();
+                this.destroy();
+            }
+            // not yet flowing: remember state
+            else {
+                this.a.ended = true;
+            }
+        }
+        g(data) {
+            this.c.data.slice(0).forEach(listener => listener(data)); // slice to avoid listener mutation from delivering event
+        }
+        h(error) {
+            if (this.c.error.length === 0) {
+                (0, errors_1.$1)(error); // nobody listened to this error so we log it as unexpected
+            }
+            else {
+                this.c.error.slice(0).forEach(listener => listener(error)); // slice to avoid listener mutation from delivering event
+            }
+        }
+        i() {
+            this.c.end.slice(0).forEach(listener => listener()); // slice to avoid listener mutation from delivering event
+        }
+        on(event, callback) {
+            if (this.a.destroyed) {
+                return;
+            }
+            switch (event) {
+                case 'data':
+                    this.c.data.push(callback);
+                    // switch into flowing mode as soon as the first 'data'
+                    // listener is added and we are not yet in flowing mode
+                    this.resume();
+                    break;
+                case 'end':
+                    this.c.end.push(callback);
+                    // emit 'end' event directly if we are flowing
+                    // and the end has already been reached
+                    //
+                    // finish() when it went through
+                    if (this.a.flowing && this.l()) {
+                        this.destroy();
+                    }
+                    break;
+                case 'error':
+                    this.c.error.push(callback);
+                    // emit buffered 'error' events unless done already
+                    // now that we know that we have at least one listener
+                    if (this.a.flowing) {
+                        this.k();
+                    }
+                    break;
+            }
+        }
+        removeListener(event, callback) {
+            if (this.a.destroyed) {
+                return;
+            }
+            let listeners = undefined;
+            switch (event) {
+                case 'data':
+                    listeners = this.c.data;
+                    break;
+                case 'end':
+                    listeners = this.c.end;
+                    break;
+                case 'error':
+                    listeners = this.c.error;
+                    break;
+            }
+            if (listeners) {
+                const index = listeners.indexOf(callback);
+                if (index >= 0) {
+                    listeners.splice(index, 1);
+                }
+            }
+        }
+        j() {
+            if (this.b.data.length > 0) {
+                const fullDataBuffer = this.e(this.b.data);
+                this.g(fullDataBuffer);
+                this.b.data.length = 0;
+                // When the buffer is empty, resolve all pending writers
+                const pendingWritePromises = [...this.d];
+                this.d.length = 0;
+                pendingWritePromises.forEach(pendingWritePromise => pendingWritePromise());
+            }
+        }
+        k() {
+            if (this.c.error.length > 0) {
+                for (const error of this.b.error) {
+                    this.h(error);
+                }
+                this.b.error.length = 0;
+            }
+        }
+        l() {
+            if (this.a.ended) {
+                this.i();
+                return this.c.end.length > 0;
+            }
+            return false;
+        }
+        destroy() {
+            if (!this.a.destroyed) {
+                this.a.destroyed = true;
+                this.a.ended = true;
+                this.b.data.length = 0;
+                this.b.error.length = 0;
+                this.c.data.length = 0;
+                this.c.error.length = 0;
+                this.c.end.length = 0;
+                this.d.length = 0;
+            }
+        }
+    }
+    /**
+     * Helper to fully read a T readable into a T.
+     */
+    function $je(readable, reducer) {
+        const chunks = [];
+        let chunk;
+        while ((chunk = readable.read()) !== null) {
+            chunks.push(chunk);
+        }
+        return reducer(chunks);
+    }
+    /**
+     * Helper to read a T readable up to a maximum of chunks. If the limit is
+     * reached, will return a readable instead to ensure all data can still
+     * be read.
+     */
+    function $ke(readable, reducer, maxChunks) {
+        const chunks = [];
+        let chunk = undefined;
+        while ((chunk = readable.read()) !== null && chunks.length < maxChunks) {
+            chunks.push(chunk);
+        }
+        // If the last chunk is null, it means we reached the end of
+        // the readable and return all the data at once
+        if (chunk === null && chunks.length > 0) {
+            return reducer(chunks);
+        }
+        // Otherwise, we still have a chunk, it means we reached the maxChunks
+        // value and as such we return a new Readable that first returns
+        // the existing read chunks and then continues with reading from
+        // the underlying readable.
+        return {
+            read: () => {
+                // First consume chunks from our array
+                if (chunks.length > 0) {
+                    return chunks.shift();
+                }
+                // Then ensure to return our last read chunk
+                if (typeof chunk !== 'undefined') {
+                    const lastReadChunk = chunk;
+                    // explicitly use undefined here to indicate that we consumed
+                    // the chunk, which could have either been null or valued.
+                    chunk = undefined;
+                    return lastReadChunk;
+                }
+                // Finally delegate back to the Readable
+                return readable.read();
+            }
+        };
+    }
+    function $le(stream, reducer) {
+        return new Promise((resolve, reject) => {
+            const chunks = [];
+            $me(stream, {
+                onData: chunk => {
+                    if (reducer) {
+                        chunks.push(chunk);
+                    }
+                },
+                onError: error => {
+                    if (reducer) {
+                        reject(error);
+                    }
+                    else {
+                        resolve(undefined);
+                    }
+                },
+                onEnd: () => {
+                    if (reducer) {
+                        resolve(reducer(chunks));
+                    }
+                    else {
+                        resolve(undefined);
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Helper to listen to all events of a T stream in proper order.
+     */
+    function $me(stream, listener, token) {
+        stream.on('error', error => {
+            if (!token?.isCancellationRequested) {
+                listener.onError(error);
+            }
+        });
+        stream.on('end', () => {
+            if (!token?.isCancellationRequested) {
+                listener.onEnd();
+            }
+        });
+        // Adding the `data` listener will turn the stream
+        // into flowing mode. As such it is important to
+        // add this listener last (DO NOT CHANGE!)
+        stream.on('data', data => {
+            if (!token?.isCancellationRequested) {
+                listener.onData(data);
+            }
+        });
+    }
+    /**
+     * Helper to peek up to `maxChunks` into a stream. The return type signals if
+     * the stream has ended or not. If not, caller needs to add a `data` listener
+     * to continue reading.
+     */
+    function $ne(stream, maxChunks) {
+        return new Promise((resolve, reject) => {
+            const streamListeners = new lifecycle_1.$Tc();
+            const buffer = [];
+            // Data Listener
+            const dataListener = (chunk) => {
+                // Add to buffer
+                buffer.push(chunk);
+                // We reached maxChunks and thus need to return
+                if (buffer.length > maxChunks) {
+                    // Dispose any listeners and ensure to pause the
+                    // stream so that it can be consumed again by caller
+                    streamListeners.dispose();
+                    stream.pause();
+                    return resolve({ stream, buffer, ended: false });
+                }
+            };
+            // Error Listener
+            const errorListener = (error) => {
+                streamListeners.dispose();
+                return reject(error);
+            };
+            // End Listener
+            const endListener = () => {
+                streamListeners.dispose();
+                return resolve({ stream, buffer, ended: true });
+            };
+            streamListeners.add((0, lifecycle_1.$Sc)(() => stream.removeListener('error', errorListener)));
+            stream.on('error', errorListener);
+            streamListeners.add((0, lifecycle_1.$Sc)(() => stream.removeListener('end', endListener)));
+            stream.on('end', endListener);
+            // Important: leave the `data` listener last because
+            // this can turn the stream into flowing mode and we
+            // want `error` events to be received as well.
+            streamListeners.add((0, lifecycle_1.$Sc)(() => stream.removeListener('data', dataListener)));
+            stream.on('data', dataListener);
+        });
+    }
+    /**
+     * Helper to create a readable stream from an existing T.
+     */
+    function $oe(t, reducer) {
+        const stream = $ie(reducer);
+        stream.end(t);
+        return stream;
+    }
+    /**
+     * Helper to create an empty stream
+     */
+    function $pe() {
+        const stream = $ie(() => { throw new Error('not supported'); });
+        stream.end();
+        return stream;
+    }
+    /**
+     * Helper to convert a T into a Readable<T>.
+     */
+    function $qe(t) {
+        let consumed = false;
+        return {
+            read: () => {
+                if (consumed) {
+                    return null;
+                }
+                consumed = true;
+                return t;
+            }
+        };
+    }
+    /**
+     * Helper to transform a readable stream into another stream.
+     */
+    function $re(stream, transformer, reducer) {
+        const target = $ie(reducer);
+        $me(stream, {
+            onData: data => target.write(transformer.data(data)),
+            onError: error => target.error(transformer.error ? transformer.error(error) : error),
+            onEnd: () => target.end()
+        });
+        return target;
+    }
+    /**
+     * Helper to take an existing readable that will
+     * have a prefix injected to the beginning.
+     */
+    function $se(prefix, readable, reducer) {
+        let prefixHandled = false;
+        return {
+            read: () => {
+                const chunk = readable.read();
+                // Handle prefix only once
+                if (!prefixHandled) {
+                    prefixHandled = true;
+                    // If we have also a read-result, make
+                    // sure to reduce it to a single result
+                    if (chunk !== null) {
+                        return reducer([prefix, chunk]);
+                    }
+                    // Otherwise, just return prefix directly
+                    return prefix;
+                }
+                return chunk;
+            }
+        };
+    }
+    /**
+     * Helper to take an existing stream that will
+     * have a prefix injected to the beginning.
+     */
+    function $te(prefix, stream, reducer) {
+        let prefixHandled = false;
+        const target = $ie(reducer);
+        $me(stream, {
+            onData: data => {
+                // Handle prefix only once
+                if (!prefixHandled) {
+                    prefixHandled = true;
+                    return target.write(reducer([prefix, data]));
+                }
+                return target.write(data);
+            },
+            onError: error => target.error(error),
+            onEnd: () => {
+                // Handle prefix only once
+                if (!prefixHandled) {
+                    prefixHandled = true;
+                    target.write(prefix);
+                }
+                target.end();
+            }
+        });
+        return target;
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[13/*vs/base/common/buffer*/], __M([0/*require*/,1/*exports*/,30/*vs/base/common/lazy*/,29/*vs/base/common/stream*/]), function (require, exports, lazy_1, streams) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$ue = void 0;
+    exports.$ve = $ve;
+    exports.$we = $we;
+    exports.$xe = $xe;
+    exports.$ye = $ye;
+    exports.$ze = $ze;
+    exports.$Ae = $Ae;
+    exports.$Be = $Be;
+    exports.$Ce = $Ce;
+    exports.$De = $De;
+    exports.$Ee = $Ee;
+    exports.$Fe = $Fe;
+    exports.$Ge = $Ge;
+    exports.$He = $He;
+    exports.$Ie = $Ie;
+    exports.$Je = $Je;
+    exports.$Ke = $Ke;
+    exports.$Le = $Le;
+    exports.$Me = $Me;
+    exports.$Ne = $Ne;
+    exports.$Oe = $Oe;
+    const hasBuffer = (typeof Buffer !== 'undefined');
+    const indexOfTable = new lazy_1.$V(() => new Uint8Array(256));
+    let textEncoder;
+    let textDecoder;
+    class $ue {
+        /**
+         * When running in a nodejs context, the backing store for the returned `VSBuffer` instance
+         * might use a nodejs Buffer allocated from node's Buffer pool, which is not transferrable.
+         */
+        static alloc(byteLength) {
+            if (hasBuffer) {
+                return new $ue(Buffer.allocUnsafe(byteLength));
+            }
+            else {
+                return new $ue(new Uint8Array(byteLength));
+            }
+        }
+        /**
+         * When running in a nodejs context, if `actual` is not a nodejs Buffer, the backing store for
+         * the returned `VSBuffer` instance might use a nodejs Buffer allocated from node's Buffer pool,
+         * which is not transferrable.
+         */
+        static wrap(actual) {
+            if (hasBuffer && !(Buffer.isBuffer(actual))) {
+                // https://nodejs.org/dist/latest-v10.x/docs/api/buffer.html#buffer_class_method_buffer_from_arraybuffer_byteoffset_length
+                // Create a zero-copy Buffer wrapper around the ArrayBuffer pointed to by the Uint8Array
+                actual = Buffer.from(actual.buffer, actual.byteOffset, actual.byteLength);
+            }
+            return new $ue(actual);
+        }
+        /**
+         * When running in a nodejs context, the backing store for the returned `VSBuffer` instance
+         * might use a nodejs Buffer allocated from node's Buffer pool, which is not transferrable.
+         */
+        static fromString(source, options) {
+            const dontUseNodeBuffer = options?.dontUseNodeBuffer || false;
+            if (!dontUseNodeBuffer && hasBuffer) {
+                return new $ue(Buffer.from(source));
+            }
+            else {
+                if (!textEncoder) {
+                    textEncoder = new TextEncoder();
+                }
+                return new $ue(textEncoder.encode(source));
+            }
+        }
+        /**
+         * When running in a nodejs context, the backing store for the returned `VSBuffer` instance
+         * might use a nodejs Buffer allocated from node's Buffer pool, which is not transferrable.
+         */
+        static fromByteArray(source) {
+            const result = $ue.alloc(source.length);
+            for (let i = 0, len = source.length; i < len; i++) {
+                result.buffer[i] = source[i];
+            }
+            return result;
+        }
+        /**
+         * When running in a nodejs context, the backing store for the returned `VSBuffer` instance
+         * might use a nodejs Buffer allocated from node's Buffer pool, which is not transferrable.
+         */
+        static concat(buffers, totalLength) {
+            if (typeof totalLength === 'undefined') {
+                totalLength = 0;
+                for (let i = 0, len = buffers.length; i < len; i++) {
+                    totalLength += buffers[i].byteLength;
+                }
+            }
+            const ret = $ue.alloc(totalLength);
+            let offset = 0;
+            for (let i = 0, len = buffers.length; i < len; i++) {
+                const element = buffers[i];
+                ret.set(element, offset);
+                offset += element.byteLength;
+            }
+            return ret;
+        }
+        constructor(buffer) {
+            this.buffer = buffer;
+            this.byteLength = this.buffer.byteLength;
+        }
+        /**
+         * When running in a nodejs context, the backing store for the returned `VSBuffer` instance
+         * might use a nodejs Buffer allocated from node's Buffer pool, which is not transferrable.
+         */
+        clone() {
+            const result = $ue.alloc(this.byteLength);
+            result.set(this);
+            return result;
+        }
+        toString() {
+            if (hasBuffer) {
+                return this.buffer.toString();
+            }
+            else {
+                if (!textDecoder) {
+                    textDecoder = new TextDecoder();
+                }
+                return textDecoder.decode(this.buffer);
+            }
+        }
+        slice(start, end) {
+            // IMPORTANT: use subarray instead of slice because TypedArray#slice
+            // creates shallow copy and NodeBuffer#slice doesn't. The use of subarray
+            // ensures the same, performance, behaviour.
+            return new $ue(this.buffer.subarray(start, end));
+        }
+        set(array, offset) {
+            if (array instanceof $ue) {
+                this.buffer.set(array.buffer, offset);
+            }
+            else if (array instanceof Uint8Array) {
+                this.buffer.set(array, offset);
+            }
+            else if (array instanceof ArrayBuffer) {
+                this.buffer.set(new Uint8Array(array), offset);
+            }
+            else if (ArrayBuffer.isView(array)) {
+                this.buffer.set(new Uint8Array(array.buffer, array.byteOffset, array.byteLength), offset);
+            }
+            else {
+                throw new Error(`Unknown argument 'array'`);
+            }
+        }
+        readUInt32BE(offset) {
+            return $ye(this.buffer, offset);
+        }
+        writeUInt32BE(value, offset) {
+            $ze(this.buffer, value, offset);
+        }
+        readUInt32LE(offset) {
+            return $Ae(this.buffer, offset);
+        }
+        writeUInt32LE(value, offset) {
+            $Be(this.buffer, value, offset);
+        }
+        readUInt8(offset) {
+            return $Ce(this.buffer, offset);
+        }
+        writeUInt8(value, offset) {
+            $De(this.buffer, value, offset);
+        }
+        indexOf(subarray, offset = 0) {
+            return $ve(this.buffer, subarray instanceof $ue ? subarray.buffer : subarray, offset);
+        }
+    }
+    exports.$ue = $ue;
+    /**
+     * Like String.indexOf, but works on Uint8Arrays.
+     * Uses the boyer-moore-horspool algorithm to be reasonably speedy.
+     */
+    function $ve(haystack, needle, offset = 0) {
+        const needleLen = needle.byteLength;
+        const haystackLen = haystack.byteLength;
+        if (needleLen === 0) {
+            return 0;
+        }
+        if (needleLen === 1) {
+            return haystack.indexOf(needle[0]);
+        }
+        if (needleLen > haystackLen - offset) {
+            return -1;
+        }
+        // find index of the subarray using boyer-moore-horspool algorithm
+        const table = indexOfTable.value;
+        table.fill(needle.length);
+        for (let i = 0; i < needle.length; i++) {
+            table[needle[i]] = needle.length - i - 1;
+        }
+        let i = offset + needle.length - 1;
+        let j = i;
+        let result = -1;
+        while (i < haystackLen) {
+            if (haystack[i] === needle[j]) {
+                if (j === 0) {
+                    result = i;
+                    break;
+                }
+                i--;
+                j--;
+            }
+            else {
+                i += Math.max(needle.length - j, table[haystack[i]]);
+                j = needle.length - 1;
+            }
+        }
+        return result;
+    }
+    function $we(source, offset) {
+        return (((source[offset + 0] << 0) >>> 0) |
+            ((source[offset + 1] << 8) >>> 0));
+    }
+    function $xe(destination, value, offset) {
+        destination[offset + 0] = (value & 0b11111111);
+        value = value >>> 8;
+        destination[offset + 1] = (value & 0b11111111);
+    }
+    function $ye(source, offset) {
+        return (source[offset] * 2 ** 24
+            + source[offset + 1] * 2 ** 16
+            + source[offset + 2] * 2 ** 8
+            + source[offset + 3]);
+    }
+    function $ze(destination, value, offset) {
+        destination[offset + 3] = value;
+        value = value >>> 8;
+        destination[offset + 2] = value;
+        value = value >>> 8;
+        destination[offset + 1] = value;
+        value = value >>> 8;
+        destination[offset] = value;
+    }
+    function $Ae(source, offset) {
+        return (((source[offset + 0] << 0) >>> 0) |
+            ((source[offset + 1] << 8) >>> 0) |
+            ((source[offset + 2] << 16) >>> 0) |
+            ((source[offset + 3] << 24) >>> 0));
+    }
+    function $Be(destination, value, offset) {
+        destination[offset + 0] = (value & 0b11111111);
+        value = value >>> 8;
+        destination[offset + 1] = (value & 0b11111111);
+        value = value >>> 8;
+        destination[offset + 2] = (value & 0b11111111);
+        value = value >>> 8;
+        destination[offset + 3] = (value & 0b11111111);
+    }
+    function $Ce(source, offset) {
+        return source[offset];
+    }
+    function $De(destination, value, offset) {
+        destination[offset] = value;
+    }
+    function $Ee(readable) {
+        return streams.$je(readable, chunks => $ue.concat(chunks));
+    }
+    function $Fe(buffer) {
+        return streams.$qe(buffer);
+    }
+    function $Ge(stream) {
+        return streams.$le(stream, chunks => $ue.concat(chunks));
+    }
+    async function $He(bufferedStream) {
+        if (bufferedStream.ended) {
+            return $ue.concat(bufferedStream.buffer);
+        }
+        return $ue.concat([
+            // Include already read chunks...
+            ...bufferedStream.buffer,
+            // ...and all additional chunks
+            await $Ge(bufferedStream.stream)
+        ]);
+    }
+    function $Ie(buffer) {
+        return streams.$oe(buffer, chunks => $ue.concat(chunks));
+    }
+    function $Je(stream) {
+        return streams.$re(stream, { data: data => typeof data === 'string' ? $ue.fromString(data) : $ue.wrap(data) }, chunks => $ue.concat(chunks));
+    }
+    function $Ke(options) {
+        return streams.$ie(chunks => $ue.concat(chunks), options);
+    }
+    function $Le(prefix, readable) {
+        return streams.$se(prefix, readable, chunks => $ue.concat(chunks));
+    }
+    function $Me(prefix, stream) {
+        return streams.$te(prefix, stream, chunks => $ue.concat(chunks));
+    }
+    /** Decodes base64 to a uint8 array. URL-encoded and unpadded base64 is allowed. */
+    function $Ne(encoded) {
+        let building = 0;
+        let remainder = 0;
+        let bufi = 0;
+        // The simpler way to do this is `Uint8Array.from(atob(str), c => c.charCodeAt(0))`,
+        // but that's about 10-20x slower than this function in current Chromium versions.
+        const buffer = new Uint8Array(Math.floor(encoded.length / 4 * 3));
+        const append = (value) => {
+            switch (remainder) {
+                case 3:
+                    buffer[bufi++] = building | value;
+                    remainder = 0;
+                    break;
+                case 2:
+                    buffer[bufi++] = building | (value >>> 2);
+                    building = value << 6;
+                    remainder = 3;
+                    break;
+                case 1:
+                    buffer[bufi++] = building | (value >>> 4);
+                    building = value << 4;
+                    remainder = 2;
+                    break;
+                default:
+                    building = value << 2;
+                    remainder = 1;
+            }
+        };
+        for (let i = 0; i < encoded.length; i++) {
+            const code = encoded.charCodeAt(i);
+            // See https://datatracker.ietf.org/doc/html/rfc4648#section-4
+            // This branchy code is about 3x faster than an indexOf on a base64 char string.
+            if (code >= 65 && code <= 90) {
+                append(code - 65); // A-Z starts ranges from char code 65 to 90
+            }
+            else if (code >= 97 && code <= 122) {
+                append(code - 97 + 26); // a-z starts ranges from char code 97 to 122, starting at byte 26
+            }
+            else if (code >= 48 && code <= 57) {
+                append(code - 48 + 52); // 0-9 starts ranges from char code 48 to 58, starting at byte 52
+            }
+            else if (code === 43 || code === 45) {
+                append(62); // "+" or "-" for URLS
+            }
+            else if (code === 47 || code === 95) {
+                append(63); // "/" or "_" for URLS
+            }
+            else if (code === 61) {
+                break; // "="
+            }
+            else {
+                throw new SyntaxError(`Unexpected base64 character ${encoded[i]}`);
+            }
+        }
+        const unpadded = bufi;
+        while (remainder > 0) {
+            append(0);
+        }
+        // slice is needed to account for overestimation due to padding
+        return $ue.wrap(buffer).slice(0, unpadded);
+    }
+    const base64Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    const base64UrlSafeAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    /** Encodes a buffer to a base64 string. */
+    function $Oe({ buffer }, padded = true, urlSafe = false) {
+        const dictionary = urlSafe ? base64UrlSafeAlphabet : base64Alphabet;
+        let output = '';
+        const remainder = buffer.byteLength % 3;
+        let i = 0;
+        for (; i < buffer.byteLength - remainder; i += 3) {
+            const a = buffer[i + 0];
+            const b = buffer[i + 1];
+            const c = buffer[i + 2];
+            output += dictionary[a >>> 2];
+            output += dictionary[(a << 4 | b >>> 4) & 0b111111];
+            output += dictionary[(b << 2 | c >>> 6) & 0b111111];
+            output += dictionary[c & 0b111111];
+        }
+        if (remainder === 1) {
+            const a = buffer[i + 0];
+            output += dictionary[a >>> 2];
+            output += dictionary[(a << 4) & 0b111111];
+            if (padded) {
+                output += '==';
+            }
+        }
+        else if (remainder === 2) {
+            const a = buffer[i + 0];
+            const b = buffer[i + 1];
+            output += dictionary[a >>> 2];
+            output += dictionary[(a << 4 | b >>> 4) & 0b111111];
+            output += dictionary[(b << 2) & 0b111111];
+            if (padded) {
+                output += '=';
+            }
+        }
+        return output;
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[31/*vs/base/common/symbols*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$4d = void 0;
+    /**
+     * Can be passed into the Delayed to defer using a microtask
+     * */
+    exports.$4d = Symbol('MicrotaskDelay');
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[14/*vs/editor/common/core/eolCounter*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.StringEOL = void 0;
+    exports.$Ot = $Ot;
+    var StringEOL;
+    (function (StringEOL) {
+        StringEOL[StringEOL["Unknown"] = 0] = "Unknown";
+        StringEOL[StringEOL["Invalid"] = 3] = "Invalid";
+        StringEOL[StringEOL["LF"] = 1] = "LF";
+        StringEOL[StringEOL["CRLF"] = 2] = "CRLF";
+    })(StringEOL || (exports.StringEOL = StringEOL = {}));
+    function $Ot(text) {
+        let eolCount = 0;
+        let firstLineLength = 0;
+        let lastLineStart = 0;
+        let eol = 0 /* StringEOL.Unknown */;
+        for (let i = 0, len = text.length; i < len; i++) {
+            const chr = text.charCodeAt(i);
+            if (chr === 13 /* CharCode.CarriageReturn */) {
+                if (eolCount === 0) {
+                    firstLineLength = i;
+                }
+                eolCount++;
+                if (i + 1 < len && text.charCodeAt(i + 1) === 10 /* CharCode.LineFeed */) {
+                    // \r\n... case
+                    eol |= 2 /* StringEOL.CRLF */;
+                    i++; // skip \n
+                }
+                else {
+                    // \r... case
+                    eol |= 3 /* StringEOL.Invalid */;
+                }
+                lastLineStart = i + 1;
+            }
+            else if (chr === 10 /* CharCode.LineFeed */) {
+                // \n... case
+                eol |= 1 /* StringEOL.LF */;
+                if (eolCount === 0) {
+                    firstLineLength = i;
+                }
+                eolCount++;
+                lastLineStart = i + 1;
+            }
+        }
+        if (eolCount === 0) {
+            firstLineLength = text.length;
+        }
+        return [eolCount, firstLineLength, text.length - lastLineStart, eol];
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[15/*vs/editor/common/encodedTokenAttributes*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Mt = exports.MetadataConsts = exports.StandardTokenType = exports.ColorId = exports.FontStyle = exports.LanguageId = void 0;
+    /**
+     * Open ended enum at runtime
+     */
+    var LanguageId;
+    (function (LanguageId) {
+        LanguageId[LanguageId["Null"] = 0] = "Null";
+        LanguageId[LanguageId["PlainText"] = 1] = "PlainText";
+    })(LanguageId || (exports.LanguageId = LanguageId = {}));
+    /**
+     * A font style. Values are 2^x such that a bit mask can be used.
+     */
+    var FontStyle;
+    (function (FontStyle) {
+        FontStyle[FontStyle["NotSet"] = -1] = "NotSet";
+        FontStyle[FontStyle["None"] = 0] = "None";
+        FontStyle[FontStyle["Italic"] = 1] = "Italic";
+        FontStyle[FontStyle["Bold"] = 2] = "Bold";
+        FontStyle[FontStyle["Underline"] = 4] = "Underline";
+        FontStyle[FontStyle["Strikethrough"] = 8] = "Strikethrough";
+    })(FontStyle || (exports.FontStyle = FontStyle = {}));
+    /**
+     * Open ended enum at runtime
+     */
+    var ColorId;
+    (function (ColorId) {
+        ColorId[ColorId["None"] = 0] = "None";
+        ColorId[ColorId["DefaultForeground"] = 1] = "DefaultForeground";
+        ColorId[ColorId["DefaultBackground"] = 2] = "DefaultBackground";
+    })(ColorId || (exports.ColorId = ColorId = {}));
+    /**
+     * A standard token type.
+     */
+    var StandardTokenType;
+    (function (StandardTokenType) {
+        StandardTokenType[StandardTokenType["Other"] = 0] = "Other";
+        StandardTokenType[StandardTokenType["Comment"] = 1] = "Comment";
+        StandardTokenType[StandardTokenType["String"] = 2] = "String";
+        StandardTokenType[StandardTokenType["RegEx"] = 3] = "RegEx";
+    })(StandardTokenType || (exports.StandardTokenType = StandardTokenType = {}));
+    /**
+     * Helpers to manage the "collapsed" metadata of an entire StackElement stack.
+     * The following assumptions have been made:
+     *  - languageId < 256 => needs 8 bits
+     *  - unique color count < 512 => needs 9 bits
+     *
+     * The binary format is:
+     * - -------------------------------------------
+     *     3322 2222 2222 1111 1111 1100 0000 0000
+     *     1098 7654 3210 9876 5432 1098 7654 3210
+     * - -------------------------------------------
+     *     xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+     *     bbbb bbbb ffff ffff fFFF FBTT LLLL LLLL
+     * - -------------------------------------------
+     *  - L = LanguageId (8 bits)
+     *  - T = StandardTokenType (2 bits)
+     *  - B = Balanced bracket (1 bit)
+     *  - F = FontStyle (4 bits)
+     *  - f = foreground color (9 bits)
+     *  - b = background color (9 bits)
+     *
+     */
+    var MetadataConsts;
+    (function (MetadataConsts) {
+        MetadataConsts[MetadataConsts["LANGUAGEID_MASK"] = 255] = "LANGUAGEID_MASK";
+        MetadataConsts[MetadataConsts["TOKEN_TYPE_MASK"] = 768] = "TOKEN_TYPE_MASK";
+        MetadataConsts[MetadataConsts["BALANCED_BRACKETS_MASK"] = 1024] = "BALANCED_BRACKETS_MASK";
+        MetadataConsts[MetadataConsts["FONT_STYLE_MASK"] = 30720] = "FONT_STYLE_MASK";
+        MetadataConsts[MetadataConsts["FOREGROUND_MASK"] = 16744448] = "FOREGROUND_MASK";
+        MetadataConsts[MetadataConsts["BACKGROUND_MASK"] = 4278190080] = "BACKGROUND_MASK";
+        MetadataConsts[MetadataConsts["ITALIC_MASK"] = 2048] = "ITALIC_MASK";
+        MetadataConsts[MetadataConsts["BOLD_MASK"] = 4096] = "BOLD_MASK";
+        MetadataConsts[MetadataConsts["UNDERLINE_MASK"] = 8192] = "UNDERLINE_MASK";
+        MetadataConsts[MetadataConsts["STRIKETHROUGH_MASK"] = 16384] = "STRIKETHROUGH_MASK";
+        // Semantic tokens cannot set the language id, so we can
+        // use the first 8 bits for control purposes
+        MetadataConsts[MetadataConsts["SEMANTIC_USE_ITALIC"] = 1] = "SEMANTIC_USE_ITALIC";
+        MetadataConsts[MetadataConsts["SEMANTIC_USE_BOLD"] = 2] = "SEMANTIC_USE_BOLD";
+        MetadataConsts[MetadataConsts["SEMANTIC_USE_UNDERLINE"] = 4] = "SEMANTIC_USE_UNDERLINE";
+        MetadataConsts[MetadataConsts["SEMANTIC_USE_STRIKETHROUGH"] = 8] = "SEMANTIC_USE_STRIKETHROUGH";
+        MetadataConsts[MetadataConsts["SEMANTIC_USE_FOREGROUND"] = 16] = "SEMANTIC_USE_FOREGROUND";
+        MetadataConsts[MetadataConsts["SEMANTIC_USE_BACKGROUND"] = 32] = "SEMANTIC_USE_BACKGROUND";
+        MetadataConsts[MetadataConsts["LANGUAGEID_OFFSET"] = 0] = "LANGUAGEID_OFFSET";
+        MetadataConsts[MetadataConsts["TOKEN_TYPE_OFFSET"] = 8] = "TOKEN_TYPE_OFFSET";
+        MetadataConsts[MetadataConsts["BALANCED_BRACKETS_OFFSET"] = 10] = "BALANCED_BRACKETS_OFFSET";
+        MetadataConsts[MetadataConsts["FONT_STYLE_OFFSET"] = 11] = "FONT_STYLE_OFFSET";
+        MetadataConsts[MetadataConsts["FOREGROUND_OFFSET"] = 15] = "FOREGROUND_OFFSET";
+        MetadataConsts[MetadataConsts["BACKGROUND_OFFSET"] = 24] = "BACKGROUND_OFFSET";
+    })(MetadataConsts || (exports.MetadataConsts = MetadataConsts = {}));
+    /**
+     */
+    class $Mt {
+        static getLanguageId(metadata) {
+            return (metadata & 255 /* MetadataConsts.LANGUAGEID_MASK */) >>> 0 /* MetadataConsts.LANGUAGEID_OFFSET */;
+        }
+        static getTokenType(metadata) {
+            return (metadata & 768 /* MetadataConsts.TOKEN_TYPE_MASK */) >>> 8 /* MetadataConsts.TOKEN_TYPE_OFFSET */;
+        }
+        static containsBalancedBrackets(metadata) {
+            return (metadata & 1024 /* MetadataConsts.BALANCED_BRACKETS_MASK */) !== 0;
+        }
+        static getFontStyle(metadata) {
+            return (metadata & 30720 /* MetadataConsts.FONT_STYLE_MASK */) >>> 11 /* MetadataConsts.FONT_STYLE_OFFSET */;
+        }
+        static getForeground(metadata) {
+            return (metadata & 16744448 /* MetadataConsts.FOREGROUND_MASK */) >>> 15 /* MetadataConsts.FOREGROUND_OFFSET */;
+        }
+        static getBackground(metadata) {
+            return (metadata & 4278190080 /* MetadataConsts.BACKGROUND_MASK */) >>> 24 /* MetadataConsts.BACKGROUND_OFFSET */;
+        }
+        static getClassNameFromMetadata(metadata) {
+            const foreground = this.getForeground(metadata);
+            let className = 'mtk' + foreground;
+            const fontStyle = this.getFontStyle(metadata);
+            if (fontStyle & 1 /* FontStyle.Italic */) {
+                className += ' mtki';
+            }
+            if (fontStyle & 2 /* FontStyle.Bold */) {
+                className += ' mtkb';
+            }
+            if (fontStyle & 4 /* FontStyle.Underline */) {
+                className += ' mtku';
+            }
+            if (fontStyle & 8 /* FontStyle.Strikethrough */) {
+                className += ' mtks';
+            }
+            return className;
+        }
+        static getInlineStyleFromMetadata(metadata, colorMap) {
+            const foreground = this.getForeground(metadata);
+            const fontStyle = this.getFontStyle(metadata);
+            let result = `color: ${colorMap[foreground]};`;
+            if (fontStyle & 1 /* FontStyle.Italic */) {
+                result += 'font-style: italic;';
+            }
+            if (fontStyle & 2 /* FontStyle.Bold */) {
+                result += 'font-weight: bold;';
+            }
+            let textDecoration = '';
+            if (fontStyle & 4 /* FontStyle.Underline */) {
+                textDecoration += ' underline';
+            }
+            if (fontStyle & 8 /* FontStyle.Strikethrough */) {
+                textDecoration += ' line-through';
+            }
+            if (textDecoration) {
+                result += `text-decoration:${textDecoration};`;
+            }
+            return result;
+        }
+        static getPresentationFromMetadata(metadata) {
+            const foreground = this.getForeground(metadata);
+            const fontStyle = this.getFontStyle(metadata);
+            return {
+                foreground: foreground,
+                italic: Boolean(fontStyle & 1 /* FontStyle.Italic */),
+                bold: Boolean(fontStyle & 2 /* FontStyle.Bold */),
+                underline: Boolean(fontStyle & 4 /* FontStyle.Underline */),
+                strikethrough: Boolean(fontStyle & 8 /* FontStyle.Strikethrough */),
+            };
+        }
+    }
+    exports.$Mt = $Mt;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[32/*vs/editor/common/model/fixedArray*/], __M([0/*require*/,1/*exports*/,33/*vs/base/common/arrays*/]), function (require, exports, arrays_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$IC = void 0;
+    /**
+     * An array that avoids being sparse by always
+     * filling up unused indices with a default value.
+     */
+    class $IC {
+        constructor(b) {
+            this.b = b;
+            this.a = [];
+        }
+        get(index) {
+            if (index < this.a.length) {
+                return this.a[index];
+            }
+            return this.b;
+        }
+        set(index, value) {
+            while (index >= this.a.length) {
+                this.a[this.a.length] = this.b;
+            }
+            this.a[index] = value;
+        }
+        replace(index, oldLength, newLength) {
+            if (index >= this.a.length) {
+                return;
+            }
+            if (oldLength === 0) {
+                this.insert(index, newLength);
+                return;
+            }
+            else if (newLength === 0) {
+                this.delete(index, oldLength);
+                return;
+            }
+            const before = this.a.slice(0, index);
+            const after = this.a.slice(index + oldLength);
+            const insertArr = arrayFill(newLength, this.b);
+            this.a = before.concat(insertArr, after);
+        }
+        delete(deleteIndex, deleteCount) {
+            if (deleteCount === 0 || deleteIndex >= this.a.length) {
+                return;
+            }
+            this.a.splice(deleteIndex, deleteCount);
+        }
+        insert(insertIndex, insertCount) {
+            if (insertCount === 0 || insertIndex >= this.a.length) {
+                return;
+            }
+            const arr = [];
+            for (let i = 0; i < insertCount; i++) {
+                arr[i] = this.b;
+            }
+            this.a = (0, arrays_1.$Wb)(this.a, insertIndex, arr);
+        }
+    }
+    exports.$IC = $IC;
+    function arrayFill(length, value) {
+        const arr = [];
+        for (let i = 0; i < length; i++) {
+            arr[i] = value;
+        }
+        return arr;
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[10/*vs/editor/common/tokens/lineTokens*/], __M([0/*require*/,1/*exports*/,15/*vs/editor/common/encodedTokenAttributes*/]), function (require, exports, encodedTokenAttributes_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Pt = void 0;
+    class $Pt {
+        static { this.defaultTokenMetadata = ((0 /* FontStyle.None */ << 11 /* MetadataConsts.FONT_STYLE_OFFSET */)
+            | (1 /* ColorId.DefaultForeground */ << 15 /* MetadataConsts.FOREGROUND_OFFSET */)
+            | (2 /* ColorId.DefaultBackground */ << 24 /* MetadataConsts.BACKGROUND_OFFSET */)) >>> 0; }
+        static createEmpty(lineContent, decoder) {
+            const defaultMetadata = $Pt.defaultTokenMetadata;
+            const tokens = new Uint32Array(2);
+            tokens[0] = lineContent.length;
+            tokens[1] = defaultMetadata;
+            return new $Pt(tokens, lineContent, decoder);
+        }
+        constructor(tokens, text, decoder) {
+            this._lineTokensBrand = undefined;
+            this.a = tokens;
+            this.b = (this.a.length >>> 1);
+            this.c = text;
+            this.d = decoder;
+        }
+        equals(other) {
+            if (other instanceof $Pt) {
+                return this.slicedEquals(other, 0, this.b);
+            }
+            return false;
+        }
+        slicedEquals(other, sliceFromTokenIndex, sliceTokenCount) {
+            if (this.c !== other.c) {
+                return false;
+            }
+            if (this.b !== other.b) {
+                return false;
+            }
+            const from = (sliceFromTokenIndex << 1);
+            const to = from + (sliceTokenCount << 1);
+            for (let i = from; i < to; i++) {
+                if (this.a[i] !== other.a[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        getLineContent() {
+            return this.c;
+        }
+        getCount() {
+            return this.b;
+        }
+        getStartOffset(tokenIndex) {
+            if (tokenIndex > 0) {
+                return this.a[(tokenIndex - 1) << 1];
+            }
+            return 0;
+        }
+        getMetadata(tokenIndex) {
+            const metadata = this.a[(tokenIndex << 1) + 1];
+            return metadata;
+        }
+        getLanguageId(tokenIndex) {
+            const metadata = this.a[(tokenIndex << 1) + 1];
+            const languageId = encodedTokenAttributes_1.$Mt.getLanguageId(metadata);
+            return this.d.decodeLanguageId(languageId);
+        }
+        getStandardTokenType(tokenIndex) {
+            const metadata = this.a[(tokenIndex << 1) + 1];
+            return encodedTokenAttributes_1.$Mt.getTokenType(metadata);
+        }
+        getForeground(tokenIndex) {
+            const metadata = this.a[(tokenIndex << 1) + 1];
+            return encodedTokenAttributes_1.$Mt.getForeground(metadata);
+        }
+        getClassName(tokenIndex) {
+            const metadata = this.a[(tokenIndex << 1) + 1];
+            return encodedTokenAttributes_1.$Mt.getClassNameFromMetadata(metadata);
+        }
+        getInlineStyle(tokenIndex, colorMap) {
+            const metadata = this.a[(tokenIndex << 1) + 1];
+            return encodedTokenAttributes_1.$Mt.getInlineStyleFromMetadata(metadata, colorMap);
+        }
+        getPresentation(tokenIndex) {
+            const metadata = this.a[(tokenIndex << 1) + 1];
+            return encodedTokenAttributes_1.$Mt.getPresentationFromMetadata(metadata);
+        }
+        getEndOffset(tokenIndex) {
+            return this.a[tokenIndex << 1];
+        }
+        /**
+         * Find the token containing offset `offset`.
+         * @param offset The search offset
+         * @return The index of the token containing the offset.
+         */
+        findTokenIndexAtOffset(offset) {
+            return $Pt.findIndexInTokensArray(this.a, offset);
+        }
+        inflate() {
+            return this;
+        }
+        sliceAndInflate(startOffset, endOffset, deltaOffset) {
+            return new SliceLineTokens(this, startOffset, endOffset, deltaOffset);
+        }
+        static convertToEndOffset(tokens, lineTextLength) {
+            const tokenCount = (tokens.length >>> 1);
+            const lastTokenIndex = tokenCount - 1;
+            for (let tokenIndex = 0; tokenIndex < lastTokenIndex; tokenIndex++) {
+                tokens[tokenIndex << 1] = tokens[(tokenIndex + 1) << 1];
+            }
+            tokens[lastTokenIndex << 1] = lineTextLength;
+        }
+        static findIndexInTokensArray(tokens, desiredIndex) {
+            if (tokens.length <= 2) {
+                return 0;
+            }
+            let low = 0;
+            let high = (tokens.length >>> 1) - 1;
+            while (low < high) {
+                const mid = low + Math.floor((high - low) / 2);
+                const endOffset = tokens[(mid << 1)];
+                if (endOffset === desiredIndex) {
+                    return mid + 1;
+                }
+                else if (endOffset < desiredIndex) {
+                    low = mid + 1;
+                }
+                else if (endOffset > desiredIndex) {
+                    high = mid;
+                }
+            }
+            return low;
+        }
+        /**
+         * @pure
+         * @param insertTokens Must be sorted by offset.
+        */
+        withInserted(insertTokens) {
+            if (insertTokens.length === 0) {
+                return this;
+            }
+            let nextOriginalTokenIdx = 0;
+            let nextInsertTokenIdx = 0;
+            let text = '';
+            const newTokens = new Array();
+            let originalEndOffset = 0;
+            while (true) {
+                const nextOriginalTokenEndOffset = nextOriginalTokenIdx < this.b ? this.a[nextOriginalTokenIdx << 1] : -1;
+                const nextInsertToken = nextInsertTokenIdx < insertTokens.length ? insertTokens[nextInsertTokenIdx] : null;
+                if (nextOriginalTokenEndOffset !== -1 && (nextInsertToken === null || nextOriginalTokenEndOffset <= nextInsertToken.offset)) {
+                    // original token ends before next insert token
+                    text += this.c.substring(originalEndOffset, nextOriginalTokenEndOffset);
+                    const metadata = this.a[(nextOriginalTokenIdx << 1) + 1];
+                    newTokens.push(text.length, metadata);
+                    nextOriginalTokenIdx++;
+                    originalEndOffset = nextOriginalTokenEndOffset;
+                }
+                else if (nextInsertToken) {
+                    if (nextInsertToken.offset > originalEndOffset) {
+                        // insert token is in the middle of the next token.
+                        text += this.c.substring(originalEndOffset, nextInsertToken.offset);
+                        const metadata = this.a[(nextOriginalTokenIdx << 1) + 1];
+                        newTokens.push(text.length, metadata);
+                        originalEndOffset = nextInsertToken.offset;
+                    }
+                    text += nextInsertToken.text;
+                    newTokens.push(text.length, nextInsertToken.tokenMetadata);
+                    nextInsertTokenIdx++;
+                }
+                else {
+                    break;
+                }
+            }
+            return new $Pt(new Uint32Array(newTokens), text, this.d);
+        }
+    }
+    exports.$Pt = $Pt;
+    class SliceLineTokens {
+        constructor(source, startOffset, endOffset, deltaOffset) {
+            this.a = source;
+            this.b = startOffset;
+            this.c = endOffset;
+            this.d = deltaOffset;
+            this.e = source.findTokenIndexAtOffset(startOffset);
+            this.f = 0;
+            for (let i = this.e, len = source.getCount(); i < len; i++) {
+                const tokenStartOffset = source.getStartOffset(i);
+                if (tokenStartOffset >= endOffset) {
+                    break;
+                }
+                this.f++;
+            }
+        }
+        getMetadata(tokenIndex) {
+            return this.a.getMetadata(this.e + tokenIndex);
+        }
+        getLanguageId(tokenIndex) {
+            return this.a.getLanguageId(this.e + tokenIndex);
+        }
+        getLineContent() {
+            return this.a.getLineContent().substring(this.b, this.c);
+        }
+        equals(other) {
+            if (other instanceof SliceLineTokens) {
+                return (this.b === other.b
+                    && this.c === other.c
+                    && this.d === other.d
+                    && this.a.slicedEquals(other.a, this.e, this.f));
+            }
+            return false;
+        }
+        getCount() {
+            return this.f;
+        }
+        getForeground(tokenIndex) {
+            return this.a.getForeground(this.e + tokenIndex);
+        }
+        getEndOffset(tokenIndex) {
+            const tokenEndOffset = this.a.getEndOffset(this.e + tokenIndex);
+            return Math.min(this.c, tokenEndOffset) - this.b + this.d;
+        }
+        getClassName(tokenIndex) {
+            return this.a.getClassName(this.e + tokenIndex);
+        }
+        getInlineStyle(tokenIndex, colorMap) {
+            return this.a.getInlineStyle(this.e + tokenIndex, colorMap);
+        }
+        getPresentation(tokenIndex) {
+            return this.a.getPresentation(this.e + tokenIndex);
+        }
+        findTokenIndexAtOffset(offset) {
+            return this.a.findTokenIndexAtOffset(offset + this.b - this.d) - this.e;
+        }
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[34/*vs/editor/common/tokens/contiguousTokensEditing*/], __M([0/*require*/,1/*exports*/,10/*vs/editor/common/tokens/lineTokens*/]), function (require, exports, lineTokens_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Rt = exports.$Qt = void 0;
+    exports.$St = $St;
+    exports.$Qt = (new Uint32Array(0)).buffer;
+    class $Rt {
+        static deleteBeginning(lineTokens, toChIndex) {
+            if (lineTokens === null || lineTokens === exports.$Qt) {
+                return lineTokens;
+            }
+            return $Rt.delete(lineTokens, 0, toChIndex);
+        }
+        static deleteEnding(lineTokens, fromChIndex) {
+            if (lineTokens === null || lineTokens === exports.$Qt) {
+                return lineTokens;
+            }
+            const tokens = $St(lineTokens);
+            const lineTextLength = tokens[tokens.length - 2];
+            return $Rt.delete(lineTokens, fromChIndex, lineTextLength);
+        }
+        static delete(lineTokens, fromChIndex, toChIndex) {
+            if (lineTokens === null || lineTokens === exports.$Qt || fromChIndex === toChIndex) {
+                return lineTokens;
+            }
+            const tokens = $St(lineTokens);
+            const tokensCount = (tokens.length >>> 1);
+            // special case: deleting everything
+            if (fromChIndex === 0 && tokens[tokens.length - 2] === toChIndex) {
+                return exports.$Qt;
+            }
+            const fromTokenIndex = lineTokens_1.$Pt.findIndexInTokensArray(tokens, fromChIndex);
+            const fromTokenStartOffset = (fromTokenIndex > 0 ? tokens[(fromTokenIndex - 1) << 1] : 0);
+            const fromTokenEndOffset = tokens[fromTokenIndex << 1];
+            if (toChIndex < fromTokenEndOffset) {
+                // the delete range is inside a single token
+                const delta = (toChIndex - fromChIndex);
+                for (let i = fromTokenIndex; i < tokensCount; i++) {
+                    tokens[i << 1] -= delta;
+                }
+                return lineTokens;
+            }
+            let dest;
+            let lastEnd;
+            if (fromTokenStartOffset !== fromChIndex) {
+                tokens[fromTokenIndex << 1] = fromChIndex;
+                dest = ((fromTokenIndex + 1) << 1);
+                lastEnd = fromChIndex;
+            }
+            else {
+                dest = (fromTokenIndex << 1);
+                lastEnd = fromTokenStartOffset;
+            }
+            const delta = (toChIndex - fromChIndex);
+            for (let tokenIndex = fromTokenIndex + 1; tokenIndex < tokensCount; tokenIndex++) {
+                const tokenEndOffset = tokens[tokenIndex << 1] - delta;
+                if (tokenEndOffset > lastEnd) {
+                    tokens[dest++] = tokenEndOffset;
+                    tokens[dest++] = tokens[(tokenIndex << 1) + 1];
+                    lastEnd = tokenEndOffset;
+                }
+            }
+            if (dest === tokens.length) {
+                // nothing to trim
+                return lineTokens;
+            }
+            const tmp = new Uint32Array(dest);
+            tmp.set(tokens.subarray(0, dest), 0);
+            return tmp.buffer;
+        }
+        static append(lineTokens, _otherTokens) {
+            if (_otherTokens === exports.$Qt) {
+                return lineTokens;
+            }
+            if (lineTokens === exports.$Qt) {
+                return _otherTokens;
+            }
+            if (lineTokens === null) {
+                return lineTokens;
+            }
+            if (_otherTokens === null) {
+                // cannot determine combined line length...
+                return null;
+            }
+            const myTokens = $St(lineTokens);
+            const otherTokens = $St(_otherTokens);
+            const otherTokensCount = (otherTokens.length >>> 1);
+            const result = new Uint32Array(myTokens.length + otherTokens.length);
+            result.set(myTokens, 0);
+            let dest = myTokens.length;
+            const delta = myTokens[myTokens.length - 2];
+            for (let i = 0; i < otherTokensCount; i++) {
+                result[dest++] = otherTokens[(i << 1)] + delta;
+                result[dest++] = otherTokens[(i << 1) + 1];
+            }
+            return result.buffer;
+        }
+        static insert(lineTokens, chIndex, textLength) {
+            if (lineTokens === null || lineTokens === exports.$Qt) {
+                // nothing to do
+                return lineTokens;
+            }
+            const tokens = $St(lineTokens);
+            const tokensCount = (tokens.length >>> 1);
+            let fromTokenIndex = lineTokens_1.$Pt.findIndexInTokensArray(tokens, chIndex);
+            if (fromTokenIndex > 0) {
+                const fromTokenStartOffset = tokens[(fromTokenIndex - 1) << 1];
+                if (fromTokenStartOffset === chIndex) {
+                    fromTokenIndex--;
+                }
+            }
+            for (let tokenIndex = fromTokenIndex; tokenIndex < tokensCount; tokenIndex++) {
+                tokens[tokenIndex << 1] += textLength;
+            }
+            return lineTokens;
+        }
+    }
+    exports.$Rt = $Rt;
+    function $St(arr) {
+        if (arr instanceof Uint32Array) {
+            return arr;
+        }
+        else {
+            return new Uint32Array(arr);
+        }
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[35/*vs/editor/common/tokens/contiguousMultilineTokens*/], __M([0/*require*/,1/*exports*/,33/*vs/base/common/arrays*/,13/*vs/base/common/buffer*/,47/*vs/editor/common/core/position*/,14/*vs/editor/common/core/eolCounter*/,34/*vs/editor/common/tokens/contiguousTokensEditing*/,16/*vs/editor/common/core/lineRange*/]), function (require, exports, arrays, buffer_1, position_1, eolCounter_1, contiguousTokensEditing_1, lineRange_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Tt = void 0;
+    /**
+     * Represents contiguous tokens over a contiguous range of lines.
+     */
+    class $Tt {
+        static deserialize(buff, offset, result) {
+            const view32 = new Uint32Array(buff.buffer);
+            const startLineNumber = (0, buffer_1.$ye)(buff, offset);
+            offset += 4;
+            const count = (0, buffer_1.$ye)(buff, offset);
+            offset += 4;
+            const tokens = [];
+            for (let i = 0; i < count; i++) {
+                const byteCount = (0, buffer_1.$ye)(buff, offset);
+                offset += 4;
+                tokens.push(view32.subarray(offset / 4, offset / 4 + byteCount / 4));
+                offset += byteCount;
+            }
+            result.push(new $Tt(startLineNumber, tokens));
+            return offset;
+        }
+        /**
+         * (Inclusive) start line number for these tokens.
+         */
+        get startLineNumber() {
+            return this.a;
+        }
+        /**
+         * (Inclusive) end line number for these tokens.
+         */
+        get endLineNumber() {
+            return this.a + this.b.length - 1;
+        }
+        constructor(startLineNumber, tokens) {
+            this.a = startLineNumber;
+            this.b = tokens;
+        }
+        getLineRange() {
+            return new lineRange_1.$lt(this.a, this.a + this.b.length);
+        }
+        /**
+         * @see {@link b}
+         */
+        getLineTokens(lineNumber) {
+            return this.b[lineNumber - this.a];
+        }
+        appendLineTokens(lineTokens) {
+            this.b.push(lineTokens);
+        }
+        serializeSize() {
+            let result = 0;
+            result += 4; // 4 bytes for the start line number
+            result += 4; // 4 bytes for the line count
+            for (let i = 0; i < this.b.length; i++) {
+                const lineTokens = this.b[i];
+                if (!(lineTokens instanceof Uint32Array)) {
+                    throw new Error(`Not supported!`);
+                }
+                result += 4; // 4 bytes for the byte count
+                result += lineTokens.byteLength;
+            }
+            return result;
+        }
+        serialize(destination, offset) {
+            (0, buffer_1.$ze)(destination, this.a, offset);
+            offset += 4;
+            (0, buffer_1.$ze)(destination, this.b.length, offset);
+            offset += 4;
+            for (let i = 0; i < this.b.length; i++) {
+                const lineTokens = this.b[i];
+                if (!(lineTokens instanceof Uint32Array)) {
+                    throw new Error(`Not supported!`);
+                }
+                (0, buffer_1.$ze)(destination, lineTokens.byteLength, offset);
+                offset += 4;
+                destination.set(new Uint8Array(lineTokens.buffer), offset);
+                offset += lineTokens.byteLength;
+            }
+            return offset;
+        }
+        applyEdit(range, text) {
+            const [eolCount, firstLineLength] = (0, eolCounter_1.$Ot)(text);
+            this.c(range);
+            this.d(new position_1.$bt(range.startLineNumber, range.startColumn), eolCount, firstLineLength);
+        }
+        c(range) {
+            if (range.startLineNumber === range.endLineNumber && range.startColumn === range.endColumn) {
+                // Nothing to delete
+                return;
+            }
+            const firstLineIndex = range.startLineNumber - this.a;
+            const lastLineIndex = range.endLineNumber - this.a;
+            if (lastLineIndex < 0) {
+                // this deletion occurs entirely before this block, so we only need to adjust line numbers
+                const deletedLinesCount = lastLineIndex - firstLineIndex;
+                this.a -= deletedLinesCount;
+                return;
+            }
+            if (firstLineIndex >= this.b.length) {
+                // this deletion occurs entirely after this block, so there is nothing to do
+                return;
+            }
+            if (firstLineIndex < 0 && lastLineIndex >= this.b.length) {
+                // this deletion completely encompasses this block
+                this.a = 0;
+                this.b = [];
+                return;
+            }
+            if (firstLineIndex === lastLineIndex) {
+                // a delete on a single line
+                this.b[firstLineIndex] = contiguousTokensEditing_1.$Rt.delete(this.b[firstLineIndex], range.startColumn - 1, range.endColumn - 1);
+                return;
+            }
+            if (firstLineIndex >= 0) {
+                // The first line survives
+                this.b[firstLineIndex] = contiguousTokensEditing_1.$Rt.deleteEnding(this.b[firstLineIndex], range.startColumn - 1);
+                if (lastLineIndex < this.b.length) {
+                    // The last line survives
+                    const lastLineTokens = contiguousTokensEditing_1.$Rt.deleteBeginning(this.b[lastLineIndex], range.endColumn - 1);
+                    // Take remaining text on last line and append it to remaining text on first line
+                    this.b[firstLineIndex] = contiguousTokensEditing_1.$Rt.append(this.b[firstLineIndex], lastLineTokens);
+                    // Delete middle lines
+                    this.b.splice(firstLineIndex + 1, lastLineIndex - firstLineIndex);
+                }
+                else {
+                    // The last line does not survive
+                    // Take remaining text on last line and append it to remaining text on first line
+                    this.b[firstLineIndex] = contiguousTokensEditing_1.$Rt.append(this.b[firstLineIndex], null);
+                    // Delete lines
+                    this.b = this.b.slice(0, firstLineIndex + 1);
+                }
+            }
+            else {
+                // The first line does not survive
+                const deletedBefore = -firstLineIndex;
+                this.a -= deletedBefore;
+                // Remove beginning from last line
+                this.b[lastLineIndex] = contiguousTokensEditing_1.$Rt.deleteBeginning(this.b[lastLineIndex], range.endColumn - 1);
+                // Delete lines
+                this.b = this.b.slice(lastLineIndex);
+            }
+        }
+        d(position, eolCount, firstLineLength) {
+            if (eolCount === 0 && firstLineLength === 0) {
+                // Nothing to insert
+                return;
+            }
+            const lineIndex = position.lineNumber - this.a;
+            if (lineIndex < 0) {
+                // this insertion occurs before this block, so we only need to adjust line numbers
+                this.a += eolCount;
+                return;
+            }
+            if (lineIndex >= this.b.length) {
+                // this insertion occurs after this block, so there is nothing to do
+                return;
+            }
+            if (eolCount === 0) {
+                // Inserting text on one line
+                this.b[lineIndex] = contiguousTokensEditing_1.$Rt.insert(this.b[lineIndex], position.column - 1, firstLineLength);
+                return;
+            }
+            this.b[lineIndex] = contiguousTokensEditing_1.$Rt.deleteEnding(this.b[lineIndex], position.column - 1);
+            this.b[lineIndex] = contiguousTokensEditing_1.$Rt.insert(this.b[lineIndex], position.column - 1, firstLineLength);
+            this.e(position.lineNumber, eolCount);
+        }
+        e(insertIndex, insertCount) {
+            if (insertCount === 0) {
+                return;
+            }
+            const lineTokens = [];
+            for (let i = 0; i < insertCount; i++) {
+                lineTokens[i] = null;
+            }
+            this.b = arrays.$Wb(this.b, insertIndex, lineTokens);
+        }
+    }
+    exports.$Tt = $Tt;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[17/*vs/editor/common/tokens/contiguousMultilineTokensBuilder*/], __M([0/*require*/,1/*exports*/,13/*vs/base/common/buffer*/,35/*vs/editor/common/tokens/contiguousMultilineTokens*/]), function (require, exports, buffer_1, contiguousMultilineTokens_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$JC = void 0;
+    class $JC {
+        static deserialize(buff) {
+            let offset = 0;
+            const count = (0, buffer_1.$ye)(buff, offset);
+            offset += 4;
+            const result = [];
+            for (let i = 0; i < count; i++) {
+                offset = contiguousMultilineTokens_1.$Tt.deserialize(buff, offset, result);
+            }
+            return result;
+        }
+        constructor() {
+            this.a = [];
+        }
+        add(lineNumber, lineTokens) {
+            if (this.a.length > 0) {
+                const last = this.a[this.a.length - 1];
+                if (last.endLineNumber + 1 === lineNumber) {
+                    // append
+                    last.appendLineTokens(lineTokens);
+                    return;
+                }
+            }
+            this.a.push(new contiguousMultilineTokens_1.$Tt(lineNumber, [lineTokens]));
+        }
+        finalize() {
+            return this.a;
+        }
+        serialize() {
+            const size = this.b();
+            const result = new Uint8Array(size);
+            this.c(result);
+            return result;
+        }
+        b() {
+            let result = 0;
+            result += 4; // 4 bytes for the count
+            for (let i = 0; i < this.a.length; i++) {
+                result += this.a[i].serializeSize();
+            }
+            return result;
+        }
+        c(destination) {
+            let offset = 0;
+            (0, buffer_1.$ze)(destination, this.a.length, offset);
+            offset += 4;
+            for (let i = 0; i < this.a.length; i++) {
+                offset = this.a[i].serialize(destination, offset);
+            }
+        }
+    }
+    exports.$JC = $JC;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[36/*vs/base/common/extpath*/], __M([0/*require*/,1/*exports*/,18/*vs/base/common/path*/,3/*vs/base/common/platform*/,19/*vs/base/common/strings*/,48/*vs/base/common/types*/]), function (require, exports, path_1, platform_1, strings_1, types_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$bg = $bg;
+    exports.$cg = $cg;
+    exports.$dg = $dg;
+    exports.$eg = $eg;
+    exports.$fg = $fg;
+    exports.$gg = $gg;
+    exports.$hg = $hg;
+    exports.$ig = $ig;
+    exports.$jg = $jg;
+    exports.$kg = $kg;
+    exports.$lg = $lg;
+    exports.$mg = $mg;
+    exports.$ng = $ng;
+    exports.$og = $og;
+    exports.$pg = $pg;
+    exports.$qg = $qg;
+    function $bg(code) {
+        return code === 47 /* CharCode.Slash */ || code === 92 /* CharCode.Backslash */;
+    }
+    /**
+     * Takes a Windows OS path and changes backward slashes to forward slashes.
+     * This should only be done for OS paths from Windows (or user provided paths potentially from Windows).
+     * Using it on a Linux or MaxOS path might change it.
+     */
+    function $cg(osPath) {
+        return osPath.replace(/[\\/]/g, path_1.$hc.sep);
+    }
+    /**
+     * Takes a Windows OS path (using backward or forward slashes) and turns it into a posix path:
+     * - turns backward slashes into forward slashes
+     * - makes it absolute if it starts with a drive letter
+     * This should only be done for OS paths from Windows (or user provided paths potentially from Windows).
+     * Using it on a Linux or MaxOS path might change it.
+     */
+    function $dg(osPath) {
+        if (osPath.indexOf('/') === -1) {
+            osPath = $cg(osPath);
+        }
+        if (/^[a-zA-Z]:(\/|$)/.test(osPath)) { // starts with a drive letter
+            osPath = '/' + osPath;
+        }
+        return osPath;
+    }
+    /**
+     * Computes the _root_ this path, like `getRoot('c:\files') === c:\`,
+     * `getRoot('files:///files/path') === files:///`,
+     * or `getRoot('\\server\shares\path') === \\server\shares\`
+     */
+    function $eg(path, sep = path_1.$hc.sep) {
+        if (!path) {
+            return '';
+        }
+        const len = path.length;
+        const firstLetter = path.charCodeAt(0);
+        if ($bg(firstLetter)) {
+            if ($bg(path.charCodeAt(1))) {
+                // UNC candidate \\localhost\shares\ddd
+                //               ^^^^^^^^^^^^^^^^^^^
+                if (!$bg(path.charCodeAt(2))) {
+                    let pos = 3;
+                    const start = pos;
+                    for (; pos < len; pos++) {
+                        if ($bg(path.charCodeAt(pos))) {
+                            break;
+                        }
+                    }
+                    if (start !== pos && !$bg(path.charCodeAt(pos + 1))) {
+                        pos += 1;
+                        for (; pos < len; pos++) {
+                            if ($bg(path.charCodeAt(pos))) {
+                                return path.slice(0, pos + 1) // consume this separator
+                                    .replace(/[\\/]/g, sep);
+                            }
+                        }
+                    }
+                }
+            }
+            // /user/far
+            // ^
+            return sep;
+        }
+        else if ($jg(firstLetter)) {
+            // check for windows drive letter c:\ or c:
+            if (path.charCodeAt(1) === 58 /* CharCode.Colon */) {
+                if ($bg(path.charCodeAt(2))) {
+                    // C:\fff
+                    // ^^^
+                    return path.slice(0, 2) + sep;
+                }
+                else {
+                    // C:
+                    // ^^
+                    return path.slice(0, 2);
+                }
+            }
+        }
+        // check for URI
+        // scheme://authority/path
+        // ^^^^^^^^^^^^^^^^^^^
+        let pos = path.indexOf('://');
+        if (pos !== -1) {
+            pos += 3; // 3 -> "://".length
+            for (; pos < len; pos++) {
+                if ($bg(path.charCodeAt(pos))) {
+                    return path.slice(0, pos + 1); // consume this separator
+                }
+            }
+        }
+        return '';
+    }
+    /**
+     * Check if the path follows this pattern: `\\hostname\sharename`.
+     *
+     * @see https://msdn.microsoft.com/en-us/library/gg465305.aspx
+     * @return A boolean indication if the path is a UNC path, on none-windows
+     * always false.
+     */
+    function $fg(path) {
+        if (!platform_1.$i) {
+            // UNC is a windows concept
+            return false;
+        }
+        if (!path || path.length < 5) {
+            // at least \\a\b
+            return false;
+        }
+        let code = path.charCodeAt(0);
+        if (code !== 92 /* CharCode.Backslash */) {
+            return false;
+        }
+        code = path.charCodeAt(1);
+        if (code !== 92 /* CharCode.Backslash */) {
+            return false;
+        }
+        let pos = 2;
+        const start = pos;
+        for (; pos < path.length; pos++) {
+            code = path.charCodeAt(pos);
+            if (code === 92 /* CharCode.Backslash */) {
+                break;
+            }
+        }
+        if (start === pos) {
+            return false;
+        }
+        code = path.charCodeAt(pos + 1);
+        if (isNaN(code) || code === 92 /* CharCode.Backslash */) {
+            return false;
+        }
+        return true;
+    }
+    // Reference: https://en.wikipedia.org/wiki/Filename
+    const WINDOWS_INVALID_FILE_CHARS = /[\\/:\*\?"<>\|]/g;
+    const UNIX_INVALID_FILE_CHARS = /[\\/]/g;
+    const WINDOWS_FORBIDDEN_NAMES = /^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])(\.(.*?))?$/i;
+    function $gg(name, isWindowsOS = platform_1.$i) {
+        const invalidFileChars = isWindowsOS ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
+        if (!name || name.length === 0 || /^\s+$/.test(name)) {
+            return false; // require a name that is not just whitespace
+        }
+        invalidFileChars.lastIndex = 0; // the holy grail of software development
+        if (invalidFileChars.test(name)) {
+            return false; // check for certain invalid file characters
+        }
+        if (isWindowsOS && WINDOWS_FORBIDDEN_NAMES.test(name)) {
+            return false; // check for certain invalid file names
+        }
+        if (name === '.' || name === '..') {
+            return false; // check for reserved values
+        }
+        if (isWindowsOS && name[name.length - 1] === '.') {
+            return false; // Windows: file cannot end with a "."
+        }
+        if (isWindowsOS && name.length !== name.trim().length) {
+            return false; // Windows: file cannot end with a whitespace
+        }
+        if (name.length > 255) {
+            return false; // most file systems do not allow files > 255 length
+        }
+        return true;
+    }
+    /**
+     * @deprecated please use `IUriIdentityService.extUri.isEqual` instead. If you are
+     * in a context without services, consider to pass down the `extUri` from the outside
+     * or use `extUriBiasedIgnorePathCase` if you know what you are doing.
+     */
+    function $hg(pathA, pathB, ignoreCase) {
+        const identityEquals = (pathA === pathB);
+        if (!ignoreCase || identityEquals) {
+            return identityEquals;
+        }
+        if (!pathA || !pathB) {
+            return false;
+        }
+        return (0, strings_1.$lf)(pathA, pathB);
+    }
+    /**
+     * @deprecated please use `IUriIdentityService.extUri.isEqualOrParent` instead. If
+     * you are in a context without services, consider to pass down the `extUri` from the
+     * outside, or use `extUriBiasedIgnorePathCase` if you know what you are doing.
+     */
+    function $ig(base, parentCandidate, ignoreCase, separator = path_1.sep) {
+        if (base === parentCandidate) {
+            return true;
+        }
+        if (!base || !parentCandidate) {
+            return false;
+        }
+        if (parentCandidate.length > base.length) {
+            return false;
+        }
+        if (ignoreCase) {
+            const beginsWith = (0, strings_1.$mf)(base, parentCandidate);
+            if (!beginsWith) {
+                return false;
+            }
+            if (parentCandidate.length === base.length) {
+                return true; // same path, different casing
+            }
+            let sepOffset = parentCandidate.length;
+            if (parentCandidate.charAt(parentCandidate.length - 1) === separator) {
+                sepOffset--; // adjust the expected sep offset in case our candidate already ends in separator character
+            }
+            return base.charAt(sepOffset) === separator;
+        }
+        if (parentCandidate.charAt(parentCandidate.length - 1) !== separator) {
+            parentCandidate += separator;
+        }
+        return base.indexOf(parentCandidate) === 0;
+    }
+    function $jg(char0) {
+        return char0 >= 65 /* CharCode.A */ && char0 <= 90 /* CharCode.Z */ || char0 >= 97 /* CharCode.a */ && char0 <= 122 /* CharCode.z */;
+    }
+    function $kg(candidate, cwd) {
+        // Special case: allow to open a drive letter without trailing backslash
+        if (platform_1.$i && candidate.endsWith(':')) {
+            candidate += path_1.sep;
+        }
+        // Ensure absolute
+        if (!(0, path_1.$jc)(candidate)) {
+            candidate = (0, path_1.$kc)(cwd, candidate);
+        }
+        // Ensure normalized
+        candidate = (0, path_1.$ic)(candidate);
+        // Ensure no trailing slash/backslash
+        if (platform_1.$i) {
+            candidate = (0, strings_1.$6e)(candidate, path_1.sep);
+            // Special case: allow to open drive root ('C:\')
+            if (candidate.endsWith(':')) {
+                candidate += path_1.sep;
+            }
+        }
+        else {
+            candidate = (0, strings_1.$6e)(candidate, path_1.sep);
+            // Special case: allow to open root ('/')
+            if (!candidate) {
+                candidate = path_1.sep;
+            }
+        }
+        return candidate;
+    }
+    function $lg(path) {
+        const pathNormalized = (0, path_1.$ic)(path);
+        if (platform_1.$i) {
+            if (path.length > 3) {
+                return false;
+            }
+            return $mg(pathNormalized) &&
+                (path.length === 2 || pathNormalized.charCodeAt(2) === 92 /* CharCode.Backslash */);
+        }
+        return pathNormalized === path_1.$hc.sep;
+    }
+    function $mg(path, isWindowsOS = platform_1.$i) {
+        if (isWindowsOS) {
+            return $jg(path.charCodeAt(0)) && path.charCodeAt(1) === 58 /* CharCode.Colon */;
+        }
+        return false;
+    }
+    function $ng(path, isWindowsOS = platform_1.$i) {
+        return $mg(path, isWindowsOS) ? path[0] : undefined;
+    }
+    function $og(path, candidate, ignoreCase) {
+        if (candidate.length > path.length) {
+            return -1;
+        }
+        if (path === candidate) {
+            return 0;
+        }
+        if (ignoreCase) {
+            path = path.toLowerCase();
+            candidate = candidate.toLowerCase();
+        }
+        return path.indexOf(candidate);
+    }
+    function $pg(rawPath) {
+        const segments = rawPath.split(':'); // C:\file.txt:<line>:<column>
+        let path = undefined;
+        let line = undefined;
+        let column = undefined;
+        for (const segment of segments) {
+            const segmentAsNumber = Number(segment);
+            if (!(0, types_1.$Zf)(segmentAsNumber)) {
+                path = !!path ? [path, segment].join(':') : segment; // a colon can well be part of a path (e.g. C:\...)
+            }
+            else if (line === undefined) {
+                line = segmentAsNumber;
+            }
+            else if (column === undefined) {
+                column = segmentAsNumber;
+            }
+        }
+        if (!path) {
+            throw new Error('Format for `--goto` should be: `FILE:LINE(:COLUMN)`');
+        }
+        return {
+            path,
+            line: line !== undefined ? line : undefined,
+            column: column !== undefined ? column : line !== undefined ? 1 : undefined // if we have a line, make sure column is also set
+        };
+    }
+    const pathChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const windowsSafePathFirstChars = 'BDEFGHIJKMOQRSTUVWXYZbdefghijkmoqrstuvwxyz0123456789';
+    function $qg(parent, prefix, randomLength = 8) {
+        let suffix = '';
+        for (let i = 0; i < randomLength; i++) {
+            let pathCharsTouse;
+            if (i === 0 && platform_1.$i && !prefix && (randomLength === 3 || randomLength === 4)) {
+                // Windows has certain reserved file names that cannot be used, such
+                // as AUX, CON, PRN, etc. We want to avoid generating a random name
+                // that matches that pattern, so we use a different set of characters
+                // for the first character of the name that does not include any of
+                // the reserved names first characters.
+                pathCharsTouse = windowsSafePathFirstChars;
+            }
+            else {
+                pathCharsTouse = pathChars;
+            }
+            suffix += pathCharsTouse.charAt(Math.floor(Math.random() * pathCharsTouse.length));
+        }
+        let randomFileName;
+        if (prefix) {
+            randomFileName = `${prefix}-${suffix}`;
+        }
+        else {
+            randomFileName = suffix;
+        }
+        if (parent) {
+            return (0, path_1.$kc)(parent, randomFileName);
+        }
+        return randomFileName;
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[20/*vs/base/common/network*/], __M([0/*require*/,1/*exports*/,9/*vs/base/common/errors*/,3/*vs/base/common/platform*/,19/*vs/base/common/strings*/,11/*vs/base/common/uri*/,18/*vs/base/common/path*/]), function (require, exports, errors, platform, strings_1, uri_1, paths) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.COI = exports.$Cg = exports.$Bg = exports.$Ag = exports.$zg = exports.$yg = exports.$xg = exports.$vg = exports.$ug = exports.$tg = exports.Schemas = void 0;
+    exports.$rg = $rg;
+    exports.$sg = $sg;
+    exports.$wg = $wg;
+    var Schemas;
+    (function (Schemas) {
+        /**
+         * A schema that is used for models that exist in memory
+         * only and that have no correspondence on a server or such.
+         */
+        Schemas.inMemory = 'inmemory';
+        /**
+         * A schema that is used for setting files
+         */
+        Schemas.vscode = 'vscode';
+        /**
+         * A schema that is used for internal private files
+         */
+        Schemas.internal = 'private';
+        /**
+         * A walk-through document.
+         */
+        Schemas.walkThrough = 'walkThrough';
+        /**
+         * An embedded code snippet.
+         */
+        Schemas.walkThroughSnippet = 'walkThroughSnippet';
+        Schemas.http = 'http';
+        Schemas.https = 'https';
+        Schemas.file = 'file';
+        Schemas.mailto = 'mailto';
+        Schemas.untitled = 'untitled';
+        Schemas.data = 'data';
+        Schemas.command = 'command';
+        Schemas.vscodeRemote = 'vscode-remote';
+        Schemas.vscodeRemoteResource = 'vscode-remote-resource';
+        Schemas.vscodeManagedRemoteResource = 'vscode-managed-remote-resource';
+        Schemas.vscodeUserData = 'vscode-userdata';
+        Schemas.vscodeCustomEditor = 'vscode-custom-editor';
+        Schemas.vscodeNotebookCell = 'vscode-notebook-cell';
+        Schemas.vscodeNotebookCellMetadata = 'vscode-notebook-cell-metadata';
+        Schemas.vscodeNotebookCellOutput = 'vscode-notebook-cell-output';
+        Schemas.vscodeInteractiveInput = 'vscode-interactive-input';
+        Schemas.vscodeSettings = 'vscode-settings';
+        Schemas.vscodeWorkspaceTrust = 'vscode-workspace-trust';
+        Schemas.vscodeTerminal = 'vscode-terminal';
+        /** Scheme used for code blocks in chat. */
+        Schemas.vscodeChatCodeBlock = 'vscode-chat-code-block';
+        /** Scheme used for the chat input editor. */
+        Schemas.vscodeChatSesssion = 'vscode-chat-editor';
+        /**
+         * Scheme used internally for webviews that aren't linked to a resource (i.e. not custom editors)
+         */
+        Schemas.webviewPanel = 'webview-panel';
+        /**
+         * Scheme used for loading the wrapper html and script in webviews.
+         */
+        Schemas.vscodeWebview = 'vscode-webview';
+        /**
+         * Scheme used for extension pages
+         */
+        Schemas.extension = 'extension';
+        /**
+         * Scheme used as a replacement of `file` scheme to load
+         * files with our custom protocol handler (desktop only).
+         */
+        Schemas.vscodeFileResource = 'vscode-file';
+        /**
+         * Scheme used for temporary resources
+         */
+        Schemas.tmp = 'tmp';
+        /**
+         * Scheme used vs live share
+         */
+        Schemas.vsls = 'vsls';
+        /**
+         * Scheme used for the Source Control commit input's text document
+         */
+        Schemas.vscodeSourceControl = 'vscode-scm';
+        /**
+         * Scheme used for special rendering of settings in the release notes
+         */
+        Schemas.codeSetting = 'code-setting';
+    })(Schemas || (exports.Schemas = Schemas = {}));
+    function $rg(target, scheme) {
+        if (uri_1.URI.isUri(target)) {
+            return (0, strings_1.$lf)(target.scheme, scheme);
+        }
+        else {
+            return (0, strings_1.$mf)(target, scheme + ':');
+        }
+    }
+    function $sg(target, ...schemes) {
+        return schemes.some(scheme => $rg(target, scheme));
+    }
+    exports.$tg = 'vscode-tkn';
+    exports.$ug = 'tkn';
+    class RemoteAuthoritiesImpl {
+        constructor() {
+            this.a = Object.create(null);
+            this.b = Object.create(null);
+            this.c = Object.create(null);
+            this.d = 'http';
+            this.e = null;
+            this.f = '/';
+        }
+        setPreferredWebSchema(schema) {
+            this.d = schema;
+        }
+        setDelegate(delegate) {
+            this.e = delegate;
+        }
+        setServerRootPath(product, serverBasePath) {
+            this.f = $wg(product, serverBasePath);
+        }
+        getServerRootPath() {
+            return this.f;
+        }
+        get g() {
+            return paths.$hc.join(this.f, Schemas.vscodeRemoteResource);
+        }
+        set(authority, host, port) {
+            this.a[authority] = host;
+            this.b[authority] = port;
+        }
+        setConnectionToken(authority, connectionToken) {
+            this.c[authority] = connectionToken;
+        }
+        getPreferredWebSchema() {
+            return this.d;
+        }
+        rewrite(uri) {
+            if (this.e) {
+                try {
+                    return this.e(uri);
+                }
+                catch (err) {
+                    errors.$1(err);
+                    return uri;
+                }
+            }
+            const authority = uri.authority;
+            let host = this.a[authority];
+            if (host && host.indexOf(':') !== -1 && host.indexOf('[') === -1) {
+                host = `[${host}]`;
+            }
+            const port = this.b[authority];
+            const connectionToken = this.c[authority];
+            let query = `path=${encodeURIComponent(uri.path)}`;
+            if (typeof connectionToken === 'string') {
+                query += `&${exports.$ug}=${encodeURIComponent(connectionToken)}`;
+            }
+            return uri_1.URI.from({
+                scheme: platform.$o ? this.d : Schemas.vscodeRemoteResource,
+                authority: `${host}:${port}`,
+                path: this.g,
+                query
+            });
+        }
+    }
+    exports.$vg = new RemoteAuthoritiesImpl();
+    function $wg(product, basePath) {
+        return paths.$hc.join(basePath ?? '/', `${product.quality ?? 'oss'}-${product.commit ?? 'dev'}`);
+    }
+    exports.$xg = 'vs/../../extensions';
+    exports.$yg = 'vs/../../node_modules';
+    exports.$zg = 'vs/../../node_modules.asar';
+    exports.$Ag = 'vs/../../node_modules.asar.unpacked';
+    exports.$Bg = 'vscode-app';
+    class FileAccessImpl {
+        static { this.a = exports.$Bg; }
+        /**
+         * Returns a URI to use in contexts where the browser is responsible
+         * for loading (e.g. fetch()) or when used within the DOM.
+         *
+         * **Note:** use `dom.ts#asCSSUrl` whenever the URL is to be used in CSS context.
+         */
+        asBrowserUri(resourcePath) {
+            const uri = this.b(resourcePath, require);
+            return this.uriToBrowserUri(uri);
+        }
+        /**
+         * Returns a URI to use in contexts where the browser is responsible
+         * for loading (e.g. fetch()) or when used within the DOM.
+         *
+         * **Note:** use `dom.ts#asCSSUrl` whenever the URL is to be used in CSS context.
+         */
+        uriToBrowserUri(uri) {
+            // Handle remote URIs via `RemoteAuthorities`
+            if (uri.scheme === Schemas.vscodeRemote) {
+                return exports.$vg.rewrite(uri);
+            }
+            // Convert to `vscode-file` resource..
+            if (
+            // ...only ever for `file` resources
+            uri.scheme === Schemas.file &&
+                (
+                // ...and we run in native environments
+                platform.$m ||
+                    // ...or web worker extensions on desktop
+                    (platform.$q === `${Schemas.vscodeFileResource}://${FileAccessImpl.a}`))) {
+                return uri.with({
+                    scheme: Schemas.vscodeFileResource,
+                    // We need to provide an authority here so that it can serve
+                    // as origin for network and loading matters in chromium.
+                    // If the URI is not coming with an authority already, we
+                    // add our own
+                    authority: uri.authority || FileAccessImpl.a,
+                    query: null,
+                    fragment: null
+                });
+            }
+            return uri;
+        }
+        /**
+         * Returns the `file` URI to use in contexts where node.js
+         * is responsible for loading.
+         */
+        asFileUri(resourcePath) {
+            const uri = this.b(resourcePath, require);
+            return this.uriToFileUri(uri);
+        }
+        /**
+         * Returns the `file` URI to use in contexts where node.js
+         * is responsible for loading.
+         */
+        uriToFileUri(uri) {
+            // Only convert the URI if it is `vscode-file:` scheme
+            if (uri.scheme === Schemas.vscodeFileResource) {
+                return uri.with({
+                    scheme: Schemas.file,
+                    // Only preserve the `authority` if it is different from
+                    // our fallback authority. This ensures we properly preserve
+                    // Windows UNC paths that come with their own authority.
+                    authority: uri.authority !== FileAccessImpl.a ? uri.authority : null,
+                    query: null,
+                    fragment: null
+                });
+            }
+            return uri;
+        }
+        b(uriOrModule, moduleIdToUrl) {
+            if (uri_1.URI.isUri(uriOrModule)) {
+                return uriOrModule;
+            }
+            return uri_1.URI.parse(moduleIdToUrl.toUrl(uriOrModule));
+        }
+    }
+    exports.$Cg = new FileAccessImpl();
+    var COI;
+    (function (COI) {
+        const coiHeaders = new Map([
+            ['1', { 'Cross-Origin-Opener-Policy': 'same-origin' }],
+            ['2', { 'Cross-Origin-Embedder-Policy': 'require-corp' }],
+            ['3', { 'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Embedder-Policy': 'require-corp' }],
+        ]);
+        COI.CoopAndCoep = Object.freeze(coiHeaders.get('3'));
+        const coiSearchParamName = 'vscode-coi';
+        /**
+         * Extract desired headers from `vscode-coi` invocation
+         */
+        function getHeadersFromQuery(url) {
+            let params;
+            if (typeof url === 'string') {
+                params = new URL(url).searchParams;
+            }
+            else if (url instanceof URL) {
+                params = url.searchParams;
+            }
+            else if (uri_1.URI.isUri(url)) {
+                params = new URL(url.toString(true)).searchParams;
+            }
+            const value = params?.get(coiSearchParamName);
+            if (!value) {
+                return undefined;
+            }
+            return coiHeaders.get(value);
+        }
+        COI.getHeadersFromQuery = getHeadersFromQuery;
+        /**
+         * Add the `vscode-coi` query attribute based on wanting `COOP` and `COEP`. Will be a noop when `crossOriginIsolated`
+         * isn't enabled the current context
+         */
+        function addSearchParam(urlOrSearch, coop, coep) {
+            if (!globalThis.crossOriginIsolated) {
+                // depends on the current context being COI
+                return;
+            }
+            const value = coop && coep ? '3' : coep ? '2' : '1';
+            if (urlOrSearch instanceof URLSearchParams) {
+                urlOrSearch.set(coiSearchParamName, value);
+            }
+            else {
+                urlOrSearch[coiSearchParamName] = value;
+            }
+        }
+        COI.addSearchParam = addSearchParam;
+    })(COI || (exports.COI = COI = {}));
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[37/*vs/amdX*/], __M([0/*require*/,1/*exports*/,24/*vs/base/common/amd*/,20/*vs/base/common/network*/,3/*vs/base/common/platform*/,11/*vs/base/common/uri*/]), function (require, exports, amd_1, network_1, platform, uri_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$JD = $JD;
+    class DefineCall {
+        constructor(id, dependencies, callback) {
+            this.id = id;
+            this.dependencies = dependencies;
+            this.callback = callback;
+        }
+    }
+    class AMDModuleImporter {
+        static { this.INSTANCE = new AMDModuleImporter(); }
+        constructor() {
+            this.a = (typeof self === 'object' && self.constructor && self.constructor.name === 'DedicatedWorkerGlobalScope');
+            this.b = typeof document === 'object';
+            this.c = [];
+            this.d = false;
+        }
+        g() {
+            if (this.d) {
+                return;
+            }
+            this.d = true;
+            globalThis.define = (id, dependencies, callback) => {
+                if (typeof id !== 'string') {
+                    callback = dependencies;
+                    dependencies = id;
+                    id = null;
+                }
+                if (typeof dependencies !== 'object' || !Array.isArray(dependencies)) {
+                    callback = dependencies;
+                    dependencies = null;
+                }
+                // if (!dependencies) {
+                // 	dependencies = ['require', 'exports', 'module'];
+                // }
+                this.c.push(new DefineCall(id, dependencies, callback));
+            };
+            globalThis.define.amd = true;
+            if (this.b) {
+                // eslint-disable-next-line no-restricted-globals
+                this.f = window.trustedTypes?.createPolicy('amdLoader', {
+                    createScriptURL(value) {
+                        // eslint-disable-next-line no-restricted-globals
+                        if (value.startsWith(window.location.origin)) {
+                            return value;
+                        }
+                        if (value.startsWith('vscode-file://vscode-app')) {
+                            return value;
+                        }
+                        throw new Error(`[trusted_script_src] Invalid script url: ${value}`);
+                    }
+                });
+            }
+            else if (this.a) {
+                this.f = globalThis.trustedTypes?.createPolicy('amdLoader', {
+                    createScriptURL(value) {
+                        return value;
+                    }
+                });
+            }
+        }
+        async load(scriptSrc) {
+            this.g();
+            const defineCall = await (this.a ? this.i(scriptSrc) : this.b ? this.h(scriptSrc) : this.j(scriptSrc));
+            if (!defineCall) {
+                throw new Error(`Did not receive a define call from script ${scriptSrc}`);
+            }
+            // TODO require, exports, module
+            if (Array.isArray(defineCall.dependencies) && defineCall.dependencies.length > 0) {
+                throw new Error(`Cannot resolve dependencies for script ${scriptSrc}. The dependencies are: ${defineCall.dependencies.join(', ')}`);
+            }
+            if (typeof defineCall.callback === 'function') {
+                return defineCall.callback([]);
+            }
+            else {
+                return defineCall.callback;
+            }
+        }
+        h(scriptSrc) {
+            return new Promise((resolve, reject) => {
+                const scriptElement = document.createElement('script');
+                scriptElement.setAttribute('async', 'async');
+                scriptElement.setAttribute('type', 'text/javascript');
+                const unbind = () => {
+                    scriptElement.removeEventListener('load', loadEventListener);
+                    scriptElement.removeEventListener('error', errorEventListener);
+                };
+                const loadEventListener = (e) => {
+                    unbind();
+                    resolve(this.c.pop());
+                };
+                const errorEventListener = (e) => {
+                    unbind();
+                    reject(e);
+                };
+                scriptElement.addEventListener('load', loadEventListener);
+                scriptElement.addEventListener('error', errorEventListener);
+                if (this.f) {
+                    scriptSrc = this.f.createScriptURL(scriptSrc);
+                }
+                scriptElement.setAttribute('src', scriptSrc);
+                // eslint-disable-next-line no-restricted-globals
+                window.document.getElementsByTagName('head')[0].appendChild(scriptElement);
+            });
+        }
+        i(scriptSrc) {
+            return new Promise((resolve, reject) => {
+                try {
+                    if (this.f) {
+                        scriptSrc = this.f.createScriptURL(scriptSrc);
+                    }
+                    importScripts(scriptSrc);
+                    resolve(this.c.pop());
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+        }
+        async j(scriptSrc) {
+            try {
+                const fs = globalThis._VSCODE_NODE_MODULES['fs'];
+                const vm = globalThis._VSCODE_NODE_MODULES['vm'];
+                const module = globalThis._VSCODE_NODE_MODULES['module'];
+                const filePath = uri_1.URI.parse(scriptSrc).fsPath;
+                const content = fs.readFileSync(filePath).toString();
+                const scriptSource = module.wrap(content.replace(/^#!.*/, ''));
+                const script = new vm.Script(scriptSource);
+                const compileWrapper = script.runInThisContext();
+                compileWrapper.apply();
+                return this.c.pop();
+            }
+            catch (error) {
+                throw error;
+            }
+        }
+    }
+    const cache = new Map();
+    let _paths = {};
+    if (typeof globalThis.require === 'object') {
+        _paths = globalThis.require.paths ?? {};
+    }
+    /**
+     * Utility for importing an AMD node module. This util supports AMD and ESM contexts and should be used while the ESM adoption
+     * is on its way.
+     *
+     * e.g. pass in `vscode-textmate/release/main.js`
+     */
+    async function $JD(nodeModuleName, pathInsideNodeModule, isBuilt) {
+        if (amd_1.$T) {
+            if (isBuilt === undefined) {
+                const product = globalThis._VSCODE_PRODUCT_JSON;
+                isBuilt = Boolean((product ?? globalThis.vscode?.context?.configuration()?.product)?.commit);
+            }
+            if (_paths[nodeModuleName]) {
+                nodeModuleName = _paths[nodeModuleName];
+            }
+            const nodeModulePath = `${nodeModuleName}/${pathInsideNodeModule}`;
+            if (cache.has(nodeModulePath)) {
+                return cache.get(nodeModulePath);
+            }
+            let scriptSrc;
+            if (/^\w[\w\d+.-]*:\/\//.test(nodeModulePath)) {
+                // looks like a URL
+                // bit of a special case for: src/vs/workbench/services/languageDetection/browser/languageDetectionSimpleWorker.ts
+                scriptSrc = nodeModulePath;
+            }
+            else {
+                const useASAR = (isBuilt && !platform.$o);
+                const actualNodeModulesPath = (useASAR ? network_1.$zg : network_1.$yg);
+                const resourcePath = `${actualNodeModulesPath}/${nodeModulePath}`;
+                scriptSrc = network_1.$Cg.asBrowserUri(resourcePath).toString(true);
+            }
+            const result = AMDModuleImporter.INSTANCE.load(scriptSrc);
+            cache.set(nodeModulePath, result);
+            return result;
+        }
+        else {
+            return await new Promise((resolve_1, reject_1) => { require([nodeModuleName], resolve_1, reject_1); });
+        }
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[21/*vs/base/common/resources*/], __M([0/*require*/,1/*exports*/,36/*vs/base/common/extpath*/,20/*vs/base/common/network*/,18/*vs/base/common/path*/,3/*vs/base/common/platform*/,19/*vs/base/common/strings*/,11/*vs/base/common/uri*/]), function (require, exports, extpath, network_1, paths, platform_1, strings_1, uri_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.DataUri = exports.$4g = exports.$3g = exports.$2g = exports.$1g = exports.$Zg = exports.$Yg = exports.$Xg = exports.$Wg = exports.$Vg = exports.$Ug = exports.$Tg = exports.$Sg = exports.$Rg = exports.$Qg = exports.$Pg = exports.$Og = exports.$Ng = exports.$Mg = exports.$Lg = exports.$Kg = void 0;
+    exports.$Jg = $Jg;
+    exports.$5g = $5g;
+    exports.$6g = $6g;
+    function $Jg(uri) {
+        return (0, uri_1.$xc)(uri, true);
+    }
+    class $Kg {
+        constructor(a) {
+            this.a = a;
+        }
+        compare(uri1, uri2, ignoreFragment = false) {
+            if (uri1 === uri2) {
+                return 0;
+            }
+            return (0, strings_1.$ef)(this.getComparisonKey(uri1, ignoreFragment), this.getComparisonKey(uri2, ignoreFragment));
+        }
+        isEqual(uri1, uri2, ignoreFragment = false) {
+            if (uri1 === uri2) {
+                return true;
+            }
+            if (!uri1 || !uri2) {
+                return false;
+            }
+            return this.getComparisonKey(uri1, ignoreFragment) === this.getComparisonKey(uri2, ignoreFragment);
+        }
+        getComparisonKey(uri, ignoreFragment = false) {
+            return uri.with({
+                path: this.a(uri) ? uri.path.toLowerCase() : undefined,
+                fragment: ignoreFragment ? null : undefined
+            }).toString();
+        }
+        ignorePathCasing(uri) {
+            return this.a(uri);
+        }
+        isEqualOrParent(base, parentCandidate, ignoreFragment = false) {
+            if (base.scheme === parentCandidate.scheme) {
+                if (base.scheme === network_1.Schemas.file) {
+                    return extpath.$ig($Jg(base), $Jg(parentCandidate), this.a(base)) && base.query === parentCandidate.query && (ignoreFragment || base.fragment === parentCandidate.fragment);
+                }
+                if ((0, exports.$1g)(base.authority, parentCandidate.authority)) {
+                    return extpath.$ig(base.path, parentCandidate.path, this.a(base), '/') && base.query === parentCandidate.query && (ignoreFragment || base.fragment === parentCandidate.fragment);
+                }
+            }
+            return false;
+        }
+        // --- path math
+        joinPath(resource, ...pathFragment) {
+            return uri_1.URI.joinPath(resource, ...pathFragment);
+        }
+        basenameOrAuthority(resource) {
+            return (0, exports.$Sg)(resource) || resource.authority;
+        }
+        basename(resource) {
+            return paths.$hc.basename(resource.path);
+        }
+        extname(resource) {
+            return paths.$hc.extname(resource.path);
+        }
+        dirname(resource) {
+            if (resource.path.length === 0) {
+                return resource;
+            }
+            let dirname;
+            if (resource.scheme === network_1.Schemas.file) {
+                dirname = uri_1.URI.file(paths.$nc($Jg(resource))).path;
+            }
+            else {
+                dirname = paths.$hc.dirname(resource.path);
+                if (resource.authority && dirname.length && dirname.charCodeAt(0) !== 47 /* CharCode.Slash */) {
+                    console.error(`dirname("${resource.toString})) resulted in a relative path`);
+                    dirname = '/'; // If a URI contains an authority component, then the path component must either be empty or begin with a CharCode.Slash ("/") character
+                }
+            }
+            return resource.with({
+                path: dirname
+            });
+        }
+        normalizePath(resource) {
+            if (!resource.path.length) {
+                return resource;
+            }
+            let normalizedPath;
+            if (resource.scheme === network_1.Schemas.file) {
+                normalizedPath = uri_1.URI.file(paths.$ic($Jg(resource))).path;
+            }
+            else {
+                normalizedPath = paths.$hc.normalize(resource.path);
+            }
+            return resource.with({
+                path: normalizedPath
+            });
+        }
+        relativePath(from, to) {
+            if (from.scheme !== to.scheme || !(0, exports.$1g)(from.authority, to.authority)) {
+                return undefined;
+            }
+            if (from.scheme === network_1.Schemas.file) {
+                const relativePath = paths.$mc($Jg(from), $Jg(to));
+                return platform_1.$i ? extpath.$cg(relativePath) : relativePath;
+            }
+            let fromPath = from.path || '/';
+            const toPath = to.path || '/';
+            if (this.a(from)) {
+                // make casing of fromPath match toPath
+                let i = 0;
+                for (const len = Math.min(fromPath.length, toPath.length); i < len; i++) {
+                    if (fromPath.charCodeAt(i) !== toPath.charCodeAt(i)) {
+                        if (fromPath.charAt(i).toLowerCase() !== toPath.charAt(i).toLowerCase()) {
+                            break;
+                        }
+                    }
+                }
+                fromPath = toPath.substr(0, i) + fromPath.substr(i);
+            }
+            return paths.$hc.relative(fromPath, toPath);
+        }
+        resolvePath(base, path) {
+            if (base.scheme === network_1.Schemas.file) {
+                const newURI = uri_1.URI.file(paths.$lc($Jg(base), path));
+                return base.with({
+                    authority: newURI.authority,
+                    path: newURI.path
+                });
+            }
+            path = extpath.$dg(path); // we allow path to be a windows path
+            return base.with({
+                path: paths.$hc.resolve(base.path, path)
+            });
+        }
+        // --- misc
+        isAbsolutePath(resource) {
+            return !!resource.path && resource.path[0] === '/';
+        }
+        isEqualAuthority(a1, a2) {
+            return a1 === a2 || (a1 !== undefined && a2 !== undefined && (0, strings_1.$lf)(a1, a2));
+        }
+        hasTrailingPathSeparator(resource, sep = paths.sep) {
+            if (resource.scheme === network_1.Schemas.file) {
+                const fsp = $Jg(resource);
+                return fsp.length > extpath.$eg(fsp).length && fsp[fsp.length - 1] === sep;
+            }
+            else {
+                const p = resource.path;
+                return (p.length > 1 && p.charCodeAt(p.length - 1) === 47 /* CharCode.Slash */) && !(/^[a-zA-Z]:(\/$|\\$)/.test(resource.fsPath)); // ignore the slash at offset 0
+            }
+        }
+        removeTrailingPathSeparator(resource, sep = paths.sep) {
+            // Make sure that the path isn't a drive letter. A trailing separator there is not removable.
+            if ((0, exports.$2g)(resource, sep)) {
+                return resource.with({ path: resource.path.substr(0, resource.path.length - 1) });
+            }
+            return resource;
+        }
+        addTrailingPathSeparator(resource, sep = paths.sep) {
+            let isRootSep = false;
+            if (resource.scheme === network_1.Schemas.file) {
+                const fsp = $Jg(resource);
+                isRootSep = ((fsp !== undefined) && (fsp.length === extpath.$eg(fsp).length) && (fsp[fsp.length - 1] === sep));
+            }
+            else {
+                sep = '/';
+                const p = resource.path;
+                isRootSep = p.length === 1 && p.charCodeAt(p.length - 1) === 47 /* CharCode.Slash */;
+            }
+            if (!isRootSep && !(0, exports.$2g)(resource, sep)) {
+                return resource.with({ path: resource.path + '/' });
+            }
+            return resource;
+        }
+    }
+    exports.$Kg = $Kg;
+    /**
+     * Unbiased utility that takes uris "as they are". This means it can be interchanged with
+     * uri#toString() usages. The following is true
+     * ```
+     * assertEqual(aUri.toString() === bUri.toString(), exturi.isEqual(aUri, bUri))
+     * ```
+     */
+    exports.$Lg = new $Kg(() => false);
+    /**
+     * BIASED utility that _mostly_ ignored the case of urs paths. ONLY use this util if you
+     * understand what you are doing.
+     *
+     * This utility is INCOMPATIBLE with `uri.toString()`-usages and both CANNOT be used interchanged.
+     *
+     * When dealing with uris from files or documents, `extUri` (the unbiased friend)is sufficient
+     * because those uris come from a "trustworthy source". When creating unknown uris it's always
+     * better to use `IUriIdentityService` which exposes an `IExtUri`-instance which knows when path
+     * casing matters.
+     */
+    exports.$Mg = new $Kg(uri => {
+        // A file scheme resource is in the same platform as code, so ignore case for non linux platforms
+        // Resource can be from another platform. Lowering the case as an hack. Should come from File system provider
+        return uri.scheme === network_1.Schemas.file ? !platform_1.$k : true;
+    });
+    /**
+     * BIASED utility that always ignores the casing of uris paths. ONLY use this util if you
+     * understand what you are doing.
+     *
+     * This utility is INCOMPATIBLE with `uri.toString()`-usages and both CANNOT be used interchanged.
+     *
+     * When dealing with uris from files or documents, `extUri` (the unbiased friend)is sufficient
+     * because those uris come from a "trustworthy source". When creating unknown uris it's always
+     * better to use `IUriIdentityService` which exposes an `IExtUri`-instance which knows when path
+     * casing matters.
+     */
+    exports.$Ng = new $Kg(_ => true);
+    exports.$Og = exports.$Lg.isEqual.bind(exports.$Lg);
+    exports.$Pg = exports.$Lg.isEqualOrParent.bind(exports.$Lg);
+    exports.$Qg = exports.$Lg.getComparisonKey.bind(exports.$Lg);
+    exports.$Rg = exports.$Lg.basenameOrAuthority.bind(exports.$Lg);
+    exports.$Sg = exports.$Lg.basename.bind(exports.$Lg);
+    exports.$Tg = exports.$Lg.extname.bind(exports.$Lg);
+    exports.$Ug = exports.$Lg.dirname.bind(exports.$Lg);
+    exports.$Vg = exports.$Lg.joinPath.bind(exports.$Lg);
+    exports.$Wg = exports.$Lg.normalizePath.bind(exports.$Lg);
+    exports.$Xg = exports.$Lg.relativePath.bind(exports.$Lg);
+    exports.$Yg = exports.$Lg.resolvePath.bind(exports.$Lg);
+    exports.$Zg = exports.$Lg.isAbsolutePath.bind(exports.$Lg);
+    exports.$1g = exports.$Lg.isEqualAuthority.bind(exports.$Lg);
+    exports.$2g = exports.$Lg.hasTrailingPathSeparator.bind(exports.$Lg);
+    exports.$3g = exports.$Lg.removeTrailingPathSeparator.bind(exports.$Lg);
+    exports.$4g = exports.$Lg.addTrailingPathSeparator.bind(exports.$Lg);
+    //#endregion
+    function $5g(items, resourceAccessor) {
+        const distinctParents = [];
+        for (let i = 0; i < items.length; i++) {
+            const candidateResource = resourceAccessor(items[i]);
+            if (items.some((otherItem, index) => {
+                if (index === i) {
+                    return false;
+                }
+                return (0, exports.$Pg)(candidateResource, resourceAccessor(otherItem));
+            })) {
+                continue;
+            }
+            distinctParents.push(items[i]);
+        }
+        return distinctParents;
+    }
+    /**
+     * Data URI related helpers.
+     */
+    var DataUri;
+    (function (DataUri) {
+        DataUri.META_DATA_LABEL = 'label';
+        DataUri.META_DATA_DESCRIPTION = 'description';
+        DataUri.META_DATA_SIZE = 'size';
+        DataUri.META_DATA_MIME = 'mime';
+        function parseMetaData(dataUri) {
+            const metadata = new Map();
+            // Given a URI of:  data:image/png;size:2313;label:SomeLabel;description:SomeDescription;base64,77+9UE5...
+            // the metadata is: size:2313;label:SomeLabel;description:SomeDescription
+            const meta = dataUri.path.substring(dataUri.path.indexOf(';') + 1, dataUri.path.lastIndexOf(';'));
+            meta.split(';').forEach(property => {
+                const [key, value] = property.split(':');
+                if (key && value) {
+                    metadata.set(key, value);
+                }
+            });
+            // Given a URI of:  data:image/png;size:2313;label:SomeLabel;description:SomeDescription;base64,77+9UE5...
+            // the mime is: image/png
+            const mime = dataUri.path.substring(0, dataUri.path.indexOf(';'));
+            if (mime) {
+                metadata.set(DataUri.META_DATA_MIME, mime);
+            }
+            return metadata;
+        }
+        DataUri.parseMetaData = parseMetaData;
+    })(DataUri || (exports.DataUri = DataUri = {}));
+    function $6g(resource, authority, localScheme) {
+        if (authority) {
+            let path = resource.path;
+            if (path && path[0] !== paths.$hc.sep) {
+                path = paths.$hc.sep + path;
+            }
+            return resource.with({ scheme: localScheme, authority, path });
+        }
+        return resource.with({ scheme: localScheme });
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[22/*vs/base/common/async*/], __M([0/*require*/,1/*exports*/,28/*vs/base/common/cancellation*/,9/*vs/base/common/errors*/,38/*vs/base/common/event*/,2/*vs/base/common/lifecycle*/,21/*vs/base/common/resources*/,3/*vs/base/common/platform*/,31/*vs/base/common/symbols*/,30/*vs/base/common/lazy*/]), function (require, exports, cancellation_1, errors_1, event_1, lifecycle_1, resources_1, platform_1, symbols_1, lazy_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$Lh = exports.$Jh = exports.$Ih = exports.$Hh = exports.$Gh = exports.Promises = exports.$Fh = exports.$Eh = exports.$Dh = exports.$Bh = exports.$Ah = exports.$zh = exports.$yh = exports.$xh = exports.$wh = exports.$vh = exports.$uh = exports.$th = exports.$sh = exports.$rh = exports.$qh = exports.$ph = exports.$oh = exports.$ih = exports.$hh = exports.$gh = exports.$fh = exports.$eh = exports.$dh = exports.$ch = void 0;
+    exports.$7g = $7g;
+    exports.$8g = $8g;
+    exports.$9g = $9g;
+    exports.$0g = $0g;
+    exports.$$g = $$g;
+    exports.$_g = $_g;
+    exports.$ah = $ah;
+    exports.$bh = $bh;
+    exports.$jh = $jh;
+    exports.$kh = $kh;
+    exports.$lh = $lh;
+    exports.$mh = $mh;
+    exports.$nh = $nh;
+    exports.$Ch = $Ch;
+    exports.$Kh = $Kh;
+    function $7g(obj) {
+        return !!obj && typeof obj.then === 'function';
+    }
+    function $8g(callback) {
+        const source = new cancellation_1.$ee();
+        const thenable = callback(source.token);
+        const promise = new Promise((resolve, reject) => {
+            const subscription = source.token.onCancellationRequested(() => {
+                subscription.dispose();
+                reject(new errors_1.$5());
+            });
+            Promise.resolve(thenable).then(value => {
+                subscription.dispose();
+                source.dispose();
+                resolve(value);
+            }, err => {
+                subscription.dispose();
+                source.dispose();
+                reject(err);
+            });
+        });
+        return new class {
+            cancel() {
+                source.cancel();
+                source.dispose();
+            }
+            then(resolve, reject) {
+                return promise.then(resolve, reject);
+            }
+            catch(reject) {
+                return this.then(undefined, reject);
+            }
+            finally(onfinally) {
+                return promise.finally(onfinally);
+            }
+        };
+    }
+    function $9g(promise, token, defaultValue) {
+        return new Promise((resolve, reject) => {
+            const ref = token.onCancellationRequested(() => {
+                ref.dispose();
+                resolve(defaultValue);
+            });
+            promise.then(resolve, reject).finally(() => ref.dispose());
+        });
+    }
+    /**
+     * Returns a promise that rejects with an {@CancellationError} as soon as the passed token is cancelled.
+     * @see {@link $9g}
+     */
+    function $0g(promise, token) {
+        return new Promise((resolve, reject) => {
+            const ref = token.onCancellationRequested(() => {
+                ref.dispose();
+                reject(new errors_1.$5());
+            });
+            promise.then(resolve, reject).finally(() => ref.dispose());
+        });
+    }
+    /**
+     * Returns as soon as one of the promises resolves or rejects and cancels remaining promises
+     */
+    async function $$g(cancellablePromises) {
+        let resolvedPromiseIndex = -1;
+        const promises = cancellablePromises.map((promise, index) => promise.then(result => { resolvedPromiseIndex = index; return result; }));
+        try {
+            const result = await Promise.race(promises);
+            return result;
+        }
+        finally {
+            cancellablePromises.forEach((cancellablePromise, index) => {
+                if (index !== resolvedPromiseIndex) {
+                    cancellablePromise.cancel();
+                }
+            });
+        }
+    }
+    function $_g(promise, timeout, onTimeout) {
+        let promiseResolve = undefined;
+        const timer = setTimeout(() => {
+            promiseResolve?.(undefined);
+            onTimeout?.();
+        }, timeout);
+        return Promise.race([
+            promise.finally(() => clearTimeout(timer)),
+            new Promise(resolve => promiseResolve = resolve)
+        ]);
+    }
+    function $ah(callback) {
+        return new Promise((resolve, reject) => {
+            const item = callback();
+            if ($7g(item)) {
+                item.then(resolve, reject);
+            }
+            else {
+                resolve(item);
+            }
+        });
+    }
+    /**
+     * Creates and returns a new promise, plus its `resolve` and `reject` callbacks.
+     *
+     * Replace with standardized [`Promise.withResolvers`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers) once it is supported
+     */
+    function $bh() {
+        let resolve;
+        let reject;
+        const promise = new Promise((res, rej) => {
+            resolve = res;
+            reject = rej;
+        });
+        return { promise, resolve: resolve, reject: reject };
+    }
+    /**
+     * A helper to prevent accumulation of sequential async tasks.
+     *
+     * Imagine a mail man with the sole task of delivering letters. As soon as
+     * a letter submitted for delivery, he drives to the destination, delivers it
+     * and returns to his base. Imagine that during the trip, N more letters were submitted.
+     * When the mail man returns, he picks those N letters and delivers them all in a
+     * single trip. Even though N+1 submissions occurred, only 2 deliveries were made.
+     *
+     * The throttler implements this via the queue() method, by providing it a task
+     * factory. Following the example:
+     *
+     * 		const throttler = new Throttler();
+     * 		const letters = [];
+     *
+     * 		function deliver() {
+     * 			const lettersToDeliver = letters;
+     * 			letters = [];
+     * 			return makeTheTrip(lettersToDeliver);
+     * 		}
+     *
+     * 		function onLetterReceived(l) {
+     * 			letters.push(l);
+     * 			throttler.queue(deliver);
+     * 		}
+     */
+    class $ch {
+        constructor() {
+            this.f = false;
+            this.a = null;
+            this.b = null;
+            this.d = null;
+        }
+        queue(promiseFactory) {
+            if (this.f) {
+                return Promise.reject(new Error('Throttler is disposed'));
+            }
+            if (this.a) {
+                this.d = promiseFactory;
+                if (!this.b) {
+                    const onComplete = () => {
+                        this.b = null;
+                        if (this.f) {
+                            return;
+                        }
+                        const result = this.queue(this.d);
+                        this.d = null;
+                        return result;
+                    };
+                    this.b = new Promise(resolve => {
+                        this.a.then(onComplete, onComplete).then(resolve);
+                    });
+                }
+                return new Promise((resolve, reject) => {
+                    this.b.then(resolve, reject);
+                });
+            }
+            this.a = promiseFactory();
+            return new Promise((resolve, reject) => {
+                this.a.then((result) => {
+                    this.a = null;
+                    resolve(result);
+                }, (err) => {
+                    this.a = null;
+                    reject(err);
+                });
+            });
+        }
+        dispose() {
+            this.f = true;
+        }
+    }
+    exports.$ch = $ch;
+    class $dh {
+        constructor() {
+            this.a = Promise.resolve(null);
+        }
+        queue(promiseTask) {
+            return this.a = this.a.then(() => promiseTask(), () => promiseTask());
+        }
+    }
+    exports.$dh = $dh;
+    class $eh {
+        constructor() {
+            this.a = new Map();
+        }
+        queue(key, promiseTask) {
+            const runningPromise = this.a.get(key) ?? Promise.resolve();
+            const newPromise = runningPromise
+                .catch(() => { })
+                .then(promiseTask)
+                .finally(() => {
+                if (this.a.get(key) === newPromise) {
+                    this.a.delete(key);
+                }
+            });
+            this.a.set(key, newPromise);
+            return newPromise;
+        }
+    }
+    exports.$eh = $eh;
+    const timeoutDeferred = (timeout, fn) => {
+        let scheduled = true;
+        const handle = setTimeout(() => {
+            scheduled = false;
+            fn();
+        }, timeout);
+        return {
+            isTriggered: () => scheduled,
+            dispose: () => {
+                clearTimeout(handle);
+                scheduled = false;
+            },
+        };
+    };
+    const microtaskDeferred = (fn) => {
+        let scheduled = true;
+        queueMicrotask(() => {
+            if (scheduled) {
+                scheduled = false;
+                fn();
+            }
+        });
+        return {
+            isTriggered: () => scheduled,
+            dispose: () => { scheduled = false; },
+        };
+    };
+    /**
+     * A helper to delay (debounce) execution of a task that is being requested often.
+     *
+     * Following the throttler, now imagine the mail man wants to optimize the number of
+     * trips proactively. The trip itself can be long, so he decides not to make the trip
+     * as soon as a letter is submitted. Instead he waits a while, in case more
+     * letters are submitted. After said waiting period, if no letters were submitted, he
+     * decides to make the trip. Imagine that N more letters were submitted after the first
+     * one, all within a short period of time between each other. Even though N+1
+     * submissions occurred, only 1 delivery was made.
+     *
+     * The delayer offers this behavior via the trigger() method, into which both the task
+     * to be executed and the waiting period (delay) must be passed in as arguments. Following
+     * the example:
+     *
+     * 		const delayer = new Delayer(WAITING_PERIOD);
+     * 		const letters = [];
+     *
+     * 		function letterReceived(l) {
+     * 			letters.push(l);
+     * 			delayer.trigger(() => { return makeTheTrip(); });
+     * 		}
+     */
+    class $fh {
+        constructor(defaultDelay) {
+            this.defaultDelay = defaultDelay;
+            this.a = null;
+            this.b = null;
+            this.d = null;
+            this.f = null;
+            this.g = null;
+        }
+        trigger(task, delay = this.defaultDelay) {
+            this.g = task;
+            this.h();
+            if (!this.b) {
+                this.b = new Promise((resolve, reject) => {
+                    this.d = resolve;
+                    this.f = reject;
+                }).then(() => {
+                    this.b = null;
+                    this.d = null;
+                    if (this.g) {
+                        const task = this.g;
+                        this.g = null;
+                        return task();
+                    }
+                    return undefined;
+                });
+            }
+            const fn = () => {
+                this.a = null;
+                this.d?.(null);
+            };
+            this.a = delay === symbols_1.$4d ? microtaskDeferred(fn) : timeoutDeferred(delay, fn);
+            return this.b;
+        }
+        isTriggered() {
+            return !!this.a?.isTriggered();
+        }
+        cancel() {
+            this.h();
+            if (this.b) {
+                this.f?.(new errors_1.$5());
+                this.b = null;
+            }
+        }
+        h() {
+            this.a?.dispose();
+            this.a = null;
+        }
+        dispose() {
+            this.cancel();
+        }
+    }
+    exports.$fh = $fh;
+    /**
+     * A helper to delay execution of a task that is being requested often, while
+     * preventing accumulation of consecutive executions, while the task runs.
+     *
+     * The mail man is clever and waits for a certain amount of time, before going
+     * out to deliver letters. While the mail man is going out, more letters arrive
+     * and can only be delivered once he is back. Once he is back the mail man will
+     * do one more trip to deliver the letters that have accumulated while he was out.
+     */
+    class $gh {
+        constructor(defaultDelay) {
+            this.a = new $fh(defaultDelay);
+            this.b = new $ch();
+        }
+        trigger(promiseFactory, delay) {
+            return this.a.trigger(() => this.b.queue(promiseFactory), delay);
+        }
+        isTriggered() {
+            return this.a.isTriggered();
+        }
+        cancel() {
+            this.a.cancel();
+        }
+        dispose() {
+            this.a.dispose();
+            this.b.dispose();
+        }
+    }
+    exports.$gh = $gh;
+    /**
+     * A barrier that is initially closed and then becomes opened permanently.
+     */
+    class $hh {
+        constructor() {
+            this.a = false;
+            this.b = new Promise((c, e) => {
+                this.d = c;
+            });
+        }
+        isOpen() {
+            return this.a;
+        }
+        open() {
+            this.a = true;
+            this.d(true);
+        }
+        wait() {
+            return this.b;
+        }
+    }
+    exports.$hh = $hh;
+    /**
+     * A barrier that is initially closed and then becomes opened permanently after a certain period of
+     * time or when open is called explicitly
+     */
+    class $ih extends $hh {
+        constructor(autoOpenTimeMs) {
+            super();
+            this.f = setTimeout(() => this.open(), autoOpenTimeMs);
+        }
+        open() {
+            clearTimeout(this.f);
+            super.open();
+        }
+    }
+    exports.$ih = $ih;
+    function $jh(millis, token) {
+        if (!token) {
+            return $8g(token => $jh(millis, token));
+        }
+        return new Promise((resolve, reject) => {
+            const handle = setTimeout(() => {
+                disposable.dispose();
+                resolve();
+            }, millis);
+            const disposable = token.onCancellationRequested(() => {
+                clearTimeout(handle);
+                disposable.dispose();
+                reject(new errors_1.$5());
+            });
+        });
+    }
+    /**
+     * Creates a timeout that can be disposed using its returned value.
+     * @param handler The timeout handler.
+     * @param timeout An optional timeout in milliseconds.
+     * @param store An optional {@link $Tc} that will have the timeout disposable managed automatically.
+     *
+     * @example
+     * const store = new DisposableStore;
+     * // Call the timeout after 1000ms at which point it will be automatically
+     * // evicted from the store.
+     * const timeoutDisposable = disposableTimeout(() => {}, 1000, store);
+     *
+     * if (foo) {
+     *   // Cancel the timeout and evict it from store.
+     *   timeoutDisposable.dispose();
+     * }
+     */
+    function $kh(handler, timeout = 0, store) {
+        const timer = setTimeout(() => {
+            handler();
+            if (store) {
+                disposable.dispose();
+            }
+        }, timeout);
+        const disposable = (0, lifecycle_1.$Sc)(() => {
+            clearTimeout(timer);
+            store?.deleteAndLeak(disposable);
+        });
+        store?.add(disposable);
+        return disposable;
+    }
+    /**
+     * Runs the provided list of promise factories in sequential order. The returned
+     * promise will complete to an array of results from each promise.
+     */
+    function $lh(promiseFactories) {
+        const results = [];
+        let index = 0;
+        const len = promiseFactories.length;
+        function next() {
+            return index < len ? promiseFactories[index++]() : null;
+        }
+        function thenHandler(result) {
+            if (result !== undefined && result !== null) {
+                results.push(result);
+            }
+            const n = next();
+            if (n) {
+                return n.then(thenHandler);
+            }
+            return Promise.resolve(results);
+        }
+        return Promise.resolve(null).then(thenHandler);
+    }
+    function $mh(promiseFactories, shouldStop = t => !!t, defaultValue = null) {
+        let index = 0;
+        const len = promiseFactories.length;
+        const loop = () => {
+            if (index >= len) {
+                return Promise.resolve(defaultValue);
+            }
+            const factory = promiseFactories[index++];
+            const promise = Promise.resolve(factory());
+            return promise.then(result => {
+                if (shouldStop(result)) {
+                    return Promise.resolve(result);
+                }
+                return loop();
+            });
+        };
+        return loop();
+    }
+    function $nh(promiseList, shouldStop = t => !!t, defaultValue = null) {
+        if (promiseList.length === 0) {
+            return Promise.resolve(defaultValue);
+        }
+        let todo = promiseList.length;
+        const finish = () => {
+            todo = -1;
+            for (const promise of promiseList) {
+                promise.cancel?.();
+            }
+        };
+        return new Promise((resolve, reject) => {
+            for (const promise of promiseList) {
+                promise.then(result => {
+                    if (--todo >= 0 && shouldStop(result)) {
+                        finish();
+                        resolve(result);
+                    }
+                    else if (todo === 0) {
+                        resolve(defaultValue);
+                    }
+                })
+                    .catch(err => {
+                    if (--todo >= 0) {
+                        finish();
+                        reject(err);
+                    }
+                });
+            }
+        });
+    }
+    /**
+     * A helper to queue N promises and run them all with a max degree of parallelism. The helper
+     * ensures that at any time no more than M promises are running at the same time.
+     */
+    class $oh {
+        constructor(maxDegreeOfParalellism) {
+            this.a = 0;
+            this.b = false;
+            this.f = maxDegreeOfParalellism;
+            this.g = [];
+            this.d = 0;
+            this.h = new event_1.$7d();
+        }
+        /**
+         *
+         * @returns A promise that resolved when all work is done (onDrained) or when
+         * there is nothing to do
+         */
+        whenIdle() {
+            return this.size > 0
+                ? event_1.Event.toPromise(this.onDrained)
+                : Promise.resolve();
+        }
+        get onDrained() {
+            return this.h.event;
+        }
+        get size() {
+            return this.a;
+        }
+        queue(factory) {
+            if (this.b) {
+                throw new Error('Object has been disposed');
+            }
+            this.a++;
+            return new Promise((c, e) => {
+                this.g.push({ factory, c, e });
+                this.j();
+            });
+        }
+        j() {
+            while (this.g.length && this.d < this.f) {
+                const iLimitedTask = this.g.shift();
+                this.d++;
+                const promise = iLimitedTask.factory();
+                promise.then(iLimitedTask.c, iLimitedTask.e);
+                promise.then(() => this.k(), () => this.k());
+            }
+        }
+        k() {
+            if (this.b) {
+                return;
+            }
+            this.d--;
+            if (--this.a === 0) {
+                this.h.fire();
+            }
+            if (this.g.length > 0) {
+                this.j();
+            }
+        }
+        clear() {
+            if (this.b) {
+                throw new Error('Object has been disposed');
+            }
+            this.g.length = 0;
+            this.a = this.d;
+        }
+        dispose() {
+            this.b = true;
+            this.g.length = 0; // stop further processing
+            this.a = 0;
+            this.h.dispose();
+        }
+    }
+    exports.$oh = $oh;
+    /**
+     * A queue is handles one promise at a time and guarantees that at any time only one promise is executing.
+     */
+    class $ph extends $oh {
+        constructor() {
+            super(1);
+        }
+    }
+    exports.$ph = $ph;
+    /**
+     * Same as `Queue`, ensures that only 1 task is executed at the same time. The difference to `Queue` is that
+     * there is only 1 task about to be scheduled next. As such, calling `queue` while a task is executing will
+     * replace the currently queued task until it executes.
+     *
+     * As such, the returned promise may not be from the factory that is passed in but from the next factory that
+     * is running after having called `queue`.
+     */
+    class $qh {
+        constructor() {
+            this.a = new $Dh();
+            this.b = 0;
+        }
+        queue(factory) {
+            if (!this.a.isRunning()) {
+                return this.a.run(this.b++, factory());
+            }
+            return this.a.queue(() => {
+                return this.a.run(this.b++, factory());
+            });
+        }
+    }
+    exports.$qh = $qh;
+    /**
+     * A helper to organize queues per resource. The ResourceQueue makes sure to manage queues per resource
+     * by disposing them once the queue is empty.
+     */
+    class $rh {
+        constructor() {
+            this.a = new Map();
+            this.b = new Set();
+            this.d = undefined;
+            this.f = 0;
+        }
+        async whenDrained() {
+            if (this.g()) {
+                return;
+            }
+            const promise = new $Fh();
+            this.b.add(promise);
+            return promise.p;
+        }
+        g() {
+            for (const [, queue] of this.a) {
+                if (queue.size > 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        queueSize(resource, extUri = resources_1.$Lg) {
+            const key = extUri.getComparisonKey(resource);
+            return this.a.get(key)?.size ?? 0;
+        }
+        queueFor(resource, factory, extUri = resources_1.$Lg) {
+            const key = extUri.getComparisonKey(resource);
+            let queue = this.a.get(key);
+            if (!queue) {
+                queue = new $ph();
+                const drainListenerId = this.f++;
+                const drainListener = event_1.Event.once(queue.onDrained)(() => {
+                    queue?.dispose();
+                    this.a.delete(key);
+                    this.h();
+                    this.d?.deleteAndDispose(drainListenerId);
+                    if (this.d?.size === 0) {
+                        this.d.dispose();
+                        this.d = undefined;
+                    }
+                });
+                if (!this.d) {
+                    this.d = new lifecycle_1.$4c();
+                }
+                this.d.set(drainListenerId, drainListener);
+                this.a.set(key, queue);
+            }
+            return queue.queue(factory);
+        }
+        h() {
+            if (!this.g()) {
+                return; // not done yet
+            }
+            this.j();
+        }
+        j() {
+            for (const drainer of this.b) {
+                drainer.complete();
+            }
+            this.b.clear();
+        }
+        dispose() {
+            for (const [, queue] of this.a) {
+                queue.dispose();
+            }
+            this.a.clear();
+            // Even though we might still have pending
+            // tasks queued, after the queues have been
+            // disposed, we can no longer track them, so
+            // we release drainers to prevent hanging
+            // promises when the resource queue is being
+            // disposed.
+            this.j();
+            this.d?.dispose();
+        }
+    }
+    exports.$rh = $rh;
+    class $sh {
+        constructor(runner, timeout) {
+            this.a = -1;
+            if (typeof runner === 'function' && typeof timeout === 'number') {
+                this.setIfNotSet(runner, timeout);
+            }
+        }
+        dispose() {
+            this.cancel();
+        }
+        cancel() {
+            if (this.a !== -1) {
+                clearTimeout(this.a);
+                this.a = -1;
+            }
+        }
+        cancelAndSet(runner, timeout) {
+            this.cancel();
+            this.a = setTimeout(() => {
+                this.a = -1;
+                runner();
+            }, timeout);
+        }
+        setIfNotSet(runner, timeout) {
+            if (this.a !== -1) {
+                // timer is already set
+                return;
+            }
+            this.a = setTimeout(() => {
+                this.a = -1;
+                runner();
+            }, timeout);
+        }
+    }
+    exports.$sh = $sh;
+    class $th {
+        constructor() {
+            this.d = undefined;
+        }
+        cancel() {
+            this.d?.dispose();
+            this.d = undefined;
+        }
+        cancelAndSet(runner, interval, context = globalThis) {
+            this.cancel();
+            const handle = context.setInterval(() => {
+                runner();
+            }, interval);
+            this.d = (0, lifecycle_1.$Sc)(() => {
+                context.clearInterval(handle);
+                this.d = undefined;
+            });
+        }
+        dispose() {
+            this.cancel();
+        }
+    }
+    exports.$th = $th;
+    class $uh {
+        constructor(runner, delay) {
+            this.b = -1;
+            this.a = runner;
+            this.d = delay;
+            this.f = this.g.bind(this);
+        }
+        /**
+         * Dispose RunOnceScheduler
+         */
+        dispose() {
+            this.cancel();
+            this.a = null;
+        }
+        /**
+         * Cancel current scheduled runner (if any).
+         */
+        cancel() {
+            if (this.isScheduled()) {
+                clearTimeout(this.b);
+                this.b = -1;
+            }
+        }
+        /**
+         * Cancel previous runner (if any) & schedule a new runner.
+         */
+        schedule(delay = this.d) {
+            this.cancel();
+            this.b = setTimeout(this.f, delay);
+        }
+        get delay() {
+            return this.d;
+        }
+        set delay(value) {
+            this.d = value;
+        }
+        /**
+         * Returns true if scheduled.
+         */
+        isScheduled() {
+            return this.b !== -1;
+        }
+        flush() {
+            if (this.isScheduled()) {
+                this.cancel();
+                this.h();
+            }
+        }
+        g() {
+            this.b = -1;
+            if (this.a) {
+                this.h();
+            }
+        }
+        h() {
+            this.a?.();
+        }
+    }
+    exports.$uh = $uh;
+    /**
+     * Same as `RunOnceScheduler`, but doesn't count the time spent in sleep mode.
+     * > **NOTE**: Only offers 1s resolution.
+     *
+     * When calling `setTimeout` with 3hrs, and putting the computer immediately to sleep
+     * for 8hrs, `setTimeout` will fire **as soon as the computer wakes from sleep**. But
+     * this scheduler will execute 3hrs **after waking the computer from sleep**.
+     */
+    class $vh {
+        constructor(runner, delay) {
+            if (delay % 1000 !== 0) {
+                console.warn(`ProcessTimeRunOnceScheduler resolution is 1s, ${delay}ms is not a multiple of 1000ms.`);
+            }
+            this.a = runner;
+            this.b = delay;
+            this.d = 0;
+            this.f = -1;
+            this.g = this.h.bind(this);
+        }
+        dispose() {
+            this.cancel();
+            this.a = null;
+        }
+        cancel() {
+            if (this.isScheduled()) {
+                clearInterval(this.f);
+                this.f = -1;
+            }
+        }
+        /**
+         * Cancel previous runner (if any) & schedule a new runner.
+         */
+        schedule(delay = this.b) {
+            if (delay % 1000 !== 0) {
+                console.warn(`ProcessTimeRunOnceScheduler resolution is 1s, ${delay}ms is not a multiple of 1000ms.`);
+            }
+            this.cancel();
+            this.d = Math.ceil(delay / 1000);
+            this.f = setInterval(this.g, 1000);
+        }
+        /**
+         * Returns true if scheduled.
+         */
+        isScheduled() {
+            return this.f !== -1;
+        }
+        h() {
+            this.d--;
+            if (this.d > 0) {
+                // still need to wait
+                return;
+            }
+            // time elapsed
+            clearInterval(this.f);
+            this.f = -1;
+            this.a?.();
+        }
+    }
+    exports.$vh = $vh;
+    class $wh extends $uh {
+        constructor(runner, timeout) {
+            super(runner, timeout);
+            this.j = [];
+        }
+        work(unit) {
+            this.j.push(unit);
+            if (!this.isScheduled()) {
+                this.schedule();
+            }
+        }
+        h() {
+            const units = this.j;
+            this.j = [];
+            this.a?.(units);
+        }
+        dispose() {
+            this.j = [];
+            super.dispose();
+        }
+    }
+    exports.$wh = $wh;
+    /**
+     * The `ThrottledWorker` will accept units of work `T`
+     * to handle. The contract is:
+     * * there is a maximum of units the worker can handle at once (via `maxWorkChunkSize`)
+     * * there is a maximum of units the worker will keep in memory for processing (via `maxBufferedWork`)
+     * * after having handled `maxWorkChunkSize` units, the worker needs to rest (via `throttleDelay`)
+     */
+    class $xh extends lifecycle_1.$Uc {
+        constructor(g, h) {
+            super();
+            this.g = g;
+            this.h = h;
+            this.a = [];
+            this.b = this.B(new lifecycle_1.$Vc());
+            this.f = false;
+        }
+        /**
+         * The number of work units that are pending to be processed.
+         */
+        get pending() { return this.a.length; }
+        /**
+         * Add units to be worked on. Use `pending` to figure out
+         * how many units are not yet processed after this method
+         * was called.
+         *
+         * @returns whether the work was accepted or not. If the
+         * worker is disposed, it will not accept any more work.
+         * If the number of pending units would become larger
+         * than `maxPendingWork`, more work will also not be accepted.
+         */
+        work(units) {
+            if (this.f) {
+                return false; // work not accepted: disposed
+            }
+            // Check for reaching maximum of pending work
+            if (typeof this.g.maxBufferedWork === 'number') {
+                // Throttled: simple check if pending + units exceeds max pending
+                if (this.b.value) {
+                    if (this.pending + units.length > this.g.maxBufferedWork) {
+                        return false; // work not accepted: too much pending work
+                    }
+                }
+                // Unthrottled: same as throttled, but account for max chunk getting
+                // worked on directly without being pending
+                else {
+                    if (this.pending + units.length - this.g.maxWorkChunkSize > this.g.maxBufferedWork) {
+                        return false; // work not accepted: too much pending work
+                    }
+                }
+            }
+            // Add to pending units first
+            for (const unit of units) {
+                this.a.push(unit);
+            }
+            // If not throttled, start working directly
+            // Otherwise, when the throttle delay has
+            // past, pending work will be worked again.
+            if (!this.b.value) {
+                this.j();
+            }
+            return true; // work accepted
+        }
+        j() {
+            // Extract chunk to handle and handle it
+            this.h(this.a.splice(0, this.g.maxWorkChunkSize));
+            // If we have remaining work, schedule it after a delay
+            if (this.a.length > 0) {
+                this.b.value = new $uh(() => {
+                    this.b.clear();
+                    this.j();
+                }, this.g.throttleDelay);
+                this.b.value.schedule();
+            }
+        }
+        dispose() {
+            super.dispose();
+            this.f = true;
+        }
+    }
+    exports.$xh = $xh;
+    (function () {
+        if (typeof globalThis.requestIdleCallback !== 'function' || typeof globalThis.cancelIdleCallback !== 'function') {
+            exports.$zh = (_targetWindow, runner) => {
+                (0, platform_1.$B)(() => {
+                    if (disposed) {
+                        return;
+                    }
+                    const end = Date.now() + 15; // one frame at 64fps
+                    const deadline = {
+                        didTimeout: true,
+                        timeRemaining() {
+                            return Math.max(0, end - Date.now());
+                        }
+                    };
+                    runner(Object.freeze(deadline));
+                });
+                let disposed = false;
+                return {
+                    dispose() {
+                        if (disposed) {
+                            return;
+                        }
+                        disposed = true;
+                    }
+                };
+            };
+        }
+        else {
+            exports.$zh = (targetWindow, runner, timeout) => {
+                const handle = targetWindow.requestIdleCallback(runner, typeof timeout === 'number' ? { timeout } : undefined);
+                let disposed = false;
+                return {
+                    dispose() {
+                        if (disposed) {
+                            return;
+                        }
+                        disposed = true;
+                        targetWindow.cancelIdleCallback(handle);
+                    }
+                };
+            };
+        }
+        exports.$yh = (runner) => (0, exports.$zh)(globalThis, runner);
+    })();
+    class $Ah {
+        constructor(targetWindow, executor) {
+            this.g = false;
+            this.d = () => {
+                try {
+                    this.j = executor();
+                }
+                catch (err) {
+                    this.l = err;
+                }
+                finally {
+                    this.g = true;
+                }
+            };
+            this.f = (0, exports.$zh)(targetWindow, () => this.d());
+        }
+        dispose() {
+            this.f.dispose();
+        }
+        get value() {
+            if (!this.g) {
+                this.f.dispose();
+                this.d();
+            }
+            if (this.l) {
+                throw this.l;
+            }
+            return this.j;
+        }
+        get isInitialized() {
+            return this.g;
+        }
+    }
+    exports.$Ah = $Ah;
+    /**
+     * An `IdleValue` that always uses the current window (which might be throttled or inactive)
+     *
+     * **Note** that there is `dom.ts#WindowIdleValue` which is better suited when running inside a browser
+     * context
+     */
+    class $Bh extends $Ah {
+        constructor(executor) {
+            super(globalThis, executor);
+        }
+    }
+    exports.$Bh = $Bh;
+    //#endregion
+    async function $Ch(task, delay, retries) {
+        let lastError;
+        for (let i = 0; i < retries; i++) {
+            try {
+                return await task();
+            }
+            catch (error) {
+                lastError = error;
+                await $jh(delay);
+            }
+        }
+        throw lastError;
+    }
+    /**
+     * @deprecated use `LimitedQueue` instead for an easier to use API
+     */
+    class $Dh {
+        isRunning(taskId) {
+            if (typeof taskId === 'number') {
+                return this.a?.taskId === taskId;
+            }
+            return !!this.a;
+        }
+        get running() {
+            return this.a?.promise;
+        }
+        cancelRunning() {
+            this.a?.cancel();
+        }
+        run(taskId, promise, onCancel) {
+            this.a = { taskId, cancel: () => onCancel?.(), promise };
+            promise.then(() => this.d(taskId), () => this.d(taskId));
+            return promise;
+        }
+        d(taskId) {
+            if (this.a && taskId === this.a.taskId) {
+                // only set running to done if the promise finished that is associated with that taskId
+                this.a = undefined;
+                // schedule the queued task now that we are free if we have any
+                this.f();
+            }
+        }
+        f() {
+            if (this.b) {
+                const queued = this.b;
+                this.b = undefined;
+                // Run queued task and complete on the associated promise
+                queued.run().then(queued.promiseResolve, queued.promiseReject);
+            }
+        }
+        /**
+         * Note: the promise to schedule as next run MUST itself call `run`.
+         *       Otherwise, this sequentializer will report `false` for `isRunning`
+         *       even when this task is running. Missing this detail means that
+         *       suddenly multiple tasks will run in parallel.
+         */
+        queue(run) {
+            // this is our first queued task, so we create associated promise with it
+            // so that we can return a promise that completes when the task has
+            // completed.
+            if (!this.b) {
+                const { promise, resolve: promiseResolve, reject: promiseReject } = $bh();
+                this.b = {
+                    run,
+                    promise,
+                    promiseResolve: promiseResolve,
+                    promiseReject: promiseReject
+                };
+            }
+            // we have a previous queued task, just overwrite it
+            else {
+                this.b.run = run;
+            }
+            return this.b.promise;
+        }
+        hasQueued() {
+            return !!this.b;
+        }
+        async join() {
+            return this.b?.promise ?? this.a?.promise;
+        }
+    }
+    exports.$Dh = $Dh;
+    //#endregion
+    //#region
+    /**
+     * The `IntervalCounter` allows to count the number
+     * of calls to `increment()` over a duration of
+     * `interval`. This utility can be used to conditionally
+     * throttle a frequent task when a certain threshold
+     * is reached.
+     */
+    class $Eh {
+        constructor(d, f = () => Date.now()) {
+            this.d = d;
+            this.f = f;
+            this.a = 0;
+            this.b = 0;
+        }
+        increment() {
+            const now = this.f();
+            // We are outside of the range of `interval` and as such
+            // start counting from 0 and remember the time
+            if (now - this.a > this.d) {
+                this.a = now;
+                this.b = 0;
+            }
+            this.b++;
+            return this.b;
+        }
+    }
+    exports.$Eh = $Eh;
+    var DeferredOutcome;
+    (function (DeferredOutcome) {
+        DeferredOutcome[DeferredOutcome["Resolved"] = 0] = "Resolved";
+        DeferredOutcome[DeferredOutcome["Rejected"] = 1] = "Rejected";
+    })(DeferredOutcome || (DeferredOutcome = {}));
+    /**
+     * Creates a promise whose resolution or rejection can be controlled imperatively.
+     */
+    class $Fh {
+        get isRejected() {
+            return this.d?.outcome === 1 /* DeferredOutcome.Rejected */;
+        }
+        get isResolved() {
+            return this.d?.outcome === 0 /* DeferredOutcome.Resolved */;
+        }
+        get isSettled() {
+            return !!this.d;
+        }
+        get value() {
+            return this.d?.outcome === 0 /* DeferredOutcome.Resolved */ ? this.d?.value : undefined;
+        }
+        constructor() {
+            this.p = new Promise((c, e) => {
+                this.a = c;
+                this.b = e;
+            });
+        }
+        complete(value) {
+            return new Promise(resolve => {
+                this.a(value);
+                this.d = { outcome: 0 /* DeferredOutcome.Resolved */, value };
+                resolve();
+            });
+        }
+        error(err) {
+            return new Promise(resolve => {
+                this.b(err);
+                this.d = { outcome: 1 /* DeferredOutcome.Rejected */, value: err };
+                resolve();
+            });
+        }
+        cancel() {
+            return this.error(new errors_1.$5());
+        }
+    }
+    exports.$Fh = $Fh;
+    //#endregion
+    //#region Promises
+    var Promises;
+    (function (Promises) {
+        /**
+         * A drop-in replacement for `Promise.all` with the only difference
+         * that the method awaits every promise to either fulfill or reject.
+         *
+         * Similar to `Promise.all`, only the first error will be returned
+         * if any.
+         */
+        async function settled(promises) {
+            let firstError = undefined;
+            const result = await Promise.all(promises.map(promise => promise.then(value => value, error => {
+                if (!firstError) {
+                    firstError = error;
+                }
+                return undefined; // do not rethrow so that other promises can settle
+            })));
+            if (typeof firstError !== 'undefined') {
+                throw firstError;
+            }
+            return result; // cast is needed and protected by the `throw` above
+        }
+        Promises.settled = settled;
+        /**
+         * A helper to create a new `Promise<T>` with a body that is a promise
+         * itself. By default, an error that raises from the async body will
+         * end up as a unhandled rejection, so this utility properly awaits the
+         * body and rejects the promise as a normal promise does without async
+         * body.
+         *
+         * This method should only be used in rare cases where otherwise `async`
+         * cannot be used (e.g. when callbacks are involved that require this).
+         */
+        function withAsyncBody(bodyFn) {
+            // eslint-disable-next-line no-async-promise-executor
+            return new Promise(async (resolve, reject) => {
+                try {
+                    await bodyFn(resolve, reject);
+                }
+                catch (error) {
+                    reject(error);
+                }
+            });
+        }
+        Promises.withAsyncBody = withAsyncBody;
+    })(Promises || (exports.Promises = Promises = {}));
+    class $Gh {
+        get value() { return this.a; }
+        get error() { return this.b; }
+        get isResolved() { return this.d; }
+        constructor(promise) {
+            this.a = undefined;
+            this.b = undefined;
+            this.d = false;
+            this.promise = promise.then(value => {
+                this.a = value;
+                this.d = true;
+                return value;
+            }, error => {
+                this.b = error;
+                this.d = true;
+                throw error;
+            });
+        }
+        /**
+         * Returns the resolved value.
+         * Throws if the promise is not resolved yet.
+         */
+        requireValue() {
+            if (!this.d) {
+                throw new errors_1.$cb('Promise is not resolved yet');
+            }
+            if (this.b) {
+                throw this.b;
+            }
+            return this.a;
+        }
+    }
+    exports.$Gh = $Gh;
+    class $Hh {
+        constructor(b) {
+            this.b = b;
+            this.a = new lazy_1.$V(() => new $Gh(this.b()));
+        }
+        /**
+         * Returns the resolved value.
+         * Throws if the promise is not resolved yet.
+         */
+        requireValue() {
+            return this.a.value.requireValue();
+        }
+        /**
+         * Returns the promise (and triggers a computation of the promise if not yet done so).
+         */
+        getPromise() {
+            return this.a.value.promise;
+        }
+        /**
+         * Reads the current value without triggering a computation of the promise.
+         */
+        get currentValue() {
+            return this.a.rawValue?.value;
+        }
+    }
+    exports.$Hh = $Hh;
+    //#endregion
+    //#region
+    var AsyncIterableSourceState;
+    (function (AsyncIterableSourceState) {
+        AsyncIterableSourceState[AsyncIterableSourceState["Initial"] = 0] = "Initial";
+        AsyncIterableSourceState[AsyncIterableSourceState["DoneOK"] = 1] = "DoneOK";
+        AsyncIterableSourceState[AsyncIterableSourceState["DoneError"] = 2] = "DoneError";
+    })(AsyncIterableSourceState || (AsyncIterableSourceState = {}));
+    /**
+     * A rich implementation for an `AsyncIterable<T>`.
+     */
+    class $Ih {
+        static fromArray(items) {
+            return new $Ih((writer) => {
+                writer.emitMany(items);
+            });
+        }
+        static fromPromise(promise) {
+            return new $Ih(async (emitter) => {
+                emitter.emitMany(await promise);
+            });
+        }
+        static fromPromises(promises) {
+            return new $Ih(async (emitter) => {
+                await Promise.all(promises.map(async (p) => emitter.emitOne(await p)));
+            });
+        }
+        static merge(iterables) {
+            return new $Ih(async (emitter) => {
+                await Promise.all(iterables.map(async (iterable) => {
+                    for await (const item of iterable) {
+                        emitter.emitOne(item);
+                    }
+                }));
+            });
+        }
+        static { this.EMPTY = $Ih.fromArray([]); }
+        constructor(executor) {
+            this.a = 0 /* AsyncIterableSourceState.Initial */;
+            this.b = [];
+            this.d = null;
+            this.f = new event_1.$7d();
+            queueMicrotask(async () => {
+                const writer = {
+                    emitOne: (item) => this.g(item),
+                    emitMany: (items) => this.h(items),
+                    reject: (error) => this.k(error)
+                };
+                try {
+                    await Promise.resolve(executor(writer));
+                    this.j();
+                }
+                catch (err) {
+                    this.k(err);
+                }
+                finally {
+                    writer.emitOne = undefined;
+                    writer.emitMany = undefined;
+                    writer.reject = undefined;
+                }
+            });
+        }
+        [Symbol.asyncIterator]() {
+            let i = 0;
+            return {
+                next: async () => {
+                    do {
+                        if (this.a === 2 /* AsyncIterableSourceState.DoneError */) {
+                            throw this.d;
+                        }
+                        if (i < this.b.length) {
+                            return { done: false, value: this.b[i++] };
+                        }
+                        if (this.a === 1 /* AsyncIterableSourceState.DoneOK */) {
+                            return { done: true, value: undefined };
+                        }
+                        await event_1.Event.toPromise(this.f.event);
+                    } while (true);
+                }
+            };
+        }
+        static map(iterable, mapFn) {
+            return new $Ih(async (emitter) => {
+                for await (const item of iterable) {
+                    emitter.emitOne(mapFn(item));
+                }
+            });
+        }
+        map(mapFn) {
+            return $Ih.map(this, mapFn);
+        }
+        static filter(iterable, filterFn) {
+            return new $Ih(async (emitter) => {
+                for await (const item of iterable) {
+                    if (filterFn(item)) {
+                        emitter.emitOne(item);
+                    }
+                }
+            });
+        }
+        filter(filterFn) {
+            return $Ih.filter(this, filterFn);
+        }
+        static coalesce(iterable) {
+            return $Ih.filter(iterable, item => !!item);
+        }
+        coalesce() {
+            return $Ih.coalesce(this);
+        }
+        static async toPromise(iterable) {
+            const result = [];
+            for await (const item of iterable) {
+                result.push(item);
+            }
+            return result;
+        }
+        toPromise() {
+            return $Ih.toPromise(this);
+        }
+        /**
+         * The value will be appended at the end.
+         *
+         * **NOTE** If `resolve()` or `reject()` have already been called, this method has no effect.
+         */
+        g(value) {
+            if (this.a !== 0 /* AsyncIterableSourceState.Initial */) {
+                return;
+            }
+            // it is important to add new values at the end,
+            // as we may have iterators already running on the array
+            this.b.push(value);
+            this.f.fire();
+        }
+        /**
+         * The values will be appended at the end.
+         *
+         * **NOTE** If `resolve()` or `reject()` have already been called, this method has no effect.
+         */
+        h(values) {
+            if (this.a !== 0 /* AsyncIterableSourceState.Initial */) {
+                return;
+            }
+            // it is important to add new values at the end,
+            // as we may have iterators already running on the array
+            this.b = this.b.concat(values);
+            this.f.fire();
+        }
+        /**
+         * Calling `resolve()` will mark the result array as complete.
+         *
+         * **NOTE** `resolve()` must be called, otherwise all consumers of this iterable will hang indefinitely, similar to a non-resolved promise.
+         * **NOTE** If `resolve()` or `reject()` have already been called, this method has no effect.
+         */
+        j() {
+            if (this.a !== 0 /* AsyncIterableSourceState.Initial */) {
+                return;
+            }
+            this.a = 1 /* AsyncIterableSourceState.DoneOK */;
+            this.f.fire();
+        }
+        /**
+         * Writing an error will permanently invalidate this iterable.
+         * The current users will receive an error thrown, as will all future users.
+         *
+         * **NOTE** If `resolve()` or `reject()` have already been called, this method has no effect.
+         */
+        k(error) {
+            if (this.a !== 0 /* AsyncIterableSourceState.Initial */) {
+                return;
+            }
+            this.a = 2 /* AsyncIterableSourceState.DoneError */;
+            this.d = error;
+            this.f.fire();
+        }
+    }
+    exports.$Ih = $Ih;
+    class $Jh extends $Ih {
+        constructor(l, executor) {
+            super(executor);
+            this.l = l;
+        }
+        cancel() {
+            this.l.cancel();
+        }
+    }
+    exports.$Jh = $Jh;
+    function $Kh(callback) {
+        const source = new cancellation_1.$ee();
+        const innerIterable = callback(source.token);
+        return new $Jh(source, async (emitter) => {
+            const subscription = source.token.onCancellationRequested(() => {
+                subscription.dispose();
+                source.dispose();
+                emitter.reject(new errors_1.$5());
+            });
+            try {
+                for await (const item of innerIterable) {
+                    if (source.token.isCancellationRequested) {
+                        // canceled in the meantime
+                        return;
+                    }
+                    emitter.emitOne(item);
+                }
+                subscription.dispose();
+                source.dispose();
+            }
+            catch (err) {
+                subscription.dispose();
+                source.dispose();
+                emitter.reject(err);
+            }
+        });
+    }
+    class $Lh {
+        constructor() {
+            this.a = new $Fh();
+            this.b = new $Ih(emitter => {
+                if (earlyError) {
+                    emitter.reject(earlyError);
+                    return;
+                }
+                if (earlyItems) {
+                    emitter.emitMany(earlyItems);
+                }
+                this.d = (error) => emitter.reject(error);
+                this.f = (item) => emitter.emitOne(item);
+                return this.a.p;
+            });
+            let earlyError;
+            let earlyItems;
+            this.f = (item) => {
+                if (!earlyItems) {
+                    earlyItems = [];
+                }
+                earlyItems.push(item);
+            };
+            this.d = (error) => {
+                if (!earlyError) {
+                    earlyError = error;
+                }
+            };
+        }
+        get asyncIterable() {
+            return this.b;
+        }
+        resolve() {
+            this.a.complete();
+        }
+        reject(error) {
+            this.d(error);
+            this.a.complete();
+        }
+        emitOne(item) {
+            this.f(item);
+        }
+    }
+    exports.$Lh = $Lh;
+});
+//#endregion
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[23/*vs/editor/common/languages/nullTokenize*/], __M([0/*require*/,1/*exports*/,39/*vs/editor/common/languages*/]), function (require, exports, languages_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$FC = void 0;
+    exports.$GC = $GC;
+    exports.$HC = $HC;
+    exports.$FC = new class {
+        clone() {
+            return this;
+        }
+        equals(other) {
+            return (this === other);
+        }
+    };
+    function $GC(languageId, state) {
+        return new languages_1.$Zt([new languages_1.$Yt(0, '', languageId)], state);
+    }
+    function $HC(languageId, state) {
+        const tokens = new Uint32Array(2);
+        tokens[0] = 0;
+        tokens[1] = ((languageId << 0 /* MetadataConsts.LANGUAGEID_OFFSET */)
+            | (0 /* StandardTokenType.Other */ << 8 /* MetadataConsts.TOKEN_TYPE_OFFSET */)
+            | (0 /* FontStyle.None */ << 11 /* MetadataConsts.FONT_STYLE_OFFSET */)
+            | (1 /* ColorId.DefaultForeground */ << 15 /* MetadataConsts.FOREGROUND_OFFSET */)
+            | (2 /* ColorId.DefaultBackground */ << 24 /* MetadataConsts.BACKGROUND_OFFSET */)) >>> 0;
+        return new languages_1.$1t(tokens, state === null ? exports.$FC : state);
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[40/*vs/editor/common/model/textModelTokens*/], __M([0/*require*/,1/*exports*/,22/*vs/base/common/async*/,9/*vs/base/common/errors*/,3/*vs/base/common/platform*/,41/*vs/base/common/stopwatch*/,14/*vs/editor/common/core/eolCounter*/,16/*vs/editor/common/core/lineRange*/,49/*vs/editor/common/core/offsetRange*/,23/*vs/editor/common/languages/nullTokenize*/,32/*vs/editor/common/model/fixedArray*/,17/*vs/editor/common/tokens/contiguousMultilineTokensBuilder*/,10/*vs/editor/common/tokens/lineTokens*/]), function (require, exports, async_1, errors_1, platform_1, stopwatch_1, eolCounter_1, lineRange_1, offsetRange_1, nullTokenize_1, fixedArray_1, contiguousMultilineTokensBuilder_1, lineTokens_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$PC = exports.$OC = exports.$NC = exports.$MC = exports.$LC = exports.$KC = void 0;
+    var Constants;
+    (function (Constants) {
+        Constants[Constants["CHEAP_TOKENIZATION_LENGTH_LIMIT"] = 2048] = "CHEAP_TOKENIZATION_LENGTH_LIMIT";
+    })(Constants || (Constants = {}));
+    class $KC {
+        constructor(lineCount, tokenizationSupport) {
+            this.tokenizationSupport = tokenizationSupport;
+            this.a = this.tokenizationSupport.getInitialState();
+            this.store = new $MC(lineCount);
+        }
+        getStartState(lineNumber) {
+            return this.store.getStartState(lineNumber, this.a);
+        }
+        getFirstInvalidLine() {
+            return this.store.getFirstInvalidLine(this.a);
+        }
+    }
+    exports.$KC = $KC;
+    class $LC extends $KC {
+        constructor(lineCount, tokenizationSupport, _textModel, _languageIdCodec) {
+            super(lineCount, tokenizationSupport);
+            this._textModel = _textModel;
+            this._languageIdCodec = _languageIdCodec;
+        }
+        updateTokensUntilLine(builder, lineNumber) {
+            const languageId = this._textModel.getLanguageId();
+            while (true) {
+                const lineToTokenize = this.getFirstInvalidLine();
+                if (!lineToTokenize || lineToTokenize.lineNumber > lineNumber) {
+                    break;
+                }
+                const text = this._textModel.getLineContent(lineToTokenize.lineNumber);
+                const r = safeTokenize(this._languageIdCodec, languageId, this.tokenizationSupport, text, true, lineToTokenize.startState);
+                builder.add(lineToTokenize.lineNumber, r.tokens);
+                this.store.setEndState(lineToTokenize.lineNumber, r.endState);
+            }
+        }
+        /** assumes state is up to date */
+        getTokenTypeIfInsertingCharacter(position, character) {
+            // TODO@hediet: use tokenizeLineWithEdit
+            const lineStartState = this.getStartState(position.lineNumber);
+            if (!lineStartState) {
+                return 0 /* StandardTokenType.Other */;
+            }
+            const languageId = this._textModel.getLanguageId();
+            const lineContent = this._textModel.getLineContent(position.lineNumber);
+            // Create the text as if `character` was inserted
+            const text = (lineContent.substring(0, position.column - 1)
+                + character
+                + lineContent.substring(position.column - 1));
+            const r = safeTokenize(this._languageIdCodec, languageId, this.tokenizationSupport, text, true, lineStartState);
+            const lineTokens = new lineTokens_1.$Pt(r.tokens, text, this._languageIdCodec);
+            if (lineTokens.getCount() === 0) {
+                return 0 /* StandardTokenType.Other */;
+            }
+            const tokenIndex = lineTokens.findTokenIndexAtOffset(position.column - 1);
+            return lineTokens.getStandardTokenType(tokenIndex);
+        }
+        /** assumes state is up to date */
+        tokenizeLineWithEdit(position, length, newText) {
+            const lineNumber = position.lineNumber;
+            const column = position.column;
+            const lineStartState = this.getStartState(lineNumber);
+            if (!lineStartState) {
+                return null;
+            }
+            const curLineContent = this._textModel.getLineContent(lineNumber);
+            const newLineContent = curLineContent.substring(0, column - 1)
+                + newText + curLineContent.substring(column - 1 + length);
+            const languageId = this._textModel.getLanguageIdAtPosition(lineNumber, 0);
+            const result = safeTokenize(this._languageIdCodec, languageId, this.tokenizationSupport, newLineContent, true, lineStartState);
+            const lineTokens = new lineTokens_1.$Pt(result.tokens, newLineContent, this._languageIdCodec);
+            return lineTokens;
+        }
+        hasAccurateTokensForLine(lineNumber) {
+            const firstInvalidLineNumber = this.store.getFirstInvalidEndStateLineNumberOrMax();
+            return (lineNumber < firstInvalidLineNumber);
+        }
+        isCheapToTokenize(lineNumber) {
+            const firstInvalidLineNumber = this.store.getFirstInvalidEndStateLineNumberOrMax();
+            if (lineNumber < firstInvalidLineNumber) {
+                return true;
+            }
+            if (lineNumber === firstInvalidLineNumber
+                && this._textModel.getLineLength(lineNumber) < 2048 /* Constants.CHEAP_TOKENIZATION_LENGTH_LIMIT */) {
+                return true;
+            }
+            return false;
+        }
+        /**
+         * The result is not cached.
+         */
+        tokenizeHeuristically(builder, startLineNumber, endLineNumber) {
+            if (endLineNumber <= this.store.getFirstInvalidEndStateLineNumberOrMax()) {
+                // nothing to do
+                return { heuristicTokens: false };
+            }
+            if (startLineNumber <= this.store.getFirstInvalidEndStateLineNumberOrMax()) {
+                // tokenization has reached the viewport start...
+                this.updateTokensUntilLine(builder, endLineNumber);
+                return { heuristicTokens: false };
+            }
+            let state = this.b(startLineNumber);
+            const languageId = this._textModel.getLanguageId();
+            for (let lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
+                const text = this._textModel.getLineContent(lineNumber);
+                const r = safeTokenize(this._languageIdCodec, languageId, this.tokenizationSupport, text, true, state);
+                builder.add(lineNumber, r.tokens);
+                state = r.endState;
+            }
+            return { heuristicTokens: true };
+        }
+        b(lineNumber) {
+            let nonWhitespaceColumn = this._textModel.getLineFirstNonWhitespaceColumn(lineNumber);
+            const likelyRelevantLines = [];
+            let initialState = null;
+            for (let i = lineNumber - 1; nonWhitespaceColumn > 1 && i >= 1; i--) {
+                const newNonWhitespaceIndex = this._textModel.getLineFirstNonWhitespaceColumn(i);
+                // Ignore lines full of whitespace
+                if (newNonWhitespaceIndex === 0) {
+                    continue;
+                }
+                if (newNonWhitespaceIndex < nonWhitespaceColumn) {
+                    likelyRelevantLines.push(this._textModel.getLineContent(i));
+                    nonWhitespaceColumn = newNonWhitespaceIndex;
+                    initialState = this.getStartState(i);
+                    if (initialState) {
+                        break;
+                    }
+                }
+            }
+            if (!initialState) {
+                initialState = this.tokenizationSupport.getInitialState();
+            }
+            likelyRelevantLines.reverse();
+            const languageId = this._textModel.getLanguageId();
+            let state = initialState;
+            for (const line of likelyRelevantLines) {
+                const r = safeTokenize(this._languageIdCodec, languageId, this.tokenizationSupport, line, false, state);
+                state = r.endState;
+            }
+            return state;
+        }
+    }
+    exports.$LC = $LC;
+    /**
+     * **Invariant:**
+     * If the text model is retokenized from line 1 to {@link getFirstInvalidEndStateLineNumber}() - 1,
+     * then the recomputed end state for line l will be equal to {@link getEndState}(l).
+     */
+    class $MC {
+        constructor(d) {
+            this.d = d;
+            this.a = new $NC();
+            this.b = new $OC();
+            this.b.addRange(new offsetRange_1.$jt(1, d + 1));
+        }
+        getEndState(lineNumber) {
+            return this.a.getEndState(lineNumber);
+        }
+        /**
+         * @returns if the end state has changed.
+         */
+        setEndState(lineNumber, state) {
+            if (!state) {
+                throw new errors_1.$cb('Cannot set null/undefined state');
+            }
+            this.b.delete(lineNumber);
+            const r = this.a.setEndState(lineNumber, state);
+            if (r && lineNumber < this.d) {
+                // because the state changed, we cannot trust the next state anymore and have to invalidate it.
+                this.b.addRange(new offsetRange_1.$jt(lineNumber + 1, lineNumber + 2));
+            }
+            return r;
+        }
+        acceptChange(range, newLineCount) {
+            this.d += newLineCount - range.length;
+            this.a.acceptChange(range, newLineCount);
+            this.b.addRangeAndResize(new offsetRange_1.$jt(range.startLineNumber, range.endLineNumberExclusive), newLineCount);
+        }
+        acceptChanges(changes) {
+            for (const c of changes) {
+                const [eolCount] = (0, eolCounter_1.$Ot)(c.text);
+                this.acceptChange(new lineRange_1.$lt(c.range.startLineNumber, c.range.endLineNumber + 1), eolCount + 1);
+            }
+        }
+        invalidateEndStateRange(range) {
+            this.b.addRange(new offsetRange_1.$jt(range.startLineNumber, range.endLineNumberExclusive));
+        }
+        getFirstInvalidEndStateLineNumber() { return this.b.min; }
+        getFirstInvalidEndStateLineNumberOrMax() {
+            return this.getFirstInvalidEndStateLineNumber() || Number.MAX_SAFE_INTEGER;
+        }
+        allStatesValid() { return this.b.min === null; }
+        getStartState(lineNumber, initialState) {
+            if (lineNumber === 1) {
+                return initialState;
+            }
+            return this.getEndState(lineNumber - 1);
+        }
+        getFirstInvalidLine(initialState) {
+            const lineNumber = this.getFirstInvalidEndStateLineNumber();
+            if (lineNumber === null) {
+                return null;
+            }
+            const startState = this.getStartState(lineNumber, initialState);
+            if (!startState) {
+                throw new errors_1.$cb('Start state must be defined');
+            }
+            return { lineNumber, startState };
+        }
+    }
+    exports.$MC = $MC;
+    class $NC {
+        constructor() {
+            this.a = new fixedArray_1.$IC(null);
+        }
+        getEndState(lineNumber) {
+            return this.a.get(lineNumber);
+        }
+        setEndState(lineNumber, state) {
+            const oldState = this.a.get(lineNumber);
+            if (oldState && oldState.equals(state)) {
+                return false;
+            }
+            this.a.set(lineNumber, state);
+            return true;
+        }
+        acceptChange(range, newLineCount) {
+            let length = range.length;
+            if (newLineCount > 0 && length > 0) {
+                // Keep the last state, even though it is unrelated.
+                // But if the new state happens to agree with this last state, then we know we can stop tokenizing.
+                length--;
+                newLineCount--;
+            }
+            this.a.replace(range.startLineNumber, length, newLineCount);
+        }
+        acceptChanges(changes) {
+            for (const c of changes) {
+                const [eolCount] = (0, eolCounter_1.$Ot)(c.text);
+                this.acceptChange(new lineRange_1.$lt(c.range.startLineNumber, c.range.endLineNumber + 1), eolCount + 1);
+            }
+        }
+    }
+    exports.$NC = $NC;
+    class $OC {
+        constructor() {
+            this.a = [];
+        }
+        getRanges() {
+            return this.a;
+        }
+        get min() {
+            if (this.a.length === 0) {
+                return null;
+            }
+            return this.a[0].start;
+        }
+        removeMin() {
+            if (this.a.length === 0) {
+                return null;
+            }
+            const range = this.a[0];
+            if (range.start + 1 === range.endExclusive) {
+                this.a.shift();
+            }
+            else {
+                this.a[0] = new offsetRange_1.$jt(range.start + 1, range.endExclusive);
+            }
+            return range.start;
+        }
+        delete(value) {
+            const idx = this.a.findIndex(r => r.contains(value));
+            if (idx !== -1) {
+                const range = this.a[idx];
+                if (range.start === value) {
+                    if (range.endExclusive === value + 1) {
+                        this.a.splice(idx, 1);
+                    }
+                    else {
+                        this.a[idx] = new offsetRange_1.$jt(value + 1, range.endExclusive);
+                    }
+                }
+                else {
+                    if (range.endExclusive === value + 1) {
+                        this.a[idx] = new offsetRange_1.$jt(range.start, value);
+                    }
+                    else {
+                        this.a.splice(idx, 1, new offsetRange_1.$jt(range.start, value), new offsetRange_1.$jt(value + 1, range.endExclusive));
+                    }
+                }
+            }
+        }
+        addRange(range) {
+            offsetRange_1.$jt.addRange(range, this.a);
+        }
+        addRangeAndResize(range, newLength) {
+            let idxFirstMightBeIntersecting = 0;
+            while (!(idxFirstMightBeIntersecting >= this.a.length || range.start <= this.a[idxFirstMightBeIntersecting].endExclusive)) {
+                idxFirstMightBeIntersecting++;
+            }
+            let idxFirstIsAfter = idxFirstMightBeIntersecting;
+            while (!(idxFirstIsAfter >= this.a.length || range.endExclusive < this.a[idxFirstIsAfter].start)) {
+                idxFirstIsAfter++;
+            }
+            const delta = newLength - range.length;
+            for (let i = idxFirstIsAfter; i < this.a.length; i++) {
+                this.a[i] = this.a[i].delta(delta);
+            }
+            if (idxFirstMightBeIntersecting === idxFirstIsAfter) {
+                const newRange = new offsetRange_1.$jt(range.start, range.start + newLength);
+                if (!newRange.isEmpty) {
+                    this.a.splice(idxFirstMightBeIntersecting, 0, newRange);
+                }
+            }
+            else {
+                const start = Math.min(range.start, this.a[idxFirstMightBeIntersecting].start);
+                const endEx = Math.max(range.endExclusive, this.a[idxFirstIsAfter - 1].endExclusive);
+                const newRange = new offsetRange_1.$jt(start, endEx + delta);
+                if (!newRange.isEmpty) {
+                    this.a.splice(idxFirstMightBeIntersecting, idxFirstIsAfter - idxFirstMightBeIntersecting, newRange);
+                }
+                else {
+                    this.a.splice(idxFirstMightBeIntersecting, idxFirstIsAfter - idxFirstMightBeIntersecting);
+                }
+            }
+        }
+        toString() {
+            return this.a.map(r => r.toString()).join(' + ');
+        }
+    }
+    exports.$OC = $OC;
+    function safeTokenize(languageIdCodec, languageId, tokenizationSupport, text, hasEOL, state) {
+        let r = null;
+        if (tokenizationSupport) {
+            try {
+                r = tokenizationSupport.tokenizeEncoded(text, hasEOL, state.clone());
+            }
+            catch (e) {
+                (0, errors_1.$1)(e);
+            }
+        }
+        if (!r) {
+            r = (0, nullTokenize_1.$HC)(languageIdCodec.encodeLanguageId(languageId), state);
+        }
+        lineTokens_1.$Pt.convertToEndOffset(r.tokens, text.length);
+        return r;
+    }
+    class $PC {
+        constructor(b, d) {
+            this.b = b;
+            this.d = d;
+            this.a = false;
+            this.f = false;
+        }
+        dispose() {
+            this.a = true;
+        }
+        handleChanges() {
+            this.g();
+        }
+        g() {
+            if (this.f || !this.b._textModel.isAttachedToEditor() || !this.k()) {
+                return;
+            }
+            this.f = true;
+            (0, async_1.$yh)((deadline) => {
+                this.f = false;
+                this.h(deadline);
+            });
+        }
+        /**
+         * Tokenize until the deadline occurs, but try to yield every 1-2ms.
+         */
+        h(deadline) {
+            // Read the time remaining from the `deadline` immediately because it is unclear
+            // if the `deadline` object will be valid after execution leaves this function.
+            const endTime = Date.now() + deadline.timeRemaining();
+            const execute = () => {
+                if (this.a || !this.b._textModel.isAttachedToEditor() || !this.k()) {
+                    // disposed in the meantime or detached or finished
+                    return;
+                }
+                this.j();
+                if (Date.now() < endTime) {
+                    // There is still time before reaching the deadline, so yield to the browser and then
+                    // continue execution
+                    (0, platform_1.$B)(execute);
+                }
+                else {
+                    // The deadline has been reached, so schedule a new idle callback if necessary
+                    this.g();
+                }
+            };
+            execute();
+        }
+        /**
+         * Tokenize for at least 1ms.
+         */
+        j() {
+            const lineCount = this.b._textModel.getLineCount();
+            const builder = new contiguousMultilineTokensBuilder_1.$JC();
+            const sw = stopwatch_1.$3d.create(false);
+            do {
+                if (sw.elapsed() > 1) {
+                    // the comparison is intentionally > 1 and not >= 1 to ensure that
+                    // a full millisecond has elapsed, given how microseconds are rounded
+                    // to milliseconds
+                    break;
+                }
+                const tokenizedLineNumber = this.l(builder);
+                if (tokenizedLineNumber >= lineCount) {
+                    break;
+                }
+            } while (this.k());
+            this.d.setTokens(builder.finalize());
+            this.checkFinished();
+        }
+        k() {
+            if (!this.b) {
+                return false;
+            }
+            return !this.b.store.allStatesValid();
+        }
+        l(builder) {
+            const firstInvalidLine = this.b?.getFirstInvalidLine();
+            if (!firstInvalidLine) {
+                return this.b._textModel.getLineCount() + 1;
+            }
+            this.b.updateTokensUntilLine(builder, firstInvalidLine.lineNumber);
+            return firstInvalidLine.lineNumber;
+        }
+        checkFinished() {
+            if (this.a) {
+                return;
+            }
+            if (this.b.store.allStatesValid()) {
+                this.d.backgroundTokenizationFinished();
+            }
+        }
+        requestTokens(startLineNumber, endLineNumberExclusive) {
+            this.b.store.invalidateEndStateRange(new lineRange_1.$lt(startLineNumber, endLineNumberExclusive));
+        }
+    }
+    exports.$PC = $PC;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[42/*vs/workbench/services/textMate/browser/tokenizationSupport/textMateTokenizationSupport*/], __M([0/*require*/,1/*exports*/,38/*vs/base/common/event*/,2/*vs/base/common/lifecycle*/,41/*vs/base/common/stopwatch*/,15/*vs/editor/common/encodedTokenAttributes*/,39/*vs/editor/common/languages*/]), function (require, exports, event_1, lifecycle_1, stopwatch_1, encodedTokenAttributes_1, languages_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$PKb = void 0;
+    class $PKb extends lifecycle_1.$Uc {
+        constructor(c, f, g, h, j, m, n) {
+            super();
+            this.c = c;
+            this.f = f;
+            this.g = g;
+            this.h = h;
+            this.j = j;
+            this.m = m;
+            this.n = n;
+            this.a = [];
+            this.b = this.B(new event_1.$7d());
+            this.onDidEncounterLanguage = this.b.event;
+        }
+        get backgroundTokenizerShouldOnlyVerifyTokens() {
+            return this.j();
+        }
+        getInitialState() {
+            return this.f;
+        }
+        tokenize(line, hasEOL, state) {
+            throw new Error('Not supported!');
+        }
+        createBackgroundTokenizer(textModel, store) {
+            if (this.h) {
+                return this.h(textModel, store);
+            }
+            return undefined;
+        }
+        tokenizeEncoded(line, hasEOL, state) {
+            const isRandomSample = Math.random() * 10_000 < 1;
+            const shouldMeasure = this.n || isRandomSample;
+            const sw = shouldMeasure ? new stopwatch_1.$3d(true) : undefined;
+            const textMateResult = this.c.tokenizeLine2(line, state, 500);
+            if (shouldMeasure) {
+                const timeMS = sw.elapsed();
+                if (isRandomSample || timeMS > 32) {
+                    this.m(timeMS, line.length, isRandomSample);
+                }
+            }
+            if (textMateResult.stoppedEarly) {
+                console.warn(`Time limit reached when tokenizing line: ${line.substring(0, 100)}`);
+                // return the state at the beginning of the line
+                return new languages_1.$1t(textMateResult.tokens, state);
+            }
+            if (this.g) {
+                const seenLanguages = this.a;
+                const tokens = textMateResult.tokens;
+                // Must check if any of the embedded languages was hit
+                for (let i = 0, len = (tokens.length >>> 1); i < len; i++) {
+                    const metadata = tokens[(i << 1) + 1];
+                    const languageId = encodedTokenAttributes_1.$Mt.getLanguageId(metadata);
+                    if (!seenLanguages[languageId]) {
+                        seenLanguages[languageId] = true;
+                        this.b.fire(languageId);
+                    }
+                }
+            }
+            let endState;
+            // try to save an object if possible
+            if (state.equals(textMateResult.ruleStack)) {
+                endState = state;
+            }
+            else {
+                endState = textMateResult.ruleStack;
+            }
+            return new languages_1.$1t(textMateResult.tokens, endState);
+        }
+    }
+    exports.$PKb = $PKb;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[43/*vs/workbench/services/textMate/browser/tokenizationSupport/tokenizationSupportWithLineLimit*/], __M([0/*require*/,1/*exports*/,23/*vs/editor/common/languages/nullTokenize*/,2/*vs/base/common/lifecycle*/,12/*vs/base/common/observable*/]), function (require, exports, nullTokenize_1, lifecycle_1, observable_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$QKb = void 0;
+    class $QKb extends lifecycle_1.$Uc {
+        get backgroundTokenizerShouldOnlyVerifyTokens() {
+            return this.b.backgroundTokenizerShouldOnlyVerifyTokens;
+        }
+        constructor(a, b, c) {
+            super();
+            this.a = a;
+            this.b = b;
+            this.c = c;
+            this.B((0, observable_1.keepObserved)(this.c));
+        }
+        getInitialState() {
+            return this.b.getInitialState();
+        }
+        tokenize(line, hasEOL, state) {
+            throw new Error('Not supported!');
+        }
+        tokenizeEncoded(line, hasEOL, state) {
+            // Do not attempt to tokenize if a line is too long
+            if (line.length >= this.c.get()) {
+                return (0, nullTokenize_1.$HC)(this.a, state);
+            }
+            return this.b.tokenizeEncoded(line, hasEOL, state);
+        }
+        createBackgroundTokenizer(textModel, store) {
+            if (this.b.createBackgroundTokenizer) {
+                return this.b.createBackgroundTokenizer(textModel, store);
+            }
+            else {
+                return undefined;
+            }
+        }
+    }
+    exports.$QKb = $QKb;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[44/*vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateWorkerTokenizer*/], __M([0/*require*/,1/*exports*/,37/*vs/amdX*/,22/*vs/base/common/async*/,12/*vs/base/common/observable*/,3/*vs/base/common/platform*/,16/*vs/editor/common/core/lineRange*/,50/*vs/editor/common/model/mirrorTextModel*/,40/*vs/editor/common/model/textModelTokens*/,17/*vs/editor/common/tokens/contiguousMultilineTokensBuilder*/,10/*vs/editor/common/tokens/lineTokens*/,42/*vs/workbench/services/textMate/browser/tokenizationSupport/textMateTokenizationSupport*/,43/*vs/workbench/services/textMate/browser/tokenizationSupport/tokenizationSupportWithLineLimit*/]), function (require, exports, amdX_1, async_1, observable_1, platform_1, lineRange_1, mirrorTextModel_1, textModelTokens_1, contiguousMultilineTokensBuilder_1, lineTokens_1, textMateTokenizationSupport_1, tokenizationSupportWithLineLimit_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$VKb = void 0;
+    class $VKb extends mirrorTextModel_1.$Hv {
+        constructor(uri, lines, eol, versionId, s, t, u, maxTokenizationLineLength) {
+            super(uri, lines, eol, versionId);
+            this.s = s;
+            this.t = t;
+            this.u = u;
+            this.a = null;
+            this.b = false;
+            this.c = (0, observable_1.observableValue)(this, -1);
+            this.q = new async_1.$uh(() => this.w(), 10);
+            this.c.set(maxTokenizationLineLength, undefined);
+            this.v();
+        }
+        dispose() {
+            this.b = true;
+            super.dispose();
+        }
+        onLanguageId(languageId, encodedLanguageId) {
+            this.t = languageId;
+            this.u = encodedLanguageId;
+            this.v();
+        }
+        onEvents(e) {
+            super.onEvents(e);
+            this.a?.store.acceptChanges(e.changes);
+            this.q.schedule();
+        }
+        acceptMaxTokenizationLineLength(maxTokenizationLineLength) {
+            this.c.set(maxTokenizationLineLength, undefined);
+        }
+        retokenize(startLineNumber, endLineNumberExclusive) {
+            if (this.a) {
+                this.a.store.invalidateEndStateRange(new lineRange_1.$lt(startLineNumber, endLineNumberExclusive));
+                this.q.schedule();
+            }
+        }
+        async v() {
+            this.a = null;
+            const languageId = this.t;
+            const encodedLanguageId = this.u;
+            const r = await this.s.getOrCreateGrammar(languageId, encodedLanguageId);
+            if (this.b || languageId !== this.t || encodedLanguageId !== this.u || !r) {
+                return;
+            }
+            if (r.grammar) {
+                const tokenizationSupport = new tokenizationSupportWithLineLimit_1.$QKb(this.u, new textMateTokenizationSupport_1.$PKb(r.grammar, r.initialState, false, undefined, () => false, (timeMs, lineLength, isRandomSample) => {
+                    this.s.reportTokenizationTime(timeMs, languageId, r.sourceExtensionId, lineLength, isRandomSample);
+                }, false), this.c);
+                this.a = new textModelTokens_1.$KC(this.f.length, tokenizationSupport);
+            }
+            else {
+                this.a = null;
+            }
+            this.w();
+        }
+        async w() {
+            if (this.b || !this.a) {
+                return;
+            }
+            if (!this.m) {
+                const { diffStateStacksRefEq } = await (0, amdX_1.$JD)('vscode-textmate', 'release/main.js');
+                this.m = diffStateStacksRefEq;
+            }
+            const startTime = new Date().getTime();
+            while (true) {
+                let tokenizedLines = 0;
+                const tokenBuilder = new contiguousMultilineTokensBuilder_1.$JC();
+                const stateDeltaBuilder = new StateDeltaBuilder();
+                while (true) {
+                    const lineToTokenize = this.a.getFirstInvalidLine();
+                    if (lineToTokenize === null || tokenizedLines > 200) {
+                        break;
+                    }
+                    tokenizedLines++;
+                    const text = this.f[lineToTokenize.lineNumber - 1];
+                    const r = this.a.tokenizationSupport.tokenizeEncoded(text, true, lineToTokenize.startState);
+                    if (this.a.store.setEndState(lineToTokenize.lineNumber, r.endState)) {
+                        const delta = this.m(lineToTokenize.startState, r.endState);
+                        stateDeltaBuilder.setState(lineToTokenize.lineNumber, delta);
+                    }
+                    else {
+                        stateDeltaBuilder.setState(lineToTokenize.lineNumber, null);
+                    }
+                    lineTokens_1.$Pt.convertToEndOffset(r.tokens, text.length);
+                    tokenBuilder.add(lineToTokenize.lineNumber, r.tokens);
+                    const deltaMs = new Date().getTime() - startTime;
+                    if (deltaMs > 20) {
+                        // yield to check for changes
+                        break;
+                    }
+                }
+                if (tokenizedLines === 0) {
+                    break;
+                }
+                const stateDeltas = stateDeltaBuilder.getStateDeltas();
+                this.s.setTokensAndStates(this.h, tokenBuilder.serialize(), stateDeltas);
+                const deltaMs = new Date().getTime() - startTime;
+                if (deltaMs > 20) {
+                    // yield to check for changes
+                    (0, platform_1.$B)(() => this.w());
+                    return;
+                }
+            }
+        }
+    }
+    exports.$VKb = $VKb;
+    class StateDeltaBuilder {
+        constructor() {
+            this.a = -1;
+            this.b = [];
+        }
+        setState(lineNumber, stackDiff) {
+            if (lineNumber === this.a + 1) {
+                this.b[this.b.length - 1].stateDeltas.push(stackDiff);
+            }
+            else {
+                this.b.push({ startLineNumber: lineNumber, stateDeltas: [stackDiff] });
+            }
+            this.a = lineNumber;
+        }
+        getStateDeltas() {
+            return this.b;
+        }
+    }
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[45/*vs/workbench/services/textMate/common/TMScopeRegistry*/], __M([0/*require*/,1/*exports*/,21/*vs/base/common/resources*/]), function (require, exports, resources) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$SKb = void 0;
+    class $SKb {
+        constructor() {
+            this.a = Object.create(null);
+        }
+        reset() {
+            this.a = Object.create(null);
+        }
+        register(def) {
+            if (this.a[def.scopeName]) {
+                const existingRegistration = this.a[def.scopeName];
+                if (!resources.$Og(existingRegistration.location, def.location)) {
+                    console.warn(`Overwriting grammar scope name to file mapping for scope ${def.scopeName}.\n` +
+                        `Old grammar file: ${existingRegistration.location.toString()}.\n` +
+                        `New grammar file: ${def.location.toString()}`);
+                }
+            }
+            this.a[def.scopeName] = def;
+        }
+        getGrammarDefinition(scopeName) {
+            return this.a[scopeName] || null;
+        }
+    }
+    exports.$SKb = $SKb;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[46/*vs/workbench/services/textMate/common/TMGrammarFactory*/], __M([0/*require*/,1/*exports*/,2/*vs/base/common/lifecycle*/,45/*vs/workbench/services/textMate/common/TMScopeRegistry*/]), function (require, exports, lifecycle_1, TMScopeRegistry_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.$UKb = exports.$TKb = void 0;
+    exports.$TKb = 'No TM Grammar registered for this language.';
+    class $UKb extends lifecycle_1.$Uc {
+        constructor(host, grammarDefinitions, vscodeTextmate, onigLib) {
+            super();
+            this.a = host;
+            this.b = vscodeTextmate.INITIAL;
+            this.c = new TMScopeRegistry_1.$SKb();
+            this.f = {};
+            this.g = {};
+            this.h = new Map();
+            this.j = this.B(new vscodeTextmate.Registry({
+                onigLib: onigLib,
+                loadGrammar: async (scopeName) => {
+                    const grammarDefinition = this.c.getGrammarDefinition(scopeName);
+                    if (!grammarDefinition) {
+                        this.a.logTrace(`No grammar found for scope ${scopeName}`);
+                        return null;
+                    }
+                    const location = grammarDefinition.location;
+                    try {
+                        const content = await this.a.readFile(location);
+                        return vscodeTextmate.parseRawGrammar(content, location.path);
+                    }
+                    catch (e) {
+                        this.a.logError(`Unable to load and parse grammar for scope ${scopeName} from ${location}`, e);
+                        return null;
+                    }
+                },
+                getInjections: (scopeName) => {
+                    const scopeParts = scopeName.split('.');
+                    let injections = [];
+                    for (let i = 1; i <= scopeParts.length; i++) {
+                        const subScopeName = scopeParts.slice(0, i).join('.');
+                        injections = [...injections, ...(this.f[subScopeName] || [])];
+                    }
+                    return injections;
+                }
+            }));
+            for (const validGrammar of grammarDefinitions) {
+                this.c.register(validGrammar);
+                if (validGrammar.injectTo) {
+                    for (const injectScope of validGrammar.injectTo) {
+                        let injections = this.f[injectScope];
+                        if (!injections) {
+                            this.f[injectScope] = injections = [];
+                        }
+                        injections.push(validGrammar.scopeName);
+                    }
+                    if (validGrammar.embeddedLanguages) {
+                        for (const injectScope of validGrammar.injectTo) {
+                            let injectedEmbeddedLanguages = this.g[injectScope];
+                            if (!injectedEmbeddedLanguages) {
+                                this.g[injectScope] = injectedEmbeddedLanguages = [];
+                            }
+                            injectedEmbeddedLanguages.push(validGrammar.embeddedLanguages);
+                        }
+                    }
+                }
+                if (validGrammar.language) {
+                    this.h.set(validGrammar.language, validGrammar.scopeName);
+                }
+            }
+        }
+        has(languageId) {
+            return this.h.has(languageId);
+        }
+        setTheme(theme, colorMap) {
+            this.j.setTheme(theme, colorMap);
+        }
+        getColorMap() {
+            return this.j.getColorMap();
+        }
+        async createGrammar(languageId, encodedLanguageId) {
+            const scopeName = this.h.get(languageId);
+            if (typeof scopeName !== 'string') {
+                // No TM grammar defined
+                throw new Error(exports.$TKb);
+            }
+            const grammarDefinition = this.c.getGrammarDefinition(scopeName);
+            if (!grammarDefinition) {
+                // No TM grammar defined
+                throw new Error(exports.$TKb);
+            }
+            const embeddedLanguages = grammarDefinition.embeddedLanguages;
+            if (this.g[scopeName]) {
+                const injectedEmbeddedLanguages = this.g[scopeName];
+                for (const injected of injectedEmbeddedLanguages) {
+                    for (const scope of Object.keys(injected)) {
+                        embeddedLanguages[scope] = injected[scope];
+                    }
+                }
+            }
+            const containsEmbeddedLanguages = (Object.keys(embeddedLanguages).length > 0);
+            let grammar;
+            try {
+                grammar = await this.j.loadGrammarWithConfiguration(scopeName, encodedLanguageId, {
+                    embeddedLanguages,
+                    tokenTypes: grammarDefinition.tokenTypes,
+                    balancedBracketSelectors: grammarDefinition.balancedBracketSelectors,
+                    unbalancedBracketSelectors: grammarDefinition.unbalancedBracketSelectors,
+                });
+            }
+            catch (err) {
+                if (err.message && err.message.startsWith('No grammar provided for')) {
+                    // No TM grammar defined
+                    throw new Error(exports.$TKb);
+                }
+                throw err;
+            }
+            return {
+                languageId: languageId,
+                grammar: grammar,
+                initialState: this.b,
+                containsEmbeddedLanguages: containsEmbeddedLanguages,
+                sourceExtensionId: grammarDefinition.sourceExtensionId,
+            };
+        }
+    }
+    exports.$UKb = $UKb;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[51/*vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateTokenizationWorker.worker*/], __M([0/*require*/,1/*exports*/,11/*vs/base/common/uri*/,46/*vs/workbench/services/textMate/common/TMGrammarFactory*/,44/*vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateWorkerTokenizer*/]), function (require, exports, uri_1, TMGrammarFactory_1, textMateWorkerTokenizer_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.TextMateTokenizationWorker = void 0;
+    exports.create = create;
+    /**
+     * Defines the worker entry point. Must be exported and named `create`.
+     */
+    function create(ctx, createData) {
+        return new TextMateTokenizationWorker(ctx, createData);
+    }
+    class TextMateTokenizationWorker {
+        constructor(ctx, f) {
+            this.f = f;
+            this.b = new Map();
+            this.c = [];
+            this.a = ctx.host;
+            const grammarDefinitions = f.grammarDefinitions.map((def) => {
+                return {
+                    location: uri_1.URI.revive(def.location),
+                    language: def.language,
+                    scopeName: def.scopeName,
+                    embeddedLanguages: def.embeddedLanguages,
+                    tokenTypes: def.tokenTypes,
+                    injectTo: def.injectTo,
+                    balancedBracketSelectors: def.balancedBracketSelectors,
+                    unbalancedBracketSelectors: def.unbalancedBracketSelectors,
+                    sourceExtensionId: def.sourceExtensionId,
+                };
+            });
+            this.d = this.g(grammarDefinitions);
+        }
+        async g(grammarDefinitions) {
+            const uri = this.f.textmateMainUri;
+            const vscodeTextmate = await new Promise((resolve_1, reject_1) => { require([uri], resolve_1, reject_1); });
+            const vscodeOniguruma = await new Promise((resolve_2, reject_2) => { require([this.f.onigurumaMainUri], resolve_2, reject_2); });
+            const response = await fetch(this.f.onigurumaWASMUri);
+            // Using the response directly only works if the server sets the MIME type 'application/wasm'.
+            // Otherwise, a TypeError is thrown when using the streaming compiler.
+            // We therefore use the non-streaming compiler :(.
+            const bytes = await response.arrayBuffer();
+            await vscodeOniguruma.loadWASM(bytes);
+            const onigLib = Promise.resolve({
+                createOnigScanner: (sources) => vscodeOniguruma.createOnigScanner(sources),
+                createOnigString: (str) => vscodeOniguruma.createOnigString(str)
+            });
+            return new TMGrammarFactory_1.$UKb({
+                logTrace: (msg) => { },
+                logError: (msg, err) => console.error(msg, err),
+                readFile: (resource) => this.a.readFile(resource)
+            }, grammarDefinitions, vscodeTextmate, onigLib);
+        }
+        // These methods are called by the renderer
+        acceptNewModel(data) {
+            const uri = uri_1.URI.revive(data.uri);
+            const that = this;
+            this.b.set(data.controllerId, new textMateWorkerTokenizer_1.$VKb(uri, data.lines, data.EOL, data.versionId, {
+                async getOrCreateGrammar(languageId, encodedLanguageId) {
+                    const grammarFactory = await that.d;
+                    if (!grammarFactory) {
+                        return Promise.resolve(null);
+                    }
+                    if (!that.c[encodedLanguageId]) {
+                        that.c[encodedLanguageId] = grammarFactory.createGrammar(languageId, encodedLanguageId);
+                    }
+                    return that.c[encodedLanguageId];
+                },
+                setTokensAndStates(versionId, tokens, stateDeltas) {
+                    that.a.setTokensAndStates(data.controllerId, versionId, tokens, stateDeltas);
+                },
+                reportTokenizationTime(timeMs, languageId, sourceExtensionId, lineLength, isRandomSample) {
+                    that.a.reportTokenizationTime(timeMs, languageId, sourceExtensionId, lineLength, isRandomSample);
+                },
+            }, data.languageId, data.encodedLanguageId, data.maxTokenizationLineLength));
+        }
+        acceptModelChanged(controllerId, e) {
+            this.b.get(controllerId).onEvents(e);
+        }
+        retokenize(controllerId, startLineNumber, endLineNumberExclusive) {
+            this.b.get(controllerId).retokenize(startLineNumber, endLineNumberExclusive);
+        }
+        acceptModelLanguageChanged(controllerId, newLanguageId, newEncodedLanguageId) {
+            this.b.get(controllerId).onLanguageId(newLanguageId, newEncodedLanguageId);
+        }
+        acceptRemovedModel(controllerId) {
+            const model = this.b.get(controllerId);
+            if (model) {
+                model.dispose();
+                this.b.delete(controllerId);
+            }
+        }
+        async acceptTheme(theme, colorMap) {
+            const grammarFactory = await this.d;
+            grammarFactory?.setTheme(theme, colorMap);
+        }
+        acceptMaxTokenizationLineLength(controllerId, value) {
+            this.b.get(controllerId).acceptMaxTokenizationLineLength(value);
+        }
+    }
+    exports.TextMateTokenizationWorker = TextMateTokenizationWorker;
+});
+
+}).call(this);
+//# sourceMappingURL=textMateTokenizationWorker.worker.js.map
