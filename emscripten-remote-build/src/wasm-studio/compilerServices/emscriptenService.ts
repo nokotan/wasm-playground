@@ -29,9 +29,28 @@ interface IFileContent {
   type?: "text" | "binary";
 }
 
-interface ICompileResult {
-  files: IFileContent[];
+interface TaskResult {
+  commandLine: string;
+
+  stdout: string;
+
+  success: boolean;
 }
+
+interface SourceFile {
+  /** the name of source file */
+  name: string;
+  /** source file content */
+  content: string;
+
+  format?: string;
+}
+
+type Response = {
+  tasks: TaskResult[];
+
+  output: SourceFile[];
+};
 
 export class EmscriptenService implements CompilerService {
 
@@ -42,51 +61,48 @@ export class EmscriptenService implements CompilerService {
 
     for (let i = 0; i < inputFile.length; i++) {
       compiledFiles.push({
-        type: inputFile[i].split(".").pop(),
         name: inputFile[i],
-        options: input.options,
-        src: files[i].content,
+        content: files[i].content,
       });
     }
 
+    const options: string = input.options;
+
     const project = {
-      output: "wasm",
-      compress: true,
       files: compiledFiles,
-      link_options: input.options
+      compileOptions: options.split(" "),
+      linkOptions: options.split(" "),
     };
-    const result = await sendRequestJSON(project, ServiceTypes.Emscripten);
+    const result = await sendRequestJSON(project, ServiceTypes.Emscripten) as unknown as Response;
     const items: any = {};
-    if (result.success) {
-      const content = await decodeBinary(result.output || "");
+    const success = result.output.length > 0;
+
+    if (success) {
+      const wasm = result.output.filter(i => i.name == "a.wasm")[0];
+      const content = await decodeBinary(wasm.content);
       items["a.wasm"] = { content };
     }
 
-    const findInputFileFromFileName = (fileName: string): string => {
-      const maybeFileRef = inputFile.filter(x => x.indexOf(fileName) >= 0);
-      if (maybeFileRef.length > 0) {
-        return maybeFileRef[0];
-      } else {
-        return "";
-      }
-    };
+    // const findInputFileFromFileName = (fileName: string): string => {
+    //   const maybeFileRef = inputFile.filter(x => x.indexOf(fileName) >= 0);
+    //   if (maybeFileRef.length > 0) {
+    //     return maybeFileRef[0];
+    //   } else {
+    //     return "";
+    //   }
+    // };
+
+    let stdout = "";
 
     if (result.tasks) {
       for (const task of result.tasks) {
-        const fileRef = findInputFileFromFileName(task.file);
-        items[task.file] = { fileRef, console: task.console };
+        stdout += task.stdout;
       }
     }
 
-    if (result.wasmBindgenJs) {
-      items["wasm_bindgen.js"] = {
-        content: result.wasmBindgenJs,
-      };
-    }
-
     return {
-      success: result.success,
-      console: result.message,
+      success: success,
+      console: stdout,
       items,
     };
   }
