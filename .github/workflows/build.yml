@@ -54,7 +54,7 @@ jobs:
     steps:
       - run: mkdir dev
       - name: Restore Bundles
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: wasm-playground-app-bundle
           path: dev
@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - name: Restore Bundles
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: wasm-playground-app-bundle
           path: dist
