@@ -24,7 +24,7 @@ jobs:
             override: true
       - uses: Swatinem/rust-cache@v2
       - name: Setup Rust tools
-        run: cargo install wasm-pack
+        run: cargo install --version 0.12.1 wasm-pack
 
       - name: Use Node.js 16.x
         uses: actions/setup-node@v3
