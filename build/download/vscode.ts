@@ -21,20 +21,11 @@ interface DownloadInfo {
 }
 
 async function getLatestVersion(quality: 'stable' | 'insider' | string): Promise<DownloadInfo> {
-
-	const knownVersions = {
-		"1.74.1": "1ad8d514439d5077d2b0b7ee64d2ce82a9308e5a"
-	};
-
-	if (quality == 'stable' || quality == 'insider') {
-		const update: DownloadInfo = await fetchJSON(`https://update.code.visualstudio.com/api/update/web-standalone/${quality}/latest`);
-		update.quality = quality;
-		return update;
-	} else if (knownVersions[quality]) {
-		return Promise.resolve({ url: `https://update.code.visualstudio.com/commit:${knownVersions[quality]}/web-standalone/stable`, version: knownVersions[quality], productVersion: quality, quality: 'stable' });
-	} else {
-		return Promise.reject('unknown vscode version');
-	}
+	return Promise.resolve({
+		 url: "https://www.kamenokosoft.com/assets/vscode-web.tar.gz", 
+		 version: "1.88.1", 
+		 productVersion: "stable", 
+		 quality: "stable" });
 }
 
 export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider' | string, installationRoot?: string): Promise<Static> {
@@ -52,7 +43,7 @@ export async function downloadAndUnzipVSCode(quality: 'stable' | 'insider' | str
 	}
 
 	if (existsSync(installationRoot)) {
-		await fs.rmdir(installationRoot, { recursive: true, maxRetries: 5 });
+		await fs.rm(installationRoot, { recursive: true, maxRetries: 5 });
 	}
 
 	await fs.mkdir(installationRoot, { recursive: true });

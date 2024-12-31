@@ -3,7 +3,7 @@
   "clang": "https://webassembly-studio-clang.herokuapp.com/build",
   "rustc": "https://webassembly-studio-rust.herokuapp.com/rustc",
   "cargo": "https://webassembly-studio-rust.herokuapp.com/cargo",
-  "emscripten": "https://emscripten-compiler.herokuapp.com/build",
+  "emscripten": "https://mx6p003j0j.execute-api.ap-southeast-2.amazonaws.com/public/build",
   "templates": {
     "default": "dist/templates/index.js",
     "arc": "dist/arc-templates/index.js"
