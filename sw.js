@@ -38,6 +38,7 @@ that.addEventListener('activate', event => {
         }));
     }).then(() => that.clients.claim()));
 });
+const cdnUrl = /https:\/\/[0-9a-z\-]+\.vscode-cdn\.net\/stable\/[0-9a-f]+\/(.*)/;
 // The fetch handler serves responses for same-origin resources from a cache.
 // If no response is found, it populates the runtime cache with the response
 // from the network before returning it to the page.
@@ -51,9 +52,14 @@ that.addEventListener('fetch', event => {
             return caches.open(RUNTIME).then(cache => {
                 return fetch(event.request).then(response => {
                     // Put a copy of the response in the runtime cache.
-                    return cache.put(event.request, response.clone()).then(() => {
+                    if (response.ok) {
+                        return cache.put(event.request, response.clone()).then(() => {
+                            return response;
+                        });
+                    }
+                    else {
                         return response;
-                    });
+                    }
                 });
             });
         }));

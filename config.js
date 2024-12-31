@@ -19,6 +19,11 @@ const config = {
         {
             scheme: "https",
             authority: "wasm-playground.kamenokosoft.com",
+            path: "/addon/vscode-clangd/extension"
+        },
+        {
+            scheme: "https",
+            authority: "wasm-playground.kamenokosoft.com",
             path: "/addon/wasmer-terminal/extension"
         }
     ],
@@ -38,7 +43,8 @@ const config = {
                 "fileSearchProvider",
                 "textSearchProvider"
             ]
-        }
+        },
+        webEndpointUrlTemplate: "https://wasm-playground.kamenokosoft.com",
     },
     codeExchangeProxyEndpoints: {
         github: "https://exchange-code.herokuapp.com/github/"
